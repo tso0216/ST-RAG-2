@@ -1,0 +1,70 @@
+{
+  "place_name": "澀谷 SKY",
+  "articles": [
+    "mock_shibuyasky_december_weekend_sunset_fuji",
+    "mock_shibuyasky_december_weekday_night_rain"
+  ],
+  "negative_articles": [
+    "mock_shibuyasky_july_weekend_sunset",
+    "mock_shibuyasky_april_weekday_night_clear"
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "question": "十二月週末傍晚想去澀谷 SKY 看夕陽，現場買得到票嗎？頂樓會不會很擠？",
+      "when": {
+        "month": "12",
+        "day_type": "假日",
+        "time": "16-17"
+      },
+      "relevant_contents": [
+        24,
+        25
+      ],
+      "expect": [
+        "夕陽時段要提早線上預約，朋友想當天現場買已經售完",
+        "頂樓角落拍十字路口的熱門位置要排約四十分鐘",
+        "四點半左右日落，西邊看得到富士山剪影",
+        "頂樓風很大，十二月很冷"
+      ]
+    },
+    {
+      "id": "q2",
+      "question": "十二月平日晚上去澀谷 SKY，如果下雨頂樓還會開嗎？人多嗎？",
+      "when": {
+        "month": "12",
+        "day_type": "平日",
+        "time": "晚上"
+      },
+      "relevant_contents": [
+        22,
+        23
+      ],
+      "expect": [
+        "下雨時頂樓暫停開放，只能待在室內樓層",
+        "人很少，當天現場就買到票，幾乎不用排隊",
+        "九點左右雨停後頂樓重新開放，可以看到十字路口夜景",
+        "室內玻璃上有雨痕，拍照會糊"
+      ]
+    },
+    {
+      "id": "q3",
+      "question": "十二月去澀谷 SKY，傍晚跟晚上哪個時段比較不擠？",
+      "when": {
+        "month": "12"
+      },
+      "relevant_contents": [
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "expect": [
+        "週末傍晚：要預約、頂樓擁擠、熱門位置排約四十分鐘，但看得到夕陽和富士山",
+        "平日晚上：現場買票、人很少，但遇到下雨頂樓會暫停",
+        "要說明這是兩位旅客不同天的經驗"
+      ]
+    }
+  ]
+}

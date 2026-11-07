@@ -1,0 +1,41 @@
+import argparse
+import asyncio
+import logging
+import sys
+from pathlib import Path
+
+from .pipeline import run
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(prog="python -m strag_v3.extract", description="把 Reddit 文章或現成的文章 JSON 抽成 content 表")
+    ap.add_argument("sources", nargs="+", metavar="source",
+                    help="Reddit 貼文或留言連結、文章 JSON 檔，或內含 *.json 的資料夾")
+    ap.add_argument("--cache", action="store_true", help="有快取就直接用，不重新呼叫 LLM")
+    ap.add_argument("--force", action="store_true", help="DB 已有的文章也重抽（會刪掉舊片段，content id 會變）")
+    a = ap.parse_args(argv)
+    logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(message)s")
+
+    sources = []
+    for s in a.sources:
+        p = Path(s)
+        sources += sorted(map(str, p.glob("*.json"))) if p.is_dir() else [s]
+
+    r = asyncio.run(run(sources, use_cache=a.cache, force=a.force))
+
+    print(f"\n處理篇數：{len(r.done)}")
+    print(f"寫入筆數：{r.written}")
+    print(f"格式不合而丟掉：{r.dropped}")
+    print(f"略過：{len(r.skipped)}")
+    for url, reason in r.skipped:
+        print(f"  {reason}  {url}")
+    if r.error:
+        print(f"\n錯誤，整批停止：{r.error}", file=sys.stderr)
+        print("已完成：", *r.done, sep="\n  ")
+        print("未完成：", *r.pending, sep="\n  ")
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
