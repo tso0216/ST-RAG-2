@@ -39,3 +39,5 @@
   - `month`、`time_of_day` 分組改用片段自己標籤的不平滑分布，不隨平滑頻寬改變，所以 `16-17` 歸下午。`全天` 自成一組。
   - `planner.md` 不再列時段表，表只在 `group.TIME_OF_DAY_GROUPS`，上面「兩處各寫一次」的說法已經不適用。
   - `Retriever.retrieve` 是唯一的檢索 seam，輸出分好組的 sections。`--json` 最上層的 `results` 拿掉了，改成每個 section 各自帶 `results` 和 `groups`。
+
+研究者決定（2026-11-07）：取消時間分布後，`time_of_day` 和 `month` 直接照片段的標籤分組，`全天`、`不明` 各成一組，上面的分組表和並列規則由 12 取代。

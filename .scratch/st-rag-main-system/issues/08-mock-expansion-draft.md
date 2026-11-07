@@ -9,7 +9,7 @@
 
 起草完跑抽取，交給研究者審稿。`relevant_contents` 留給 09 由研究者確認。
 
-**Blocked by:** 03, 04
+**Blocked by:** 03, 04, 12
 
 **Status:** ready-for-agent
 
