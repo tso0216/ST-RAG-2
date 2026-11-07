@@ -20,44 +20,40 @@ async def run(question: str, db: Path) -> dict:
     try:
         plan = await llm.plan(question)
         retriever = Retriever(conn, CachedEmbedder(OpenAIEmbedder(), conn), hierarchy=hierarchy)
-        sections = retriever.retrieve_grouped(plan, question)
-        results = [r for s in sections for r in s.results]
+        sections = retriever.retrieve(plan, question)
         answer = await llm.answer(question, sections)
     finally:
         conn.close()
-    index = {id(r): i for i, r in enumerate(results)}
     return {
         "question": question,
         "plan": plan.to_dict(),
-        "results": [{"sub_query": asdict(r.sub_query), "evidence": [asdict(e) for e in r.evidence],
-                     "nearest": [asdict(n) for n in r.nearest]}
-                    for r in results],
-        # 交給生成器的段落：sub_queries 是 plan 裡子查詢的索引（0 起算）
-        "sections": [{"sub_queries": [index[id(r)] for r in s.results],
-                      "groups": [{"key": g.key, "evidence": [asdict(e) for e in g.evidence]} for g in s.groups]}
-                     for s in sections],
+        # 交給生成器的段：results 是這段的子查詢（條件、各自取回的證據、沒有證據時最接近的時段），groups 是分好的組
+        "sections": [asdict(s) for s in sections],
         "answer": answer,
     }
+
+
+def _when(t: dict) -> str:
+    return f"{t['month']}月 {t['day_type']} {t['time']}"
 
 
 def show(out: dict) -> None:
     print("## 檢索計畫")
     print(json.dumps(out["plan"], ensure_ascii=False, indent=2))
-    for s in out["sections"]:
-        subs = "、".join(str(i + 1) for i in s["sub_queries"])
-        print(f"\n## 子查詢 {subs} 取回 {sum(len(g['evidence']) for g in s['groups'])} 筆")
+    for i, s in enumerate(out["sections"], 1):
+        print(f"\n## 第 {i} 段：取回 {sum(len(g['evidence']) for g in s['groups'])} 筆")
+        for r in s["results"]:
+            print("子查詢：" + json.dumps(r["sub_query"], ensure_ascii=False))
+            for n in r["nearest"]:
+                print(f"  最接近的時段：{n['place']}｜{_when(n['time'])}｜{n['count']} 筆")
         for g in s["groups"]:
             if g["key"]:
                 print("### " + "｜".join(f"{d}={v}" for d, v in g["key"].items()))
             for e in g["evidence"]:
-                print(f"[{e['content_id']}] {e['article_id']}｜{e['place']}｜{e['month']}月 {e['day_type']} {e['time']}"
-                      f"｜重疊 {e['overlap']:.3f} 語意 {e['semantic']:.3f} 分數 {e['score']:.3f}"
+                print(f"[{e['content_id']}] {e['article_id']}｜{e['place']}｜{_when(e['time'])}"
+                      f"｜重疊 {e['overlap']:.3f} 相符 {e['time_match']:.2f} 語意 {e['semantic']:.3f} 分數 {e['score']:.3f}"
                       + ("｜退讓到母節點" if e["backoff"] else ""))
                 print(f"    {e['content']}")
-        for i in s["sub_queries"]:
-            for n in out["results"][i]["nearest"]:
-                print(f"子查詢 {i + 1} 最接近的時段：{n['place']}｜{n['month']}月 {n['day_type']} {n['time']}"
-                      f"｜{n['count']} 筆")
     print("\n## 答案")
     print(out["answer"])
 

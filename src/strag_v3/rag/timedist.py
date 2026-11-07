@@ -25,13 +25,25 @@ class LabelError(ValueError):
     """看不懂的時間標籤。"""
 
 
-def _blank(label: str | None) -> bool:
+@dataclass(frozen=True)
+class TimeSpec:
+    """時間標籤：月份、平日／假日、時段三個維度，格式跟抽取 schema 及 eval 的 `when` 相同。
+
+    問題（子查詢）的 None 代表該維度不限；片段沒寫的維度是 `不明`。
+    """
+    month: str | None = None
+    day_type: str | None = None
+    time: str | None = None
+
+
+def is_unknown(label: str | None) -> bool:
+    """標籤是 `不明` 或空的。"""
     return label is None or not label.strip() or label.strip() == UNKNOWN
 
 
-def has_unknown(*labels: str | None) -> bool:
-    """任何一個時間標籤是 `不明`（或空的）就是 True。"""
-    return any(_blank(label) for label in labels)
+def has_unknown(t: TimeSpec) -> bool:
+    """任何一個維度的標籤是 `不明`（或空的）就是 True。"""
+    return any(is_unknown(label) for label in (t.month, t.day_type, t.time))
 
 
 def _uniform(n: int) -> list[float]:
@@ -55,7 +67,7 @@ def _cyclic_range(start: int, end: int, n: int) -> list[int]:
 
 
 def month_marginal(label: str | None) -> list[float]:
-    if _blank(label):
+    if is_unknown(label):
         return _uniform(N_MONTH)
     s = label.strip()
     if s in SEASONS:
@@ -75,7 +87,7 @@ def month_marginal(label: str | None) -> list[float]:
 
 
 def day_marginal(label: str | None) -> list[float]:
-    if _blank(label):
+    if is_unknown(label):
         return _uniform(N_DAY)
     s = label.strip()
     if s not in DAY_TYPES:
@@ -94,7 +106,7 @@ def _trapezoid(x: float, a: float, b: float, c: float, d: float) -> float:
 
 
 def hour_marginal(label: str | None, params: Params = DEFAULT) -> list[float]:
-    if _blank(label):
+    if is_unknown(label):
         return _uniform(N_HOUR)
     s = label.strip()
     if s in params.periods:
@@ -140,12 +152,12 @@ def smooth_cyclic(w: list[float], bandwidth: float) -> list[float]:
     return [x / s for x in out]
 
 
-def to_dist(month: str | None = None, day_type: str | None = None, time: str | None = None,
-            params: Params = DEFAULT) -> TimeDist:
-    """三個維度各自轉成邊際分布；月份軸和小時軸再做週期平滑，平日／假日不平滑。"""
-    pm = smooth_cyclic(month_marginal(month), params.month_bandwidth)
-    pd = day_marginal(day_type)
-    ph = smooth_cyclic(hour_marginal(time, params), params.hour_bandwidth)
+def to_dist(t: TimeSpec | None, params: Params = DEFAULT) -> TimeDist:
+    """三個維度各自轉成邊際分布；月份軸和小時軸再做週期平滑，平日／假日不平滑。None 代表完全不限時間。"""
+    t = t or TimeSpec()
+    pm = smooth_cyclic(month_marginal(t.month), params.month_bandwidth)
+    pd = day_marginal(t.day_type)
+    ph = smooth_cyclic(hour_marginal(t.time, params), params.hour_bandwidth)
     return TimeDist(tuple(m * d * h for m in pm for d in pd for h in ph))
 
 
@@ -157,3 +169,20 @@ def overlap(query: TimeDist, content: TimeDist) -> float:
     """
     peak = max(query.cells)
     return sum(c * q for c, q in zip(content.cells, query.cells)) / peak
+
+
+def time_match(query: TimeSpec | None, content: TimeSpec, params: Params = DEFAULT) -> float:
+    """時間相符程度：片段的時間有多少比例落在問題的時間範圍內，0–1。給生成器判斷要不要揭露時間落差。
+
+    兩邊都不平滑：問題範圍是問題標籤有質量的月份、平日／假日、鐘點（時段詞含梯形的邊）；
+    三個維度各自算片段邊際分布落在範圍內的質量，再相乘。
+    片段標籤跟問題相同或更窄時是 1；完全在範圍外（只是相近、靠平滑才取回）時是 0；
+    問題不限時間時是 1。時空重疊度兩邊都平滑，完全相符也不到 1，所以不拿來判斷落差。
+    """
+    q = query or TimeSpec()
+    out = 1.0
+    for qm, cm in ((month_marginal(q.month), month_marginal(content.month)),
+                   (day_marginal(q.day_type), day_marginal(content.day_type)),
+                   (hour_marginal(q.time, params), hour_marginal(content.time, params))):
+        out *= sum(c for c, x in zip(cm, qm) if x > 0)
+    return out
