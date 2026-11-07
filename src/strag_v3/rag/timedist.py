@@ -169,3 +169,20 @@ def overlap(query: TimeDist, content: TimeDist) -> float:
     """
     peak = max(query.cells)
     return sum(c * q for c, q in zip(content.cells, query.cells)) / peak
+
+
+def time_match(query: TimeSpec | None, content: TimeSpec, params: Params = DEFAULT) -> float:
+    """時間相符程度：片段的時間有多少比例落在問題的時間範圍內，0–1。給生成器判斷要不要揭露時間落差。
+
+    兩邊都不平滑：問題範圍是問題標籤有質量的月份、平日／假日、鐘點（時段詞含梯形的邊）；
+    三個維度各自算片段邊際分布落在範圍內的質量，再相乘。
+    片段標籤跟問題相同或更窄時是 1；完全在範圍外（只是相近、靠平滑才取回）時是 0；
+    問題不限時間時是 1。時空重疊度兩邊都平滑，完全相符也不到 1，所以不拿來判斷落差。
+    """
+    q = query or TimeSpec()
+    out = 1.0
+    for qm, cm in ((month_marginal(q.month), month_marginal(content.month)),
+                   (day_marginal(q.day_type), day_marginal(content.day_type)),
+                   (hour_marginal(q.time, params), hour_marginal(content.time, params))):
+        out *= sum(c for c, x in zip(cm, qm) if x > 0)
+    return out

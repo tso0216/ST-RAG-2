@@ -51,7 +51,7 @@ def show(out: dict) -> None:
                 print("### " + "｜".join(f"{d}={v}" for d, v in g["key"].items()))
             for e in g["evidence"]:
                 print(f"[{e['content_id']}] {e['article_id']}｜{e['place']}｜{_when(e['time'])}"
-                      f"｜重疊 {e['overlap']:.3f} 語意 {e['semantic']:.3f} 分數 {e['score']:.3f}"
+                      f"｜重疊 {e['overlap']:.3f} 相符 {e['time_match']:.2f} 語意 {e['semantic']:.3f} 分數 {e['score']:.3f}"
                       + ("｜退讓到母節點" if e["backoff"] else ""))
                 print(f"    {e['content']}")
     print("\n## 答案")

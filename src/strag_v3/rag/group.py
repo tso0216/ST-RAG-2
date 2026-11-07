@@ -9,7 +9,7 @@
   - 地點依片段景點在階層裡的節點分組，同一節點的別名在同一組，組名用正式名稱。
 """
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from .evidence import Evidence, Group, Section, SubQueryResult
 from .hierarchy import Hierarchy
@@ -58,12 +58,17 @@ def build_sections(plan: Plan, results: list[SubQueryResult], places: Hierarchy,
 
 
 def _merged(results: list[SubQueryResult]) -> list[Evidence]:
-    """各子查詢的證據合在一起；同一個片段只留分數最高的那筆，再照分數排序。"""
-    best: dict[int, Evidence] = {}
+    """各子查詢的證據合在一起，再照分數排序。
+
+    同一個片段被多個子查詢取回時只留分數最高的那筆；時間相符程度取各筆裡最高的，
+    因為合併後生成器看到的是所有子查詢的條件，片段只要落在其中一個的時間內就算相符。
+    """
+    copies: dict[int, list[Evidence]] = {}
     for e in (e for r in results for e in r.evidence):
-        if e.content_id not in best or e.score > best[e.content_id].score:
-            best[e.content_id] = e
-    return sorted(best.values(), key=lambda e: (-e.score, e.content_id))
+        copies.setdefault(e.content_id, []).append(e)
+    merged = [replace(max(es, key=lambda e: e.score), time_match=max(e.time_match for e in es))
+              for es in copies.values()]
+    return sorted(merged, key=lambda e: (-e.score, e.content_id))
 
 
 def _group(evidence: list[Evidence], dims: tuple[str, ...], places: Hierarchy, params: Params) -> list[Group]:

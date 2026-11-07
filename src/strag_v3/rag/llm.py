@@ -77,7 +77,7 @@ def _evidence_block(e: Evidence) -> dict:
         "文章": e.article_id,
         "地點": e.place,
         **_time_block(e.time),
-        "時空重疊度": round(e.overlap, 2),
+        "時間相符程度": round(e.time_match, 2),
         "內容": e.content,
         "來自退讓": e.backoff,
     }

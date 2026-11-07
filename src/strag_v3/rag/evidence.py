@@ -16,6 +16,8 @@ class Evidence:
     overlap: float
     semantic: float
     score: float
+    # 時間相符程度（見 timedist.time_match）：1 是完全落在子查詢的時間範圍內，0 是完全在範圍外
+    time_match: float
     backoff: bool = False
 
 

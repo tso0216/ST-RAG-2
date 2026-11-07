@@ -20,7 +20,7 @@ from .nearest import nearest_times
 from .params import DEFAULT, Params
 from .plan import Plan, SubQuery
 from .store import Content, contents, place_names
-from .timedist import has_unknown, overlap, to_dist
+from .timedist import has_unknown, overlap, time_match, to_dist
 
 
 class Retriever:
@@ -65,7 +65,7 @@ class Retriever:
         out = [
             Evidence(c.id, c.article_id, c.place, c.time, c.text, overlap=ov, semantic=sem,
                      score=sem * (p.epsilon + ov) * (p.unknown_discount if has_unknown(c.time) else 1.0),
-                     backoff=backoff)
+                     time_match=time_match(sq.time, c.time, p), backoff=backoff)
             for (c, ov), sem in zip(candidates, sems) if sem >= floor
         ]
         out.sort(key=lambda e: (-e.score, e.content_id))
