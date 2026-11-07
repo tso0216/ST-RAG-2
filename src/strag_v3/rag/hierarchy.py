@@ -41,13 +41,13 @@ def _normalize_name(name: str) -> str:
 class Hierarchy:
     def __init__(self, nodes=()):
         self.nodes: dict[str, Node] = {}
-        self._by_key: dict[str, str] = {}
+        self._owner_by_name: dict[str, str] = {}
         self._children: dict[str, list[str]] = {}
         for n in nodes:
             if n.kind not in KINDS:
                 raise HierarchyError(f"{n.name}：kind 只能是 {'、'.join(KINDS)}，不是 {n.kind}")
             for name in (n.name, *n.aliases):
-                owner = self._by_key.setdefault(_normalize_name(name), n.name)
+                owner = self._owner_by_name.setdefault(_normalize_name(name), n.name)
                 if owner != n.name:
                     raise HierarchyError(f"名稱「{name}」同時屬於 {owner} 和 {n.name}")
             self.nodes[n.name] = n
@@ -85,7 +85,7 @@ class Hierarchy:
         對不上的名稱各自成為沒有母節點的節點。
         """
         nodes = dict(self.nodes)
-        owners = dict(self._by_key)
+        owners = dict(self._owner_by_name)
         for name in dict.fromkeys(names):
             owner = owners.setdefault(_normalize_name(name), name)
             if owner == name and name not in nodes:
@@ -96,7 +96,7 @@ class Hierarchy:
 
     def lookup(self, name: str) -> Node | None:
         """名稱或別名完全相同（正規化後）的節點。"""
-        found = self._by_key.get(_normalize_name(name))
+        found = self._owner_by_name.get(_normalize_name(name))
         return self.nodes[found] if found else None
 
     def nearest(self, name: str, embedder: Embedder, min_sim: float) -> Node | None:
