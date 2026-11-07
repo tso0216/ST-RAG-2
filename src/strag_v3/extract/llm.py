@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 from service.llm import LLMError, call
-from .paths import CACHE_DIR, PROMPT_DIR
+from .paths import CACHE_DIR, PROMPT_DIR, TIME_SLOTS_MARK, TIME_SLOTS_PATH
 
 __all__ = ["LLMError", "extract", "prompt_version", "build_messages"]
 
@@ -22,12 +22,15 @@ SCHEMA = {
                 "type": "object",
                 "properties": {
                     "poi_name": {"type": "string"},
+                    "name_ja": {"type": "string"},
+                    "city": {"type": "string"},
+                    "kind": {"type": "string", "enum": ["景點", "區域"]},
                     "day_type": {"type": "string", "enum": ["平日", "假日", "不明"]},
-                    "time": {"type": "string"},
+                    "time": {"type": "string", "enum": ["早上", "中午", "下午", "晚上", "全天", "不明"]},
                     "month": {"type": "string"},
                     "content": {"type": "string"},
                 },
-                "required": ["poi_name", "day_type", "time", "month", "content"],
+                "required": ["poi_name", "name_ja", "city", "kind", "day_type", "time", "month", "content"],
                 "additionalProperties": False,
             },
         }
@@ -40,7 +43,7 @@ PARENT_SEP = "\n\n---\n\n"
 
 
 def _prompt_files() -> list[Path]:
-    return sorted(p for p in PROMPT_DIR.iterdir() if p.is_file())
+    return [*sorted(p for p in PROMPT_DIR.iterdir() if p.is_file()), TIME_SLOTS_PATH]
 
 
 def prompt_version() -> str:
@@ -51,7 +54,7 @@ def prompt_version() -> str:
 
 
 def build_messages(article: dict) -> tuple[str, str]:
-    system = (PROMPT_DIR / "system.md").read_text()
+    system = (PROMPT_DIR / "system.md").read_text().replace(TIME_SLOTS_MARK, TIME_SLOTS_PATH.read_text().strip())
     template = (PROMPT_DIR / "user.md").read_text()
     is_post = article["kind"] == "post"
     user = template.format(

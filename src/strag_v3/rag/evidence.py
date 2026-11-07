@@ -1,32 +1,45 @@
 """檢索的輸出：每筆證據、每個子查詢的結果，以及交給生成器的段和分組。"""
 from dataclasses import dataclass
 
-from .nearest import NearestTime
 from .plan import Dimension, SubQuery
-from .timedist import TimeSpec
+from .timematch import TimeSpec
 
 
 @dataclass(frozen=True)
 class Evidence:
     content_id: int
     article_id: str
+    place_id: int
+    # 地點的顯示名稱（繁中）
     place: str
     time: TimeSpec
     content: str
-    overlap: float
     semantic: float
+    # 語意分數；時間不明時再乘上 unknown_discount
     score: float
-    # 時間相符程度（見 timedist.time_match）：1 是完全落在子查詢的時間範圍內，0 是完全在範圍外
-    time_match: float
-    backoff: bool = False
+    # 子查詢原本的時間條件沒有證據，時段和月份各往外擴一格才找到
+    time_backoff: bool = False
+    # 子查詢的地點沒有證據，退到外圍的行政區才找到
+    space_backoff: bool = False
+    # 空間退讓時，退到的外圍行政區的名稱
+    backoff_area: str | None = None
+    # 片段有任何一個時間維度是 `不明`
+    time_unknown: bool = False
+
+
+@dataclass(frozen=True)
+class Available:
+    """沒有證據時，問的地點有資料的時段和月份，各有幾筆（依片段的標籤計數）。"""
+    time: tuple[tuple[str, int], ...] = ()
+    month: tuple[tuple[str, int], ...] = ()
 
 
 @dataclass(frozen=True)
 class SubQueryResult:
     sub_query: SubQuery
     evidence: list[Evidence]
-    # 沒有證據時，查過的範圍裡最接近問題時間的時段；有證據時為空
-    nearest: tuple[NearestTime, ...] = ()
+    # 沒有證據時，問的地點有資料的時段和月份；有證據時為空
+    available: Available = Available()
 
 
 @dataclass(frozen=True)

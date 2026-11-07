@@ -1,4 +1,4 @@
-"""DB 寫入：place 用名稱找或建，content 整篇替換。"""
+"""DB 寫入：content 整篇替換。地點由 `place.py` 解析並寫進 place 表，這裡只拿到 place id。"""
 import sqlite3
 from pathlib import Path
 
@@ -11,23 +11,15 @@ def connect(db_path: Path = DB_PATH) -> sqlite3.Connection:
     return conn
 
 
-def _place_id(conn: sqlite3.Connection, name: str) -> int:
-    row = conn.execute("SELECT id FROM place WHERE name = ? ORDER BY id LIMIT 1", (name,)).fetchone()
-    if row:
-        return row[0]
-    return conn.execute("INSERT INTO place (name) VALUES (?)", (name,)).lastrowid
-
-
 def has_article(conn: sqlite3.Connection, article_id: str) -> bool:
     return conn.execute("SELECT 1 FROM content WHERE article_id = ? LIMIT 1", (article_id,)).fetchone() is not None
 
 
-def replace_article(conn: sqlite3.Connection, article_id: str, items: list[dict]) -> int:
-    """在一個 transaction 裡刪掉這篇的舊資料再寫入，回傳寫入筆數。"""
+def replace_article(conn: sqlite3.Connection, article_id: str, items: list[dict], place_ids: list[int]) -> int:
+    """在一個 transaction 裡刪掉這篇的舊資料再寫入，回傳寫入筆數。place_ids 跟 items 一一對應。"""
     with conn:
         conn.execute("DELETE FROM content WHERE article_id = ?", (article_id,))
-        for it in items:
-            pid = _place_id(conn, it["poi_name"])
+        for it, pid in zip(items, place_ids, strict=True):
             conn.execute(
                 "INSERT INTO content (article_id, poi_id, poi_name, day_type, time, month, content)"
                 " VALUES (?, ?, ?, ?, ?, ?, ?)",

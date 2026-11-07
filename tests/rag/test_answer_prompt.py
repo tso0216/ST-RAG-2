@@ -25,56 +25,79 @@ def conditions_in(prompt: str) -> list[list[dict]]:
     return [json.loads(c) for c in re.findall(r"^檢索條件：(.*)$", prompt, re.M)]
 
 
-def test_evidence_matching_the_asked_time_is_marked_fully_matching(add, retrieve, sub):
-    exact = add("晴空塔", "平日", "晚上", "12")
-    inside = add("晴空塔", "平日", "20", "12")
-    january = add("晴空塔", "平日", "晚上", "1")
-
-    prompt = build_answer_prompt("十二月平日晚上排隊要多久", retrieve(sub(month="12", day_type="平日", time="晚上")))
-    got = evidence_in(prompt)
-
-    assert got[exact]["時間相符程度"] == 1
-    assert got[inside]["時間相符程度"] == 1
-    assert got[january]["時間相符程度"] == 0
+FLAGS = ("時間退讓", "空間退讓", "時間不明")
 
 
-def test_neighbouring_hour_is_marked_outside_the_asked_time(add, retrieve, sub):
-    at23 = add("晴空塔", "假日", "23", "8")
-    midnight = add("晴空塔", "假日", "0", "8")
-
-    got = evidence_in(build_answer_prompt("23 點排隊要多久", retrieve(sub(time="23"))))
-
-    assert got[at23]["時間相符程度"] == 1
-    assert got[midnight]["時間相符程度"] == 0
+def flags(e: dict) -> tuple[str, ...]:
+    return tuple(f for f in FLAGS if e[f])
 
 
-def test_vague_content_is_marked_partly_matching(add, retrieve, sub):
-    winter = add("晴空塔", "平日", "10", "冬")  # 十二月、一月、二月各三分之一
+def test_evidence_shows_its_own_time_labels_and_no_flags_when_it_matches(add, retrieve, sub):
+    row = add("晴空塔", "平日", "晚上", "12")
 
-    got = evidence_in(build_answer_prompt("十二月排隊要多久", retrieve(sub(month="12"))))
+    got = evidence_in(build_answer_prompt("十二月平日晚上排隊要多久",
+                                          retrieve(sub(month="12", day_type="平日", time="晚上"))))
 
-    assert 0 < got[winter]["時間相符程度"] < 1
+    assert (got[row]["月份"], got[row]["平日／假日"], got[row]["時段"]) == ("12", "平日", "晚上")
+    assert flags(got[row]) == ()
 
 
-def test_merged_evidence_matching_any_sub_query_time_is_fully_matching(add, retrieve, sub):
-    # 一月片段：對十二月的子查詢語意分數高、時間不符；對一月的子查詢時間相符、語意分數低
-    january = add("晴空塔", "平日", "10", "1", content="排隊")
+def test_time_backoff_evidence_is_flagged(add, retrieve, sub):
+    january = add("晴空塔", "平日", "早上", "1")
 
-    sections = retrieve(sub(month="12", aspect="排隊"), sub(month="1", aspect="富士山"), compose="merge")
+    got = evidence_in(build_answer_prompt("十二月早上排隊要多久", retrieve(sub(month="12", time="早上"))))
+
+    assert flags(got[january]) == ("時間退讓",)
+
+
+def test_space_backoff_evidence_names_the_admin_area_it_came_from(add, retrieve, sub):
+    town = add("晴空塔城", "平日", "早上", "12")
+
+    got = evidence_in(build_answer_prompt("十二月晴空塔排隊要多久", retrieve(sub(space="晴空塔", month="12"))))
+
+    assert flags(got[town]) == ("空間退讓",)
+    assert (got[town]["地點"], got[town]["空間退讓到"]) == ("晴空塔城", "押上一丁目")
+
+
+def test_unknown_time_evidence_is_flagged(add, retrieve, sub):
+    unknown = add("晴空塔", "平日", "不明", "12")
+
+    got = evidence_in(build_answer_prompt("十二月早上排隊要多久", retrieve(sub(month="12", time="早上"))))
+
+    assert flags(got[unknown]) == ("時間不明",)
+
+
+def test_merged_evidence_matching_any_sub_query_directly_is_not_flagged(add, retrieve, sub):
+    # 一月片段：十二月的子查詢靠時間退讓才取回；一月的子查詢直接取回
+    january = add("晴空塔", "平日", "早上", "1")
+
+    sections = retrieve(sub(month="12"), sub(month="1"), compose="merge")
     got = evidence_in(build_answer_prompt("十二月和一月排隊要多久", sections))
 
-    assert got[january]["時間相符程度"] == 1
+    assert flags(got[january]) == ()
+
+
+def test_empty_sub_query_lists_slots_and_months_with_data(add, retrieve, sub):
+    add("晴空塔", "平日", "早上", "5")
+    add("晴空塔", "假日", "早上", "5", article="a2")
+    add("晴空塔", "平日", "晚上", "夏", article="a3")
+
+    prompt = build_answer_prompt("一月排隊要多久", retrieve(sub(month="1")))
+    [empty] = json.loads(re.search(r"沒有證據的子查詢.*?```json\n(.*?)\n```", prompt, re.S)[1])
+
+    assert empty["有資料的時段"] == {"早上": 2, "晚上": 1}
+    assert empty["有資料的月份"] == {"5": 2, "夏": 1}
 
 
 def test_each_section_states_its_sub_query_time(add, retrieve, sub):
-    add("澀谷 SKY", "假日", "17", "12")
-    add("澀谷 SKY", "平日", "21", "12")
+    add("澀谷 SKY", "假日", "下午", "12")
+    add("澀谷 SKY", "平日", "晚上", "12")
 
-    sections = retrieve(sub(space="澀谷 SKY", month="12", time="16-18"),
+    sections = retrieve(sub(space="澀谷 SKY", month="12", time=["下午", "晚上"]),
                         sub(space="澀谷 SKY", month="12", time="晚上"), compose="contrast")
     conditions = conditions_in(build_answer_prompt("十二月傍晚跟晚上哪個比較不擠", sections))
 
     assert [[(c["月份"], c["時段"]) for c in section] for section in conditions] == [
-        [("12", "16-18")],
+        [("12", "下午、晚上")],
         [("12", "晚上")],
     ]

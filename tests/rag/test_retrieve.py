@@ -1,118 +1,154 @@
-"""檢索 seam：輸入檢索計畫，看取回哪些片段、怎麼排序。不打外部 API。"""
+"""檢索 seam：時間硬過濾、語意門檻、「不明」折扣。輸入檢索計畫，看取回哪些片段、怎麼排序。不打外部 API。"""
 import pytest
 
 from strag_v3.rag.embedding import CachedEmbedder
 from strag_v3.rag.params import Params
+from strag_v3.rag.plan import PlanError
+from strag_v3.rag.timematch import LabelError
 
 
 def ids(sections):
     return [e.content_id for s in sections for e in s.evidence]
 
 
-def test_dusk_query_takes_17_and_16_17_but_blocks_morning(add, retrieve, sub):
-    at17 = add("晴空塔", "假日", "17", "1")
-    at16_17 = add("晴空塔", "假日", "16-17", "1")
-    morning = add("晴空塔", "假日", "早上", "1")
-
-    got = ids(retrieve(sub(time="16-18")))
-
-    assert at17 in got and at16_17 in got
-    assert morning not in got
+def evidence(sections):
+    return {e.content_id: e for s in sections for e in s.evidence}
 
 
-def test_evening_period_word_is_soft_matched_by_dusk(add, retrieve, sub):
-    evening = add("晴空塔", "不明", "晚上", "1")
-    assert ids(retrieve(sub(time="16-18"))) == [evening]
+def test_december_query_takes_only_december(add, retrieve, sub):
+    dec = add(month="12")
+    jan = add(month="1")
+    nov = add(month="11")
+
+    assert ids(retrieve(sub(month="12"))) == [dec]
 
 
 @pytest.mark.parametrize("month", ["12-2", "冬"])
 def test_cross_year_range_and_winter_match_january(add, retrieve, sub, month):
-    jan = add("晴空塔", "平日", "10", "1")
-    may = add("晴空塔", "平日", "10", "5")
+    jan = add(month="1")
+    may = add(month="5")
 
-    got = ids(retrieve(sub(month=month)))
-
-    assert jan in got
-    assert may not in got
+    assert ids(retrieve(sub(month=month))) == [jan]
 
 
-def test_january_query_matches_winter_content(add, retrieve, sub):
-    winter = add("晴空塔", "平日", "10", "冬")
-    summer = add("晴空塔", "平日", "10", "夏")
+@pytest.mark.parametrize("label", ["12-2", "冬"])
+def test_january_query_matches_content_labelled_with_a_range_or_season(add, retrieve, sub, label):
+    winter = add(month=label)
+    summer = add(month="夏")
+
     assert ids(retrieve(sub(month="1"))) == [winter]
 
 
-def test_hour_range_wraps_past_midnight(add, retrieve, sub):
-    late = add("晴空塔", "假日", "0", "8")
-    noon = add("晴空塔", "假日", "12", "8")
-    assert ids(retrieve(sub(time="22-1"))) == [late]
+def test_query_with_a_set_of_months_takes_any_of_them(add, retrieve, sub):
+    dec = add(month="12")
+    jan = add(month="1")
+    feb = add(month="2")
+
+    assert sorted(ids(retrieve(sub(month=["12", "1"])))) == [dec, jan]
+
+
+def test_afternoon_and_evening_query_takes_all_day_and_blocks_morning(add, retrieve, sub):
+    afternoon = add(time="下午")
+    evening = add(time="晚上")
+    all_day = add(time="全天")
+    morning = add(time="早上")
+    noon = add(time="中午")
+
+    assert sorted(ids(retrieve(sub(time=["下午", "晚上"])))) == [afternoon, evening, all_day]
+
+
+def test_all_day_query_does_not_limit_time_of_day(add, retrieve, sub):
+    rows = [add(time=t) for t in ("早上", "晚上", "全天")]
+    assert sorted(ids(retrieve(sub(time="全天")))) == rows
+
+
+def test_day_type_must_match(add, retrieve, sub):
+    weekday = add(day_type="平日")
+    weekend = add(day_type="假日")
+    assert ids(retrieve(sub(day_type="平日"))) == [weekday]
 
 
 def test_empty_time_does_not_limit_time(add, retrieve, sub):
-    rows = [add("晴空塔", d, t, m) for d, t, m in
-            [("平日", "7", "1"), ("假日", "晚上", "8"), ("不明", "不明", "不明")]]
+    rows = [add(day_type=d, time=t, month=m) for d, t, m in
+            [("平日", "早上", "1"), ("假日", "晚上", "8"), ("不明", "不明", "不明")]]
     assert sorted(ids(retrieve(sub()))) == rows
 
 
 def test_omitted_time_dimension_does_not_limit_it(add, retrieve, sub):
-    weekday = add("晴空塔", "平日", "7", "1")
-    weekend_night = add("晴空塔", "假日", "21", "1")
-    other_month = add("晴空塔", "平日", "7", "6")
+    weekday = add(day_type="平日", time="早上", month="1")
+    weekend_night = add(day_type="假日", time="晚上", month="1")
+    other_month = add(day_type="平日", time="早上", month="6")
 
     assert sorted(ids(retrieve(sub(month="1")))) == [weekday, weekend_night]
 
 
-def test_day_type_must_match(add, retrieve, sub):
-    weekday = add("晴空塔", "平日", "10", "1")
-    weekend = add("晴空塔", "假日", "10", "1")
-    assert ids(retrieve(sub(day_type="平日"))) == [weekday]
+@pytest.mark.parametrize("dim", ["month", "day_type", "time"])
+def test_unknown_dimension_matches_but_is_marked_and_ranks_after_explicit_match(add, retrieve, sub, dim):
+    explicit = add(day_type="平日", time="早上", month="1")
+    unknown = add(**{"day_type": "平日", "time": "早上", "month": "1", dim: "不明"})
+    other = add(day_type="假日", time="晚上", month="7")
+
+    sections = retrieve(sub(day_type="平日", time="早上", month="1"))
+    got = evidence(sections)
+
+    assert ids(sections) == [explicit, unknown]
+    assert got[unknown].time_unknown and not got[explicit].time_unknown
+
+
+def test_unknown_discount_is_tunable(add, retrieve, sub):
+    unknown = add(time="不明")
+    explicit = add(time="早上")
+
+    got = evidence(retrieve(sub(month="1"), params=Params(unknown_discount=0.5)))
+
+    assert got[unknown].score == pytest.approx(got[explicit].score * 0.5)
+    assert got[unknown].semantic == pytest.approx(got[explicit].semantic)
+    assert ids(retrieve(sub(month="1"), params=Params(unknown_discount=1.0))) == [unknown, explicit]  # 同分依 id 排
+
+
+def test_evidence_matching_directly_carries_no_backoff_flags(add, retrieve, sub):
+    row = add(month="1", article="a2")
+    [e] = retrieve(sub(month="1"))[0].evidence
+    assert (e.content_id, e.article_id) == (row, "a2")
+    assert not (e.time_backoff or e.space_backoff or e.time_unknown)
 
 
 def test_empty_space_does_not_limit_place(add, retrieve, sub):
-    a = add("晴空塔", "平日", "10", "1")
-    b = add("淺草寺", "平日", "10", "1")
+    a = add("晴空塔")
+    b = add("淺草寺")
     assert sorted(ids(retrieve(sub(space=None, month="1")))) == [a, b]
 
 
 def test_space_matches_exact_place_name_only(add, retrieve, sub):
-    tower = add("晴空塔", "平日", "10", "1")
-    town = add("晴空塔城", "平日", "10", "1")
+    tower = add("晴空塔")
+    town = add("晴空塔城")
     assert ids(retrieve(sub(month="1"))) == [tower]
 
 
 def test_semantic_relative_threshold_drops_off_topic_content(add, retrieve, sub):
-    fuji = add("晴空塔", "平日", "10", "1", content="早上看得到富士山")
-    ramen = add("晴空塔", "平日", "10", "1", content="附近的拉麵店")
+    fuji = add(content="早上看得到富士山")
+    ramen = add(content="附近的拉麵店")
 
     assert ids(retrieve(sub(aspect="富士山", month="1"))) == [fuji]
 
 
 def test_aspect_falls_back_to_question(add, retrieve, sub):
-    fuji = add("晴空塔", "平日", "10", "1", content="早上看得到富士山")
-    ramen = add("晴空塔", "平日", "10", "1", content="附近的拉麵店")
+    fuji = add(content="早上看得到富士山")
+    ramen = add(content="附近的拉麵店")
 
     assert ids(retrieve(sub(aspect=None), question="看得到富士山嗎")) == [fuji]
 
 
-def test_better_time_match_ranks_first_and_evidence_carries_scores(add, retrieve, sub):
-    exact = add("晴空塔", "平日", "10", "1")
-    vague = add("晴空塔", "平日", "10", "冬", article="a2")  # 三分之一落在一月
-
-    unsmoothed = Params(month_bandwidth=0, hour_bandwidth=0)
-    [section] = retrieve(sub(month="1"), question="排隊", params=unsmoothed)
-    first, second = section.evidence
-
-    assert (first.content_id, second.content_id) == (exact, vague)
-    assert first.overlap == pytest.approx(1.0)
-    assert second.overlap == pytest.approx(1 / 3)
-    assert first.semantic == pytest.approx(second.semantic)
-    assert second.article_id == "a2"
-    assert not first.backoff
+@pytest.mark.parametrize("time", [{"time": "16-17"}, {"time": "不明"}, {"month": "13"}, {"day_type": "週末"}])
+def test_plan_rejects_time_labels_outside_the_format(retrieve, sub, time):
+    with pytest.raises(PlanError):
+        retrieve(sub(**time))
 
 
-def test_no_candidates_returns_empty(add, retrieve, sub):
-    add("晴空塔", "平日", "10", "5")
-    assert ids(retrieve(sub(month="1"))) == []
+def test_old_hour_labels_in_db_are_rejected(add, retrieve, sub):
+    add(time="16-17")
+    with pytest.raises(LabelError):
+        retrieve(sub(month="1"))
 
 
 def test_embedding_cache_skips_repeated_texts(conn, embedder):

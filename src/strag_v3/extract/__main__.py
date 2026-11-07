@@ -29,12 +29,16 @@ def main(argv=None) -> int:
     print(f"略過：{len(r.skipped)}")
     for url, reason in r.skipped:
         print(f"  {reason}  {url}")
+    if r.unresolved:
+        print(f"\n地點解析不到，整篇沒有寫入：{len(r.unresolved)} 篇", file=sys.stderr)
+        for article_id, names in r.unresolved:
+            print(f"  {article_id}：{'、'.join(names)}", file=sys.stderr)
     if r.error:
         print(f"\n錯誤，整批停止：{r.error}", file=sys.stderr)
         print("已完成：", *r.done, sep="\n  ")
         print("未完成：", *r.pending, sep="\n  ")
         return 1
-    return 0
+    return 1 if r.unresolved else 0
 
 
 if __name__ == "__main__":

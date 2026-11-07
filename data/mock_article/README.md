@@ -46,7 +46,7 @@ data/mock_article/
 
 同一地點，寫 2 篇**時空條件不符合任何一題**的遊記，用來測檢索會不會撈錯：
 
-- 先把所有題目的 `when` 列出來，負例的時間要全部避開。注意範圍大的條件：只要有一題是 `"month": "冬"`，負例就不能落在 12–2 月。
+- 先把所有題目的 `when` 列出來，負例的時間要全部避開。注意範圍大的條件：只要有一題是 `"month": ["冬"]`，負例就不能落在 12–2 月。
 - 寫成難負例：主題、時段盡量跟正例相似，只差在題目限定的條件。例如正例是一月平日早上看富士山，負例就寫五月平日早上、一樣開門就上去、但看不到富士山。
 - 寫進題目檔的 `negative_articles`。
 
@@ -60,6 +60,8 @@ cd src
 - DB 已經有片段的文章會略過，只抽新的。
 - 要重抽就加 `--force`：會刪掉該篇的舊片段再寫入，**content id 會變**，做完要重做第 5 步。
 - 預設每次都呼叫 LLM；加 `--cache` 才會用快取。
+- 每筆的地點用 Nominatim 解析成 OSM 物件（結果存進 `main.db` 的 `nominatim_cache`，之後只讀快取）。有地點解析不到的文章整篇不寫入，結束時列出解析不到的名稱。
+- 改了 DB schema 或抽取 prompt、要整個重抽時，先跑 `.venv/bin/python scripts/db/create_main_db.py --rebuild`（清掉 content 和 place，保留 embedding 和 Nominatim 快取）。
 
 ### 5. 對應片段
 
@@ -75,6 +77,12 @@ sqlite3 data/main.db "SELECT id, article_id, poi_name, day_type, time, month, co
 - 只放回答這題真的要用到的片段；同篇但時段不符的不要放（例如問傍晚，就不放天黑後下樓那段）。
 - 負例的片段不放進任何一題。
 - 順便檢查提取結果有沒有怪東西（地點名稱寫錯、混進奇怪的字），有的話用 `--force` 重抽那篇再重新對應。
+- 檢查地點解析到的 OSM 物件對不對，特別是區域有沒有對到行政區（Nominatim 一律取第一筆，對錯不會自動發現）：
+
+```bash
+sqlite3 data/main.db "SELECT p.id, p.kind, p.name_zh, p.name_ja, p.osm_type || '/' || p.osm_id, o.name_ja AS outer_area
+  FROM place p LEFT JOIN place o ON o.id = p.outer_id ORDER BY p.id"
+```
 
 ## 遊記檔格式
 
@@ -108,7 +116,7 @@ sqlite3 data/main.db "SELECT id, article_id, poi_name, day_type, time, month, co
     {
       "id": "q1",
       "question": "一月平日早上去晴空塔，看得到富士山嗎？要排多久？",
-      "when": {"month": "1", "day_type": "平日", "time": "早上"},
+      "when": {"month": ["1"], "day_type": "平日", "time": ["早上"]},
       "relevant_contents": [9, 10, 11],
       "expect": ["開門前約二十分鐘到……", "富士山很清楚……"]
     }
@@ -126,10 +134,10 @@ sqlite3 data/main.db "SELECT id, article_id, poi_name, day_type, time, month, co
 | `questions[].relevant_contents` | 回答需要檢索到的 `main.db` content id |
 | `questions[].expect` | 答案應包含的重點 |
 
-`when` 的格式跟 content 表一樣：
+`when` 的格式跟檢索計畫子查詢的 `time` 一樣：
 
 | 欄位 | 可用的值 |
 |---|---|
-| `month` | `1`–`12`、範圍 `M-M`（跨年寫 `12-2`）、`春` `夏` `秋` `冬` |
+| `month` | 一個或一組月份標籤的列表，每個是 `1`–`12`、範圍 `M-M`（跨年寫 `12-2`）、`春` `夏` `秋` `冬` |
 | `day_type` | `平日`、`假日` |
-| `time` | `0`–`23`、範圍 `H-H`、`早上` `中午` `下午` `晚上` `全天` |
+| `time` | 一個或一組時段的列表：`早上` `中午` `下午` `晚上` `全天`，鐘點邊界見 `src/strag_v3/time_slots.md` |

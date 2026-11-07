@@ -1,39 +1,21 @@
 """檢索的可調參數，集中在這裡。
 
-預設值依常理定，不在 test 題目上調；門檻和 δ 之後在 dev 題目上決定。
+預設值依常理定，不在 test 題目上調；δ 之後在 dev 題目上決定。
 """
-from dataclasses import dataclass, field
-
-# 時段詞的梯形分布：(a, b, c, d) 的單位是鐘點，a 之前和 d 之後為 0，b 到 c 為 1，中間線性。
-# 每個小時格取格子中點（h + 0.5）的值，再正規化成分布；超過 24 的部分繞回 0 點。
-# 邊界參考 Shwartz 2022（morning／noon／afternoon／evening 的分布），再依中文用法調整。
-DEFAULT_PERIODS: dict[str, tuple[float, float, float, float]] = {
-    "早上": (5, 6, 11, 12),    # 5 點 0.5，6–10 點 1，11 點 0.5
-    "中午": (11, 12, 13, 14),  # 11 點 0.5，12 點 1，13 點 0.5
-    "下午": (12, 13, 17, 18),  # 12 點 0.5，13–16 點 1，17 點 0.5
-    "晚上": (17, 18, 23, 24),  # 17 點 0.5，18–22 點 1，23 點 0.5
-    "全天": (5, 7, 21, 23),    # 白天整段：5 點 0.25，6 點 0.75，7–20 點 1，21 點 0.75，22 點 0.25
-}
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
 class Params:
-    # 分數 = 語意分數 × (epsilon + 時空重疊度)
-    epsilon: float = 0.1
-    # 時空重疊度的絕對門檻，刻意寬鬆，不要變成硬過濾
-    overlap_min: float = 0.05
     # 語意分數的相對門檻：不低於該子查詢的最高分減 delta。
     # text-embedding-3-large 在晴空塔 eval 上，相關片段的分數散在 0.23–0.65，0.15 會漏掉排隊那段
     delta: float = 0.3
-    # 時段詞的梯形邊界
-    periods: dict[str, tuple[float, float, float, float]] = field(default_factory=lambda: dict(DEFAULT_PERIODS))
-    # 週期平滑：月份軸和小時軸各自套頭尾相接的高斯核，數字是標準差（單位為月、小時），0 就不平滑。
-    # 片段和問題的分布都會平滑。月份 0.5：問十二月時一月、十一月能通過門檻，十月、二月不行。
-    month_bandwidth: float = 0.5
-    # 小時 1：問 23 點時 0 點、22 點能通過，問 16–18 點時 14 點能通過、13 點不行。
-    hour_bandwidth: float = 1.0
-    # 片段有任何一個時間維度是 `不明` 時，分數再乘上這個折扣（小於 1；設成 1 就不折扣）
+    # 片段有任何一個時間維度是 `不明` 時，分數乘上這個折扣（小於 1；設成 1 就不折扣）
     unknown_discount: float = 0.8
+    # 沒有證據時，時段和月份各往外擴一格再查（消融時關掉）
+    time_backoff: bool = True
+    # 時間退讓後還是沒有，退到外圍的地點再查（消融時關掉）
+    space_backoff: bool = True
 
 
 DEFAULT = Params()

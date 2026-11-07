@@ -6,9 +6,11 @@ import json
 from pathlib import Path
 
 from service.llm import LLMError, call
+from ..extract.paths import TIME_SLOTS_MARK, TIME_SLOTS_PATH
 from .evidence import Evidence, Section, SubQueryResult
 from .plan import Compose, Dimension, Plan, SubQuery
-from .timedist import DAY_TYPES, TimeSpec
+from ..place import KINDS
+from .timematch import DAY_TYPES, QUERY_SLOTS, TimeQuery, TimeSpec
 
 __all__ = ["LLMError", "plan", "answer"]
 
@@ -16,6 +18,18 @@ MODEL = "claude-opus-5-5"
 PROMPT_DIR = Path(__file__).resolve().parent / "prompts"
 
 _NULLABLE_STR = {"anyOf": [{"type": "string"}, {"type": "null"}]}
+
+_SPACE = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "name_ja": {"type": "string"},
+        "city": {"type": "string"},
+        "kind": {"type": "string", "enum": list(KINDS)},
+    },
+    "required": ["name", "name_ja", "city", "kind"],
+    "additionalProperties": False,
+}
 
 PLAN_SCHEMA = {
     "type": "object",
@@ -26,13 +40,14 @@ PLAN_SCHEMA = {
             "items": {
                 "type": "object",
                 "properties": {
-                    "space": _NULLABLE_STR,
+                    "space": {"anyOf": [_SPACE, {"type": "null"}]},
                     "time": {
                         "type": "object",
                         "properties": {
-                            "month": _NULLABLE_STR,
+                            "month": {"anyOf": [{"type": "array", "items": {"type": "string"}}, {"type": "null"}]},
                             "day_type": {"anyOf": [{"type": "string", "enum": list(DAY_TYPES)}, {"type": "null"}]},
-                            "time": _NULLABLE_STR,
+                            "time": {"anyOf": [{"type": "array", "items": {"type": "string", "enum": list(QUERY_SLOTS)}},
+                                               {"type": "null"}]},
                         },
                         "required": ["month", "day_type", "time"],
                         "additionalProperties": False,
@@ -60,15 +75,19 @@ ANSWER_SCHEMA = {
 
 async def plan(question: str) -> Plan:
     """zero-shot：prompt 只說明計畫格式。"""
-    system = (PROMPT_DIR / "planner.md").read_text()
+    system = (PROMPT_DIR / "planner.md").read_text().replace(TIME_SLOTS_MARK, TIME_SLOTS_PATH.read_text().strip())
     out = await call(system, question, PLAN_SCHEMA, MODEL)
     return Plan.from_dict(out)
 
 
-def _time_block(t: TimeSpec | None) -> dict:
-    """時間標籤的三個維度；子查詢沒限制的維度寫「不限」。"""
-    t = t or TimeSpec()
-    return {"月份": t.month or "不限", "平日／假日": t.day_type or "不限", "時段": t.time or "不限"}
+def _query_time_block(t: TimeQuery | None) -> dict:
+    """子查詢的時間條件；沒限制的維度寫「不限」。"""
+    t = t or TimeQuery()
+    return {"月份": "、".join(t.month) or "不限", "平日／假日": t.day_type or "不限", "時段": "、".join(t.time) or "不限"}
+
+
+def _content_time_block(t: TimeSpec) -> dict:
+    return {"月份": t.month, "平日／假日": t.day_type, "時段": t.time}
 
 
 def _evidence_block(e: Evidence) -> dict:
@@ -76,22 +95,26 @@ def _evidence_block(e: Evidence) -> dict:
         "片段 id": e.content_id,
         "文章": e.article_id,
         "地點": e.place,
-        **_time_block(e.time),
-        "時間相符程度": round(e.time_match, 2),
+        **_content_time_block(e.time),
         "內容": e.content,
-        "來自退讓": e.backoff,
+        "時間退讓": e.time_backoff,
+        "空間退讓": e.space_backoff,
+        **({"空間退讓到": e.backoff_area} if e.space_backoff else {}),
+        "時間不明": e.time_unknown,
     }
 
 
 def _sub_query_block(sq: SubQuery) -> dict:
-    return {"地點": sq.space or "不限", **_time_block(sq.time), "面向": sq.aspect or "（同問題）"}
+    place = f"{sq.space.name}（{sq.space.kind}）" if sq.space else "不限"
+    return {"地點": place, **_query_time_block(sq.time), "面向": sq.aspect or "（同問題）"}
 
 
-def _nearest_block(results: list[SubQueryResult]) -> str:
-    """沒有證據的子查詢：列出它的檢索條件，和查過的範圍裡最接近的時段（只有標籤和筆數）。"""
+def _empty_block(results: list[SubQueryResult]) -> str:
+    """沒有證據的子查詢：列出它的檢索條件，和問的地點有資料的時段、月份（只有標籤和筆數）。"""
     empty = [{
         "檢索條件": _sub_query_block(r.sub_query),
-        "最接近的時段": [{"地點": n.place, **_time_block(n.time), "片段數": n.count} for n in r.nearest],
+        "有資料的時段": dict(r.available.time),
+        "有資料的月份": dict(r.available.month),
     } for r in results if not r.evidence]
     if not empty:
         return ""
@@ -112,7 +135,7 @@ def _section_text(section: Section) -> str:
         body = [_evidence_block(e) for e in section.evidence]
         head = f"證據（{n} 筆）："
     return (f"檢索條件：{json.dumps(conditions, ensure_ascii=False)}\n"
-            f"{head}\n```json\n{json.dumps(body, ensure_ascii=False, indent=2)}\n```") + _nearest_block(section.results)
+            f"{head}\n```json\n{json.dumps(body, ensure_ascii=False, indent=2)}\n```") + _empty_block(section.results)
 
 
 def build_answer_prompt(question: str, sections: list[Section]) -> str:

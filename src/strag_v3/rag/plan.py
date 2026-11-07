@@ -1,10 +1,12 @@
 """檢索計畫：一到多個子查詢，每個子查詢有 space、time、aspect，留空代表不限制。
 
+space 寫出繁中名稱、日文名稱、城市、景點或區域；檢索時用日文名稱、城市、種類解析成 OSM 物件（見 `place.py`）。
 計畫另有 `group_by`（取回的證據依哪些維度分組）和 `compose`（多個子查詢的結果合併或分開對照）。"""
 from dataclasses import asdict, dataclass
 from enum import StrEnum
 
-from .timedist import LabelError, TimeSpec, day_marginal, hour_marginal, month_marginal
+from ..place import KINDS
+from .timematch import LabelError, TimeQuery
 
 
 class PlanError(ValueError):
@@ -32,9 +34,30 @@ class Compose(StrEnum):
 
 
 @dataclass(frozen=True)
+class Space:
+    name: str      # 繁中名稱，顯示用
+    name_ja: str   # 日文名稱，給 Nominatim 查詢
+    city: str      # 城市（日文）
+    kind: str      # 景點、區域
+
+    @classmethod
+    def from_dict(cls, d) -> "Space | None":
+        if d is None:
+            return None
+        if not isinstance(d, dict):
+            raise PlanError(f"space 要寫成 {{name, name_ja, city, kind}}，不是 {d!r}")
+        name_ja, kind = _clean(d.get("name_ja")), _clean(d.get("kind"))
+        if not name_ja:
+            raise PlanError(f"space 沒有日文名稱：{d}")
+        if kind not in KINDS:
+            raise PlanError(f"space 的 kind 只能是 {'、'.join(KINDS)}，不是「{kind}」")
+        return cls(name=_clean(d.get("name")) or name_ja, name_ja=name_ja, city=_clean(d.get("city")) or "", kind=kind)
+
+
+@dataclass(frozen=True)
 class SubQuery:
-    space: str | None = None
-    time: TimeSpec | None = None
+    space: Space | None = None
+    time: TimeQuery | None = None
     aspect: str | None = None
 
 
@@ -49,14 +72,13 @@ class Plan:
         subs = []
         for s in d.get("sub_queries") or []:
             t = s.get("time") or {}
-            spec = TimeSpec(_clean(t.get("month")), _clean(t.get("day_type")), _clean(t.get("time")))
             try:
-                month_marginal(spec.month), day_marginal(spec.day_type), hour_marginal(spec.time)
+                spec = TimeQuery(_labels(t.get("month")), _clean(t.get("day_type")), _labels(t.get("time")))
             except LabelError as e:
                 raise PlanError(str(e)) from None
             subs.append(SubQuery(
-                space=_clean(s.get("space")),
-                time=spec if spec != TimeSpec() else None,
+                space=Space.from_dict(s.get("space")),
+                time=spec if spec != TimeQuery() else None,
                 aspect=_clean(s.get("aspect")),
             ))
         if not subs:
@@ -75,6 +97,12 @@ def _parse[E: StrEnum](enum: type[E], value, what: str) -> E:
         return enum(value)
     except ValueError:
         raise PlanError(f"看不懂的{what}：{value}") from None
+
+
+def _labels(v) -> tuple[str, ...]:
+    """月份或時段：一個值或一組值都可以；空的去掉，重複的只留一個。"""
+    values = v if isinstance(v, (list, tuple)) else [v]
+    return tuple(dict.fromkeys(x for x in map(_clean, values) if x))
 
 
 def _clean(v) -> str | None:

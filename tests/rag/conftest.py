@@ -1,12 +1,11 @@
-"""檢索 seam 測試共用的假 embedder 和 fixture：記憶體內 SQLite，不打外部 API。"""
-import textwrap
-
+"""檢索 seam 測試共用的假 embedder、假 Nominatim 和 fixture：記憶體內 SQLite，不打外部 API。"""
 import pytest
 
-from strag_v3.rag.hierarchy import Hierarchy
+from strag_v3.place import SPOT, Places
 from strag_v3.rag.params import Params
 from strag_v3.rag.plan import Plan
 from strag_v3.rag.retrieve import Retriever
+from tests.fake_nominatim import FakeNominatim
 
 
 class KeywordEmbedder:
@@ -24,51 +23,54 @@ class KeywordEmbedder:
 
 
 @pytest.fixture
+def nominatim():
+    return FakeNominatim()
+
+
+@pytest.fixture
 def embedder():
     return KeywordEmbedder()
 
 
 @pytest.fixture
-def add(conn):
-    """塞一個片段，回傳片段 id；景點不在 place 表時順便建。"""
-    def add(place="晴空塔", day_type="平日", time="10", month="1", content="排隊狀況", article="a1") -> int:
-        pid = conn.execute("SELECT id FROM place WHERE name = ?", (place,)).fetchone()
-        pid = pid[0] if pid else conn.execute("INSERT INTO place (name) VALUES (?)", (place,)).lastrowid
+def add(conn, nominatim):
+    """塞一個片段，回傳片段 id。地點用假 Nominatim 解析，name_zh 記成第一次給的寫法。"""
+    places = Places(conn, nominatim)
+
+    def add(place="晴空塔", day_type="平日", time="早上", month="1", content="排隊狀況", article="a1",
+            kind=SPOT) -> int:
+        p = places.resolve(place, "東京", kind, name_zh=place)
+        assert p is not None, f"假世界裡沒有「{place}」"
         return conn.execute(
             "INSERT INTO content (article_id, poi_id, poi_name, day_type, time, month, content)"
-            " VALUES (?, ?, ?, ?, ?, ?, ?)", (article, pid, place, day_type, time, month, content)).lastrowid
+            " VALUES (?, ?, ?, ?, ?, ?, ?)", (article, p.id, place, day_type, time, month, content)).lastrowid
     return add
 
 
 @pytest.fixture
-def hierarchy(tmp_path):
-    """把 TOML 字串寫成階層檔再載入：測試用的小型階層。"""
-    def hierarchy(toml: str) -> Hierarchy:
-        path = tmp_path / "hierarchy.toml"
-        path.write_text(textwrap.dedent(toml))
-        return Hierarchy.load(path)
-    return hierarchy
-
-
-@pytest.fixture
 def sub():
-    """一個子查詢；時間的欄位（month、day_type、time）用關鍵字給，都沒給就不限時間。"""
-    def sub(space="晴空塔", aspect="排隊", **time) -> dict:
-        return {"space": space, "time": time or None, "aspect": aspect}
+    """一個子查詢；時間的欄位（month、day_type、time）用關鍵字給，都沒給就不限時間。
+
+    space 給地點的寫法（同時當繁中名稱和日文名稱），kind 給景點或區域；space=None 不限地點。
+    month 和 time 可以給一個值或一組值的列表，跟規劃器的寫法相同。
+    """
+    def sub(space="晴空塔", aspect="排隊", kind=SPOT, **time) -> dict:
+        s = None if space is None else {"name": space, "name_ja": space, "city": "東京", "kind": kind}
+        return {"space": s, "time": time or None, "aspect": aspect}
     return sub
 
 
 @pytest.fixture
-def retrieve(conn, embedder, sub):
+def retrieve(conn, embedder, nominatim, sub):
     """檢索 seam：一份檢索計畫進，分好組的證據（段的列表）出。
 
     沒給子查詢時用 `sub()` 的預設值；沒給 embedder 時用 `embedder` fixture 的 KeywordEmbedder。
     """
     default_embedder = embedder
 
-    def retrieve(*sub_queries, group_by=(), compose="merge", question="排隊要多久", params=Params(),
-                 hierarchy=None, embedder=None):
+    def retrieve(*sub_queries, group_by=(), compose="merge", question="排隊要多久", params=Params(), embedder=None):
         plan = Plan.from_dict({"sub_queries": list(sub_queries) or [sub()],
                                "group_by": list(group_by), "compose": compose})
-        return Retriever(conn, embedder or default_embedder, params, hierarchy).retrieve(plan, question)
+        return Retriever(conn, embedder or default_embedder, params, nominatim).retrieve(plan, question)
     return retrieve
+
