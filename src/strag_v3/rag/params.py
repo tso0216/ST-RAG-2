@@ -34,6 +34,10 @@ class Params:
     hour_bandwidth: float = 1.0
     # 片段有任何一個時間維度是 `不明` 時，分數再乘上這個折扣（小於 1；設成 1 就不折扣）
     unknown_discount: float = 0.8
+    # 地點名稱比對不到別名、改用 embedding 找最近節點時，cosine 至少要這麼高，否則當作階層裡沒有這個地點。
+    # text-embedding-3-large 實測：東京天空樹→東京晴空塔 0.62、伏見稻荷→伏見稻荷大社 0.86；
+    # 大阪城、新宿、上野公園的最近名稱都在 0.6 以下。東京鐵塔→東京晴空塔 0.75 擋不掉，靠生成端揭露地點。
+    place_min_sim: float = 0.6
 
 
 DEFAULT = Params()

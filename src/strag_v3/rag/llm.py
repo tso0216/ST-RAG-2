@@ -75,6 +75,7 @@ def _evidence_block(e: Evidence) -> dict:
         "時段": e.time,
         "時空重疊度": round(e.overlap, 2),
         "內容": e.content,
+        "來自退讓": e.backoff,
     }
 
 
@@ -85,6 +86,19 @@ def _sub_query_block(sq: SubQuery) -> dict:
     t = sq.time or TimeSpec()
     return {"地點": sq.space or "不限", "月份": t.month or "不限", "平日／假日": t.day_type or "不限",
             "時段": t.time or "不限", "面向": sq.aspect or "（同問題）"}
+
+
+def _nearest_block(results: list[SubQueryResult]) -> str:
+    """沒有證據的子查詢：列出它的檢索條件，和查過的範圍裡最接近的時段（只有標籤和筆數）。"""
+    empty = [{
+        "檢索條件": _sub_query_block(r.sub_query),
+        "最接近的時段": [{"地點": n.place, "月份": n.month, "平日／假日": n.day_type, "時段": n.time,
+                     "片段數": n.count} for n in r.nearest],
+    } for r in results if not r.evidence]
+    if not empty:
+        return ""
+    return (f"\n沒有證據的子查詢（{len(empty)} 個）：\n"
+            f"```json\n{json.dumps(empty, ensure_ascii=False, indent=2)}\n```")
 
 
 def _section_text(section: Section) -> str:
@@ -100,7 +114,7 @@ def _section_text(section: Section) -> str:
         body = [_evidence_block(e) for g in section.groups for e in g.evidence]
         head = f"證據（{n} 筆）："
     return (f"檢索條件：{json.dumps(conditions, ensure_ascii=False)}\n"
-            f"{head}\n```json\n{json.dumps(body, ensure_ascii=False, indent=2)}\n```")
+            f"{head}\n```json\n{json.dumps(body, ensure_ascii=False, indent=2)}\n```") + _nearest_block(section.results)
 
 
 def build_answer_prompt(question: str, sections: list[Section]) -> str:

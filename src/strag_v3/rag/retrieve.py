@@ -1,17 +1,20 @@
 """檢索：輸入檢索計畫，輸出每個子查詢取回的證據。
 
 每個子查詢：
-- space：片段的景點名稱要完全相同；留空不限地點。
+- space：用景點階層解析成節點（先比別名，再用名稱 embedding 找最近的），節點和所有子孫的片段都算；留空不限地點。
+  一筆都沒過門檻時退一層到母節點再查，證據標成退讓；還是沒有就回傳空結果，附上最接近的時段。
 - time：轉成時間分布，跟片段的時間分布算時空重疊度；留空不限時間。
 - 語意分數：aspect（沒有就用原問題）跟片段內容的 embedding cosine。
 - 分數 = 語意分數 × (ε + 時空重疊度)。片段有任何一個時間維度是 `不明` 時，再乘上 unknown_discount。
 - 門檻：時空重疊度 ≥ overlap_min，且語意分數 ≥ 該子查詢最高分 − δ；兩個都過才取，全部取。
 """
 import sqlite3
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from .embedding import Embedder, cosine
 from .group import Section, organize
+from .hierarchy import Hierarchy
+from .nearest import NearestTime, nearest_times
 from .params import DEFAULT, Params
 from .plan import Plan, SubQuery, TimeSpec
 from .timedist import has_unknown, overlap, to_dist
@@ -36,31 +39,59 @@ class Evidence:
 class SubQueryResult:
     sub_query: SubQuery
     evidence: list[Evidence]
+    # 沒有證據時，查過的範圍裡最接近問題時間的時段；有證據時為空
+    nearest: tuple[NearestTime, ...] = ()
 
 
 class Retriever:
-    def __init__(self, conn: sqlite3.Connection, embedder: Embedder, params: Params = DEFAULT):
+    def __init__(self, conn: sqlite3.Connection, embedder: Embedder, params: Params = DEFAULT,
+                 hierarchy: Hierarchy | None = None):
         self.conn = conn
         self.embedder = embedder
         self.params = params
+        self.hierarchy = hierarchy or Hierarchy()
 
     def retrieve(self, plan: Plan, question: str) -> list[SubQueryResult]:
-        return [SubQueryResult(sq, self._run(sq, question)) for sq in plan.sub_queries]
+        return [self._retrieve_one(sq, question) for sq in plan.sub_queries]
 
     def retrieve_grouped(self, plan: Plan, question: str) -> list[Section]:
         """依計畫的 compose 和 group_by，把取回的證據整理成交給生成器的段落和分組。"""
         return organize(plan, self.retrieve(plan, question), self.params)
 
-    def _run(self, sq: SubQuery, question: str) -> list[Evidence]:
+    def _retrieve_one(self, sq: SubQuery, question: str) -> SubQueryResult:
+        """先查 space 的節點；一筆都沒過門檻時退一層到母節點再查，取回的證據標成退讓。
+
+        還是沒有就回傳空結果，附上查過的範圍裡最接近的時段。時間門檻不放寬。
+        """
+        scopes = self._place_scopes(sq.space)
+        evidence = self._run(sq, question, scopes[0])
+        if not evidence and len(scopes) > 1:
+            evidence = [replace(e, backoff=True) for e in self._run(sq, question, scopes[1])]
+        if evidence:
+            return SubQueryResult(sq, evidence)
+        return SubQueryResult(sq, [], nearest=nearest_times(self.conn, scopes[-1], sq.time, self.params))
+
+    def _place_scopes(self, space: str | None) -> list[frozenset[str] | None]:
+        """[space 要比對的片段景點名稱, 母節點的（有母節點才有）]；None 代表不限地點。"""
+        if space is None:
+            return [None]
+        h = self.hierarchy.with_places(name for (name,) in self.conn.execute("SELECT name FROM place ORDER BY id"))
+        node = h.lookup(space) or h.nearest(space, self.embedder, self.params.place_min_sim)
+        if node is None:
+            return [frozenset({space})]
+        parent = h.parent(node)
+        return [h.names_under(n) for n in (node, parent) if n]
+
+    def _run(self, sq: SubQuery, question: str, places: frozenset[str] | None = None) -> list[Evidence]:
         p = self.params
         t = sq.time or TimeSpec()
         qdist = to_dist(t.month, t.day_type, t.time, p)
 
         sql = "SELECT id, article_id, poi_name, month, day_type, time, content FROM content"
         args: tuple = ()
-        if sq.space:
-            sql += " WHERE poi_name = ?"
-            args = (sq.space,)
+        if places is not None:
+            sql += f" WHERE poi_name IN ({', '.join('?' * len(places))})"
+            args = tuple(sorted(places))
         candidates = []
         for row in self.conn.execute(sql + " ORDER BY id", args):
             cid, aid, place, month, day_type, time, text = row
