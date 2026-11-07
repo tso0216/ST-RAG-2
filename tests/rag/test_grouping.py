@@ -1,4 +1,7 @@
 """檢索 seam：多子查詢、group_by 分組、compose 合併或對照。不打外部 API。"""
+import pytest
+
+from strag_v3.rag.params import Params
 
 
 def layout(sections):
@@ -24,6 +27,35 @@ def test_content_spanning_groups_goes_to_the_group_holding_most_of_its_time(add,
     assert layout(retrieve(group_by=["time_of_day"])) == [[
         ({"time_of_day": "下午"}, [mostly_afternoon]),
         ({"time_of_day": "晚上"}, [mostly_evening]),
+    ]]
+
+
+@pytest.mark.parametrize("bandwidths", [
+    {"hour_bandwidth": 0, "month_bandwidth": 0},
+    {},  # 預設頻寬
+    {"hour_bandwidth": 3, "month_bandwidth": 2},
+])
+def test_groups_follow_the_content_labels_whatever_the_smoothing_bandwidth(add, retrieve, bandwidths):
+    dusk = add("晴空塔", "平日", "16-17", "11-12")  # 16 下午、17 晚上各半；11、12 月各半：並列時歸前面的組
+    night = add("晴空塔", "平日", "20", "12")
+
+    assert layout(retrieve(group_by=["time_of_day", "month"], params=Params(**bandwidths))) == [[
+        ({"time_of_day": "下午", "month": "11"}, [dusk]),
+        ({"time_of_day": "晚上", "month": "12"}, [night]),
+    ]]
+
+
+def test_all_day_content_gets_its_own_group(add, retrieve):
+    all_day = add("晴空塔", "平日", "全天", "1")
+    morning = add("晴空塔", "平日", "8", "1")
+    night = add("晴空塔", "平日", "晚上", "1")
+    unknown = add("晴空塔", "平日", "不明", "1")
+
+    assert layout(retrieve(group_by=["time_of_day"])) == [[
+        ({"time_of_day": "早上"}, [morning]),
+        ({"time_of_day": "晚上"}, [night]),
+        ({"time_of_day": "全天"}, [all_day]),
+        ({"time_of_day": "不明"}, [unknown]),
     ]]
 
 
