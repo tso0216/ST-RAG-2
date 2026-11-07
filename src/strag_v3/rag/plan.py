@@ -1,4 +1,6 @@
-"""檢索計畫：一到多個子查詢，每個子查詢有 space、time、aspect，留空代表不限制。"""
+"""檢索計畫：一到多個子查詢，每個子查詢有 space、time、aspect，留空代表不限制。
+
+計畫另有 `group_by`（取回的證據依哪些維度分組）和 `compose`（多個子查詢的結果合併或分開對照）。"""
 from dataclasses import asdict, dataclass
 
 from .timedist import LabelError, day_marginal, hour_marginal, month_marginal
@@ -6,6 +8,10 @@ from .timedist import LabelError, day_marginal, hour_marginal, month_marginal
 
 class PlanError(ValueError):
     pass
+
+
+GROUP_DIMENSIONS = ("month", "day_type", "time_of_day", "place")
+COMPOSE_MODES = ("merge", "contrast")
 
 
 @dataclass(frozen=True)
@@ -26,6 +32,8 @@ class SubQuery:
 @dataclass(frozen=True)
 class Plan:
     sub_queries: tuple[SubQuery, ...]
+    group_by: tuple[str, ...] = ()
+    compose: str = "merge"
 
     @classmethod
     def from_dict(cls, d: dict) -> "Plan":
@@ -44,10 +52,20 @@ class Plan:
             ))
         if not subs:
             raise PlanError("計畫沒有任何子查詢")
-        return cls(tuple(subs))
+        group_by = []
+        for dim in d.get("group_by") or []:
+            if dim not in GROUP_DIMENSIONS:
+                raise PlanError(f"看不懂的分組維度：{dim}")
+            if dim not in group_by:
+                group_by.append(dim)
+        compose = d.get("compose") or "merge"
+        if compose not in COMPOSE_MODES:
+            raise PlanError(f"看不懂的 compose：{compose}")
+        return cls(tuple(subs), tuple(group_by), compose)
 
     def to_dict(self) -> dict:
-        return {"sub_queries": [asdict(s) for s in self.sub_queries]}
+        return {"sub_queries": [asdict(s) for s in self.sub_queries],
+                "group_by": list(self.group_by), "compose": self.compose}
 
 
 def _clean(v) -> str | None:

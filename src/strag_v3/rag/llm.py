@@ -6,7 +6,8 @@ import json
 from pathlib import Path
 
 from service.llm import LLMError, call
-from .plan import Plan
+from .group import Section
+from .plan import COMPOSE_MODES, GROUP_DIMENSIONS, Plan, SubQuery, TimeSpec
 from .retrieve import Evidence, SubQueryResult
 
 __all__ = ["LLMError", "plan", "answer"]
@@ -41,9 +42,11 @@ PLAN_SCHEMA = {
                 "required": ["space", "time", "aspect"],
                 "additionalProperties": False,
             },
-        }
+        },
+        "group_by": {"type": "array", "items": {"type": "string", "enum": list(GROUP_DIMENSIONS)}},
+        "compose": {"type": "string", "enum": list(COMPOSE_MODES)},
     },
-    "required": ["sub_queries"],
+    "required": ["sub_queries", "group_by", "compose"],
     "additionalProperties": False,
 }
 
@@ -75,16 +78,43 @@ def _evidence_block(e: Evidence) -> dict:
     }
 
 
-def build_answer_prompt(question: str, results: list[SubQueryResult]) -> str:
-    evidence = [_evidence_block(e) for r in results for e in r.evidence]
-    return (
-        f"旅客的問題：{question}\n\n"
-        f"證據（{len(evidence)} 筆）：\n"
-        f"```json\n{json.dumps(evidence, ensure_ascii=False, indent=2)}\n```"
-    )
+_DIMENSION_NAMES = {"month": "月份", "day_type": "平日／假日", "time_of_day": "時段", "place": "地點"}
 
 
-async def answer(question: str, results: list[SubQueryResult]) -> str:
+def _sub_query_block(sq: SubQuery) -> dict:
+    t = sq.time or TimeSpec()
+    return {"地點": sq.space or "不限", "月份": t.month or "不限", "平日／假日": t.day_type or "不限",
+            "時段": t.time or "不限", "面向": sq.aspect or "（同問題）"}
+
+
+def _section_text(section: Section) -> str:
+    """一段證據：先列這段的檢索條件，再列證據；有分組時依組列出。"""
+    n = sum(len(g.evidence) for g in section.groups)
+    conditions = [_sub_query_block(r.sub_query) for r in section.results]
+    if any(g.key for g in section.groups):
+        body = [{"分組": {_DIMENSION_NAMES[d]: v for d, v in g.key.items()},
+                 "證據": [_evidence_block(e) for e in g.evidence]} for g in section.groups]
+        dims = "、".join(_DIMENSION_NAMES[d] for d in section.groups[0].key)
+        head = f"證據（{n} 筆，依{dims}分組）："
+    else:
+        body = [_evidence_block(e) for g in section.groups for e in g.evidence]
+        head = f"證據（{n} 筆）："
+    return (f"檢索條件：{json.dumps(conditions, ensure_ascii=False)}\n"
+            f"{head}\n```json\n{json.dumps(body, ensure_ascii=False, indent=2)}\n```")
+
+
+def build_answer_prompt(question: str, sections: list[Section]) -> str:
+    """一段時直接列證據；多段（compose=contrast）時逐段列出，讓生成器分段說明再對照。"""
+    parts = [f"旅客的問題：{question}"]
+    if len(sections) == 1:
+        parts.append(_section_text(sections[0]))
+    else:
+        parts.append(f"證據分成 {len(sections)} 段，每段是一個子查詢各自找到的證據，要分段說明再互相對照。")
+        parts += [f"## 第 {i} 段\n{_section_text(s)}" for i, s in enumerate(sections, 1)]
+    return "\n\n".join(parts)
+
+
+async def answer(question: str, sections: list[Section]) -> str:
     system = (PROMPT_DIR / "generator.md").read_text()
-    out = await call(system, build_answer_prompt(question, results), ANSWER_SCHEMA, MODEL)
+    out = await call(system, build_answer_prompt(question, sections), ANSWER_SCHEMA, MODEL)
     return out["answer"]
