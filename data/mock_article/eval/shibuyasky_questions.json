@@ -113,7 +113,7 @@
       "id": "q4",
       "type": "找地點",
       "split": "dev",
-      "question": "十二月平日晚上在澀谷車站附近，想吃晚餐再看夜景，可以去哪裡？",
+      "question": "十二月平日晚上在澀谷區，想吃晚餐再看夜景，可以去哪裡？",
       "when": {
         "month": ["12"],
         "day_type": "平日",
@@ -127,7 +127,7 @@
       "gold_plan": {
         "sub_queries": [
           {
-            "space": {"name": "澀谷", "name_ja": "渋谷", "city": "東京", "kind": "區域"},
+            "space": {"name": "澀谷區", "name_ja": "渋谷区", "city": "東京", "kind": "區域"},
             "time": {
               "month": ["12"],
               "day_type": "平日",
