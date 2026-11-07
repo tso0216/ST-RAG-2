@@ -6,9 +6,8 @@ import json
 from pathlib import Path
 
 from service.llm import LLMError, call
-from .group import Section
+from .evidence import Evidence, Section, SubQueryResult
 from .plan import COMPOSE_MODES, GROUP_DIMENSIONS, Plan, SubQuery, TimeSpec
-from .retrieve import Evidence, SubQueryResult
 
 __all__ = ["LLMError", "plan", "answer"]
 
@@ -103,7 +102,7 @@ def _nearest_block(results: list[SubQueryResult]) -> str:
 
 def _section_text(section: Section) -> str:
     """一段證據：先列這段的檢索條件，再列證據；有分組時依組列出。"""
-    n = sum(len(g.evidence) for g in section.groups)
+    n = len(section.evidence)
     conditions = [_sub_query_block(r.sub_query) for r in section.results]
     if any(g.key for g in section.groups):
         body = [{"分組": {_DIMENSION_NAMES[d]: v for d, v in g.key.items()},
@@ -111,7 +110,7 @@ def _section_text(section: Section) -> str:
         dims = "、".join(_DIMENSION_NAMES[d] for d in section.groups[0].key)
         head = f"證據（{n} 筆，依{dims}分組）："
     else:
-        body = [_evidence_block(e) for g in section.groups for e in g.evidence]
+        body = [_evidence_block(e) for e in section.evidence]
         head = f"證據（{n} 筆）："
     return (f"檢索條件：{json.dumps(conditions, ensure_ascii=False)}\n"
             f"{head}\n```json\n{json.dumps(body, ensure_ascii=False, indent=2)}\n```") + _nearest_block(section.results)

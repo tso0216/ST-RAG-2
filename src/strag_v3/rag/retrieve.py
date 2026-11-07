@@ -9,38 +9,16 @@
 - 門檻：時空重疊度 ≥ overlap_min，且語意分數 ≥ 該子查詢最高分 − δ；兩個都過才取，全部取。
 """
 import sqlite3
-from dataclasses import dataclass, replace
+from dataclasses import replace
 
 from .embedding import Embedder, cosine
-from .group import Section, organize
+from .evidence import Evidence, Section, SubQueryResult
+from .group import build_sections
 from .hierarchy import Hierarchy
-from .nearest import NearestTime, nearest_times
+from .nearest import nearest_times
 from .params import DEFAULT, Params
 from .plan import Plan, SubQuery, TimeSpec
 from .timedist import has_unknown, overlap, to_dist
-
-
-@dataclass(frozen=True)
-class Evidence:
-    content_id: int
-    article_id: str
-    place: str
-    month: str
-    day_type: str
-    time: str
-    content: str
-    overlap: float
-    semantic: float
-    score: float
-    backoff: bool = False
-
-
-@dataclass(frozen=True)
-class SubQueryResult:
-    sub_query: SubQuery
-    evidence: list[Evidence]
-    # 沒有證據時，查過的範圍裡最接近問題時間的時段；有證據時為空
-    nearest: tuple[NearestTime, ...] = ()
 
 
 class Retriever:
@@ -51,12 +29,10 @@ class Retriever:
         self.params = params
         self.hierarchy = hierarchy or Hierarchy()
 
-    def retrieve(self, plan: Plan, question: str) -> list[SubQueryResult]:
-        return [self._retrieve_one(sq, question) for sq in plan.sub_queries]
-
-    def retrieve_grouped(self, plan: Plan, question: str) -> list[Section]:
-        """依計畫的 compose 和 group_by，把取回的證據整理成交給生成器的段落和分組。"""
-        return organize(plan, self.retrieve(plan, question), self.params)
+    def retrieve(self, plan: Plan, question: str) -> list[Section]:
+        """依計畫逐一跑子查詢，再依 compose 和 group_by 把證據整理成交給生成器的段和分組。"""
+        results = [self._retrieve_one(sq, question) for sq in plan.sub_queries]
+        return build_sections(plan, results, self.params)
 
     def _retrieve_one(self, sq: SubQuery, question: str) -> SubQueryResult:
         """先查 space 的節點；一筆都沒過門檻時退一層到母節點再查，取回的證據標成退讓。

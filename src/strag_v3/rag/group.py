@@ -5,17 +5,10 @@
 - `group_by`：每段的證據再依指定的維度分組，可以多選；每個片段分到它時間分布質量最大的那一組。
   組內照分數排序。
 """
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import TYPE_CHECKING
-
+from .evidence import Evidence, Group, Section, SubQueryResult
 from .params import DEFAULT, Params
 from .plan import Plan
 from .timedist import DAY_TYPES, N_DAY, N_HOUR, N_MONTH, TimeDist, to_dist
-
-if TYPE_CHECKING:
-    from .retrieve import Evidence, SubQueryResult
 
 UNKNOWN = "不明"
 
@@ -41,21 +34,7 @@ _TIME_AXES: dict[str, tuple[int, dict[str, range]]] = {
 }
 
 
-@dataclass(frozen=True)
-class Group:
-    """一組證據。`key` 依 group_by 的順序記錄每個維度的組名；沒有分組時是空的。"""
-    key: dict[str, str]
-    evidence: list[Evidence]
-
-
-@dataclass(frozen=True)
-class Section:
-    """交給生成器的一段證據：合併時全部子查詢共用一段，對照時每個子查詢一段。"""
-    results: list[SubQueryResult]
-    groups: list[Group]
-
-
-def organize(plan: Plan, results: list[SubQueryResult], params: Params = DEFAULT) -> list[Section]:
+def build_sections(plan: Plan, results: list[SubQueryResult], params: Params = DEFAULT) -> list[Section]:
     if plan.compose == "contrast":
         return [Section([r], _group(r.evidence, plan.group_by, params)) for r in results]
     return [Section(results, _group(_merged(results), plan.group_by, params))]
