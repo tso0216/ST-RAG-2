@@ -1,3 +1,6 @@
 .venv
 .cache
 .archive
+.env
+.pytest_cache
+__pycache__
