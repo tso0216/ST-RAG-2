@@ -1,0 +1,115 @@
+{
+  "place_name": "阿美橫町",
+  "articles": [
+    "mock_ameyoko_december_weekend_afternoon_yearend",
+    "mock_ameyoko_december_weekday_night_izakaya"
+  ],
+  "negative_articles": [
+    "mock_ameyoko_november_weekend_afternoon_shopping",
+    "mock_ameyoko_january_weekday_night_quiet"
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "type": "停留",
+      "split": "test",
+      "question": "十二月底週末下午去阿美橫町，會擠到什麼程度？",
+      "when": {
+        "month": ["12"],
+        "day_type": "假日",
+        "time": ["下午"]
+      },
+      "expect": [
+        "整條路從頭擠到尾，被人潮推著走，警察在路口指揮大家靠左走",
+        "海鮮店堆滿螃蟹、鮭魚卵，叫賣聲大到講話要用喊的",
+        "三點多人潮最多，停下來拍照會被推",
+        "四點過後開始降價，鮭魚卵從三千日圓降到兩千",
+        "包包要背在前面"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "阿美橫町", "name_ja": "アメヤ横丁", "city": "東京", "kind": "景點"},
+            "time": {
+              "month": ["12"],
+              "day_type": "假日",
+              "time": ["下午"]
+            },
+            "aspect": "人潮擁擠程度"
+          }
+        ],
+        "group_by": [],
+        "compose": "merge"
+      }
+    },
+    {
+      "id": "q2",
+      "type": "比較",
+      "split": "dev",
+      "question": "十二月去阿美橫町，平日晚上跟週末下午的氣氛差在哪？",
+      "when": {
+        "month": ["12"]
+      },
+      "expect": [
+        "平日晚上：白天的店七點前大多關了，路上人少；高架橋下的居酒屋坐滿上班族，等十分鐘左右有位子",
+        "週末下午（年底）：擠到被人潮推著走，海鮮店大聲叫賣，四點後降價",
+        "要說明這是兩位旅客不同天的經驗"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "阿美橫町", "name_ja": "アメヤ横丁", "city": "東京", "kind": "景點"},
+            "time": {
+              "month": ["12"],
+              "day_type": "平日",
+              "time": ["晚上"]
+            },
+            "aspect": "氣氛和人潮"
+          },
+          {
+            "space": {"name": "阿美橫町", "name_ja": "アメヤ横丁", "city": "東京", "kind": "景點"},
+            "time": {
+              "month": ["12"],
+              "day_type": "假日",
+              "time": ["下午"]
+            },
+            "aspect": "氣氛和人潮"
+          }
+        ],
+        "group_by": [],
+        "compose": "contrast"
+      }
+    },
+    {
+      "id": "q3",
+      "type": "找地點",
+      "split": "test",
+      "question": "十二月週末下午在台東區，哪裡可以感受到年末的熱鬧氣氛？",
+      "when": {
+        "month": ["12"],
+        "day_type": "假日",
+        "time": ["下午"]
+      },
+      "expect": [
+        "淺草寺：仲見世開始賣新年裝飾和羽子板，人潮擁擠，本堂參拜要排隊",
+        "阿美橫町：年末採購人潮，螃蟹和鮭魚卵大聲叫賣，四點後降價",
+        "依地點分開說明，並說明是不同旅客的經驗"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "台東區", "name_ja": "台東区", "city": "東京", "kind": "區域"},
+            "time": {
+              "month": ["12"],
+              "day_type": "假日",
+              "time": ["下午"]
+            },
+            "aspect": "年末的熱鬧氣氛"
+          }
+        ],
+        "group_by": ["place"],
+        "compose": "merge"
+      }
+    }
+  ]
+}

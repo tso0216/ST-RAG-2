@@ -1,0 +1,108 @@
+{
+  "place_name": "明治神宮",
+  "articles": [
+    "mock_meijijingu_january_weekend_noon_hatsumode",
+    "mock_meijijingu_october_weekend_morning_quiet"
+  ],
+  "negative_articles": [
+    "mock_meijijingu_january_weekday_noon_calm",
+    "mock_meijijingu_june_weekday_morning_rain"
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "type": "停留",
+      "split": "test",
+      "question": "一月週末去明治神宮參拜，要排多久？",
+      "when": {
+        "month": ["1"],
+        "day_type": "假日"
+      },
+      "expect": [
+        "一月三號週六中午，從入口的大鳥居就開始排隊，走到本殿前廣場花了快四十分鐘",
+        "廣場分區輪流參拜，總共大約一個小時",
+        "授與所抽籤、買御守排了大約二十分鐘",
+        "正月三天要有排隊一小時的準備"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "明治神宮", "name_ja": "明治神宮", "city": "東京", "kind": "景點"},
+            "time": {
+              "month": ["1"],
+              "day_type": "假日"
+            },
+            "aspect": "參拜排隊時間"
+          }
+        ],
+        "group_by": [],
+        "compose": "merge"
+      }
+    },
+    {
+      "id": "q2",
+      "type": "找時間",
+      "split": "test",
+      "question": "週末去明治神宮想安靜走參道，幾點去比較好？",
+      "when": {
+        "day_type": "假日"
+      },
+      "expect": [
+        "早上六點半到七點參道幾乎沒人，只聽得到掃落葉的聲音，本殿參拜不用等",
+        "九點以後人慢慢變多，十點左右週末常遇到婚禮隊伍，廣場熱鬧起來",
+        "正月期間的週末中午，從大鳥居排到本殿，參拜要一小時左右",
+        "要說明這是不同旅客、不同月份的經驗"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "明治神宮", "name_ja": "明治神宮", "city": "東京", "kind": "景點"},
+            "time": {
+              "day_type": "假日"
+            },
+            "aspect": "參道的人潮"
+          }
+        ],
+        "group_by": ["time_of_day"],
+        "compose": "merge"
+      }
+    },
+    {
+      "id": "q3",
+      "type": "比較",
+      "split": "dev",
+      "question": "一月週末去初詣，明治神宮跟淺草寺哪邊比較擠？",
+      "when": {
+        "month": ["1"],
+        "day_type": "假日"
+      },
+      "expect": [
+        "明治神宮：一月三號中午從大鳥居排到本殿，參拜大約一小時",
+        "淺草寺：一月週六下午一點多雷門前走不動，仲見世整條是人，人形燒排十幾分鐘",
+        "要說明這是兩位旅客不同天的經驗，淺草寺那次不在正月三天"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "明治神宮", "name_ja": "明治神宮", "city": "東京", "kind": "景點"},
+            "time": {
+              "month": ["1"],
+              "day_type": "假日"
+            },
+            "aspect": "初詣人潮"
+          },
+          {
+            "space": {"name": "淺草寺", "name_ja": "浅草寺", "city": "東京", "kind": "景點"},
+            "time": {
+              "month": ["1"],
+              "day_type": "假日"
+            },
+            "aspect": "初詣人潮"
+          }
+        ],
+        "group_by": [],
+        "compose": "contrast"
+      }
+    }
+  ]
+}

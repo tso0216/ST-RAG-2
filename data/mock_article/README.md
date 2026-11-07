@@ -12,7 +12,7 @@ data/mock_article/
 
 `eval/` 必須是子資料夾：extract 讀資料夾時只讀第一層的 `*.json`，題目放第一層會被當成文章。
 
-現有範例：晴空塔，正例 2 篇、負例 2 篇、題目 3 題（`eval/skytree_questions.json`）。
+現有 10 個景點、30 題（dev 10 題、test 20 題，兩組都有四種題型），每個景點正例 2 篇、負例 2 篇。題目集的結構由 `tests/eval/test_mock_dataset.py` 檢查。
 
 ## 流程
 
@@ -52,9 +52,10 @@ data/mock_article/
 
 ### 4. 提取
 
+從專案根目錄：
+
 ```bash
-cd src
-../.venv/bin/python -m strag_v3.extract ../data/mock_article/
+PYTHONPATH=src:. .venv/bin/python -m strag_v3.extract data/mock_article/
 ```
 
 - DB 已經有片段的文章會略過，只抽新的。
@@ -135,6 +136,9 @@ sqlite3 data/main.db "SELECT p.id, p.kind, p.name_zh, p.name_ja, p.osm_type || '
 | `questions[].expect` | 答案應包含的重點 |
 | `questions[].type` | 題型：停留、找時間、找地點、比較；只用於分組分析，系統不讀，可以不寫 |
 | `questions[].split` | `dev` 或 `test`；可以不寫，沒寫的題目分組時歸在「未標」 |
+| `questions[].gold_plan` | 人工寫的檢索計畫，格式跟規劃器的輸出相同（`sub_queries`、`group_by`、`compose`），用來算規劃器正確率 |
+
+`gold_plan` 的 `space` 寫成 `{name, name_ja, city, kind}`。京都的區（東山区、中京区）`city` 要寫 `京都市`：用 `京都` 查 Nominatim，第一頁只有道路，解析不到行政區。
 
 `when` 的格式跟檢索計畫子查詢的 `time` 一樣：
 

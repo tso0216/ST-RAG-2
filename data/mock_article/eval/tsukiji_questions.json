@@ -1,0 +1,72 @@
+{
+  "place_name": "築地場外市場",
+  "articles": [
+    "mock_tsukiji_september_weekend_morning_crowd",
+    "mock_tsukiji_october_weekday_morning_early"
+  ],
+  "negative_articles": [
+    "mock_tsukiji_november_sunday_noon_closing",
+    "mock_tsukiji_july_holiday_noon_heat"
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "type": "停留",
+      "split": "test",
+      "question": "週六早上去築地場外市場吃早餐，會很擠嗎？要排多久？",
+      "when": {
+        "day_type": "假日",
+        "time": ["早上"]
+      },
+      "expect": [
+        "八點剛到時人還好，八點半以後巷子變窄、一直卡住",
+        "玉子燒排了大約十分鐘",
+        "熱門的海鮮丼九點時門口排了三十幾個人，要等一小時",
+        "十點左右最擠，旅行團很多，推行李箱寸步難行",
+        "建議八點前到、不要帶行李"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "築地場外市場", "name_ja": "築地場外市場", "city": "東京", "kind": "景點"},
+            "time": {
+              "day_type": "假日",
+              "time": ["早上"]
+            },
+            "aspect": "人潮與排隊時間"
+          }
+        ],
+        "group_by": [],
+        "compose": "merge"
+      }
+    },
+    {
+      "id": "q2",
+      "type": "找時間",
+      "split": "test",
+      "question": "平日去築地場外市場，幾點去最剛好？",
+      "when": {
+        "day_type": "平日"
+      },
+      "expect": [
+        "早上七點店家剛開，海鮮丼等不到五分鐘，玉子燒和烤海鮮都不用排",
+        "九點以後旅行團變多，但平日還不到擠",
+        "十二點半很多店已經在收攤，一點多鐵門拉下一大半",
+        "建議七點到九點之間去"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "築地場外市場", "name_ja": "築地場外市場", "city": "東京", "kind": "景點"},
+            "time": {
+              "day_type": "平日"
+            },
+            "aspect": "人潮和店家營業時間"
+          }
+        ],
+        "group_by": ["time_of_day"],
+        "compose": "merge"
+      }
+    }
+  ]
+}

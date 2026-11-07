@@ -1,0 +1,115 @@
+{
+  "place_name": "淺草寺",
+  "articles": [
+    "mock_sensoji_december_weekend_afternoon_crowd",
+    "mock_sensoji_february_weekday_dawn_night"
+  ],
+  "negative_articles": [
+    "mock_sensoji_july_weekend_afternoon_heat",
+    "mock_sensoji_may_weekend_afternoon_sanja"
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "type": "停留",
+      "split": "test",
+      "question": "十二月週末下午去淺草寺，仲見世通會很擠嗎？本堂幾點關門？",
+      "when": {
+        "month": ["12"],
+        "day_type": "假日",
+        "time": ["下午"]
+      },
+      "expect": [
+        "雷門大燈籠前拍照要等前一組人，等了快十分鐘",
+        "仲見世通幾乎是一步一步往前挪，賣新年裝飾和羽子板的店前很多人停下來",
+        "人形燒排了大約十五分鐘",
+        "本堂前參拜排了大約十分鐘",
+        "五點左右仲見世的店家陸續關門、本堂也關門，之後人少一半"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "淺草寺", "name_ja": "浅草寺", "city": "東京", "kind": "景點"},
+            "time": {
+              "month": ["12"],
+              "day_type": "假日",
+              "time": ["下午"]
+            },
+            "aspect": "仲見世通的人潮與本堂關門時間"
+          }
+        ],
+        "group_by": [],
+        "compose": "merge"
+      }
+    },
+    {
+      "id": "q2",
+      "type": "找時間",
+      "split": "dev",
+      "question": "平日去淺草寺，幾點去才拍得到沒什麼人的雷門和仲見世？",
+      "when": {
+        "day_type": "平日"
+      },
+      "expect": [
+        "早上六點半雷門前沒有人；仲見世的店還沒開，可以拍到鐵門上的老街景畫",
+        "本堂六點半開門，早上參拜的多是附近居民，很安靜",
+        "聽說平日十點以後旅行團和校外教學進來，仲見世開始擠",
+        "晚上八點多本堂已關，但境內可以走，點燈的五重塔和雷門人不多",
+        "早上店家沒開、晚上本堂不能進去"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "淺草寺", "name_ja": "浅草寺", "city": "東京", "kind": "景點"},
+            "time": {
+              "day_type": "平日"
+            },
+            "aspect": "雷門和仲見世的人潮"
+          }
+        ],
+        "group_by": ["time_of_day"],
+        "compose": "merge"
+      }
+    },
+    {
+      "id": "q3",
+      "type": "比較",
+      "split": "test",
+      "question": "冬天週末傍晚，淺草寺跟晴空塔哪邊比較擠？",
+      "when": {
+        "month": ["冬"],
+        "day_type": "假日",
+        "time": ["下午", "晚上"]
+      },
+      "expect": [
+        "淺草寺：下午仲見世和本堂前很擠；五點左右店家和本堂關門，天黑點燈後人少很多，拍照不會被擋",
+        "晴空塔：當日券排了快五十分鐘，日落時窗邊擠滿人，天黑後人仍然很多",
+        "要說明這是兩位旅客不同天的經驗"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "淺草寺", "name_ja": "浅草寺", "city": "東京", "kind": "景點"},
+            "time": {
+              "month": ["冬"],
+              "day_type": "假日",
+              "time": ["下午", "晚上"]
+            },
+            "aspect": "人潮"
+          },
+          {
+            "space": {"name": "東京晴空塔", "name_ja": "東京スカイツリー", "city": "東京", "kind": "景點"},
+            "time": {
+              "month": ["冬"],
+              "day_type": "假日",
+              "time": ["下午", "晚上"]
+            },
+            "aspect": "人潮"
+          }
+        ],
+        "group_by": [],
+        "compose": "contrast"
+      }
+    }
+  ]
+}
