@@ -165,22 +165,26 @@ def test_name_unlike_any_node_is_not_forced_onto_one(add, retrieve_at, hierarchy
     assert result.nearest == ()
 
 
-@pytest.mark.parametrize("asked, stored", [
-    ("晴空塔城", "東京晴空塔城"),
-    ("東京晴空塔城", "晴空塔城"),
-    ("雷門", "淺草寺雷門"),
-    ("淺草寺雷門", "雷門"),
-    ("嵐山竹林", "嵐山竹林小徑"),
-    ("嵐山竹林小徑", "嵐山竹林"),
-    ("晴空塔", "東京晴空塔天望甲板"),  # 天望甲板屬於晴空塔
-    ("押上", "東京晴空塔"),
-    ("淺草", "淺草寺"),
-])
-def test_shipped_hierarchy_merges_aliases_and_includes_children(add, retrieve_at, asked, stored):
-    content = add(stored)
-    add("清水寺")
+def test_canonical_name_retrieves_content_stored_under_alias(add, retrieve_at, hierarchy):
+    town = add("晴空塔城")
+    tower = add("東京晴空塔")
 
-    assert ids(retrieve_at(asked, Hierarchy.load(HIERARCHY_PATH))) == [content]
+    assert ids(retrieve_at("東京晴空塔城", hierarchy(SKYTREE))) == [town, tower]
+
+
+def test_shipped_hierarchy_file_is_well_formed():
+    """正式的階層檔只檢查結構：能載入、每個母節點都存在、沒有循環。內容由研究者審稿，不在這裡檢查。"""
+    h = Hierarchy.load(HIERARCHY_PATH)
+
+    assert h.nodes
+    for node in h.nodes.values():
+        seen = {node.name}
+        parent = node.parent
+        while parent:
+            assert parent in h.nodes, f"{node.name} 的母節點「{parent}」不在階層檔裡"
+            assert parent not in seen, f"{node.name} 的母子關係繞成循環"
+            seen.add(parent)
+            parent = h.nodes[parent].parent
 
 
 def test_stored_place_spelled_with_extra_space_still_matches(add, retrieve_at, hierarchy):
