@@ -14,6 +14,7 @@ from pathlib import Path
 
 from ..extract.paths import DATA, DB_PATH
 from .embedding import Embedder, cosine
+from .store import place_names
 
 HIERARCHY_PATH = DATA / "place_hierarchy.toml"
 KINDS = ("景點", "區域")
@@ -164,7 +165,7 @@ def main(argv=None) -> int:
 
     conn = sqlite3.connect(a.db)
     try:
-        names = [name for (name,) in conn.execute("SELECT name FROM place ORDER BY id")]
+        names = place_names(conn)
     finally:
         conn.close()
     missing = [n for n in names if h.lookup(n) is None]

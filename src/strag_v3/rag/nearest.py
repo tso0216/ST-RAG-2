@@ -8,12 +8,12 @@
 - 平日／假日：不在問題範圍內就是 1
 問題範圍取隸屬度不低於峰值一半的格子。片段標籤是範圍、季節或 `不明` 時，依它的邊際分布取期望值。
 """
-import sqlite3
+from collections import Counter
 from dataclasses import dataclass
 
 from .params import DEFAULT, Params
-from .plan import TimeSpec
-from .timedist import day_marginal, hour_marginal, month_marginal
+from .store import Content
+from .timedist import TimeSpec, day_marginal, hour_marginal, month_marginal
 
 NEAREST_K = 3
 
@@ -22,32 +22,29 @@ NEAREST_K = 3
 class NearestTime:
     """一個有資料的時段：景點和時間標籤相同的片段併成一筆。"""
     place: str
-    month: str
-    day_type: str
-    time: str
+    time: TimeSpec
     count: int
 
 
-def nearest_times(conn: sqlite3.Connection, places: frozenset[str] | None, time: TimeSpec | None,
-                  params: Params = DEFAULT, k: int = NEAREST_K) -> tuple[NearestTime, ...]:
-    """places 是要找的片段景點名稱（None 代表不限地點）；回傳離 time 最近的 k 個時段。"""
-    t = time or TimeSpec()
-    q = (month_marginal(t.month), day_marginal(t.day_type), hour_marginal(t.time, params))
+def nearest_times(contents: list[Content], time: TimeSpec | None, params: Params = DEFAULT) -> tuple[NearestTime, ...]:
+    """查過的片段裡，離 time 最近的 NEAREST_K 個時段（time 是 None 代表不限時間）。"""
+    q = _marginals(time or TimeSpec(), params)
 
-    sql = "SELECT poi_name, month, day_type, time, COUNT(*) FROM content"
-    args: tuple = ()
-    if places is not None:
-        sql += f" WHERE poi_name IN ({', '.join('?' * len(places))})"
-        args = tuple(sorted(places))
-    sql += " GROUP BY poi_name, month, day_type, time"
+    def distance(t: TimeSpec) -> float:
+        return sum(_distance(qm, cm) for qm, cm in zip(q, _marginals(t, params)))
 
-    ranked = []
-    for place, month, day_type, hour, count in conn.execute(sql, args):
-        c = (month_marginal(month), day_marginal(day_type), hour_marginal(hour, params))
-        dist = sum(_distance(qm, cm) for qm, cm in zip(q, c))
-        ranked.append((dist, place, month, day_type, hour, count))
-    ranked.sort()
-    return tuple(NearestTime(*row[1:]) for row in ranked[:k])
+    counts = Counter((c.place, c.time) for c in contents)
+    ranked = sorted(counts.items(), key=lambda item: (distance(item[0][1]), item[0][0], *_labels(item[0][1])))
+    return tuple(NearestTime(place, t, n) for (place, t), n in ranked[:NEAREST_K])
+
+
+def _marginals(t: TimeSpec, params: Params) -> tuple[list[float], list[float], list[float]]:
+    return month_marginal(t.month), day_marginal(t.day_type), hour_marginal(t.time, params)
+
+
+def _labels(t: TimeSpec) -> tuple[str, str, str]:
+    """距離並列時依標籤字串排，讓順序固定。"""
+    return t.month or "", t.day_type or "", t.time or ""
 
 
 def _distance(query: list[float], content: list[float]) -> float:

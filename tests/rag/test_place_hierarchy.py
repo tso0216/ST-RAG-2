@@ -2,6 +2,7 @@
 import pytest
 
 from strag_v3.rag.hierarchy import HIERARCHY_PATH, Hierarchy
+from strag_v3.rag.timedist import TimeSpec
 
 
 @pytest.fixture
@@ -102,9 +103,9 @@ def test_empty_result_lists_closest_times_first(add, retrieve_at, hierarchy):
 
     result = retrieve_at("天望甲板", hierarchy(SKYTREE), month="1", day_type="平日")
 
-    assert [(s.place, s.month, s.day_type, s.time, s.count) for s in result.nearest] == [
-        ("天望甲板", "5", "平日", "10", 2),
-        ("東京晴空塔", "7", "平日", "10", 1),
+    assert [(s.place, s.time, s.count) for s in result.nearest] == [
+        ("天望甲板", TimeSpec("5", "平日", "10"), 2),
+        ("東京晴空塔", TimeSpec("7", "平日", "10"), 1),
     ]
 
 

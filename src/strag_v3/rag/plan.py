@@ -3,7 +3,7 @@
 計畫另有 `group_by`（取回的證據依哪些維度分組）和 `compose`（多個子查詢的結果合併或分開對照）。"""
 from dataclasses import asdict, dataclass
 
-from .timedist import LabelError, day_marginal, hour_marginal, month_marginal
+from .timedist import LabelError, TimeSpec, day_marginal, hour_marginal, month_marginal
 
 
 class PlanError(ValueError):
@@ -12,14 +12,6 @@ class PlanError(ValueError):
 
 GROUP_DIMENSIONS = ("month", "day_type", "time_of_day", "place")
 COMPOSE_MODES = ("merge", "contrast")
-
-
-@dataclass(frozen=True)
-class TimeSpec:
-    """格式跟 eval 的 `when` 相同；None 代表該維度不限。"""
-    month: str | None = None
-    day_type: str | None = None
-    time: str | None = None
 
 
 @dataclass(frozen=True)

@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from .nearest import NearestTime
 from .plan import SubQuery
+from .timedist import TimeSpec
 
 
 @dataclass(frozen=True)
@@ -10,9 +11,7 @@ class Evidence:
     content_id: int
     article_id: str
     place: str
-    month: str
-    day_type: str
-    time: str
+    time: TimeSpec
     content: str
     overlap: float
     semantic: float

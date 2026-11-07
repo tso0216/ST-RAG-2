@@ -68,7 +68,7 @@ def _label(e: Evidence, dim: str, places: Hierarchy, params: Params) -> str:
     if dim == "place":
         return places.canonical(e.place)
     axis, groups = _TIME_AXES[dim]
-    marginal = _marginal(to_dist(e.month, e.day_type, e.time, params), axis)
+    marginal = _marginal(to_dist(e.time, params), axis)
     if max(marginal) - min(marginal) < 1e-9:
         return UNKNOWN
     mass = {name: sum(marginal[i] for i in idx) for name, idx in groups.items()}
