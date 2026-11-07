@@ -1,19 +1,7 @@
 """檢索 seam：景點階層（別名、母子包含、退讓）。輸入檢索計畫，看取回哪些片段。不打外部 API。"""
-import textwrap
-
 import pytest
 
 from strag_v3.rag.hierarchy import HIERARCHY_PATH, Hierarchy
-
-
-@pytest.fixture
-def hierarchy(tmp_path):
-    """把 TOML 字串寫成階層檔再載入：測試用的小型階層。"""
-    def hierarchy(toml: str) -> Hierarchy:
-        path = tmp_path / "hierarchy.toml"
-        path.write_text(textwrap.dedent(toml))
-        return Hierarchy.load(path)
-    return hierarchy
 
 
 @pytest.fixture

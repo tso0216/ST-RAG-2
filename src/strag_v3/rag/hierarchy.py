@@ -32,7 +32,7 @@ class Node:
     kind: str = "景點"
 
 
-def _key(name: str) -> str:
+def _normalize_name(name: str) -> str:
     """比對用的正規化：全半形統一、去掉空白、不分大小寫。"""
     return "".join(unicodedata.normalize("NFKC", name).split()).casefold()
 
@@ -46,7 +46,7 @@ class Hierarchy:
             if n.kind not in KINDS:
                 raise HierarchyError(f"{n.name}：kind 只能是 {'、'.join(KINDS)}，不是 {n.kind}")
             for name in (n.name, *n.aliases):
-                owner = self._by_key.setdefault(_key(name), n.name)
+                owner = self._by_key.setdefault(_normalize_name(name), n.name)
                 if owner != n.name:
                     raise HierarchyError(f"名稱「{name}」同時屬於 {owner} 和 {n.name}")
             self.nodes[n.name] = n
@@ -86,7 +86,7 @@ class Hierarchy:
         nodes = dict(self.nodes)
         owners = dict(self._by_key)
         for name in dict.fromkeys(names):
-            owner = owners.setdefault(_key(name), name)
+            owner = owners.setdefault(_normalize_name(name), name)
             if owner == name and name not in nodes:
                 nodes[name] = Node(name)
             elif name not in (owner, *nodes[owner].aliases):
@@ -95,10 +95,10 @@ class Hierarchy:
 
     def lookup(self, name: str) -> Node | None:
         """名稱或別名完全相同（正規化後）的節點。"""
-        found = self._by_key.get(_key(name))
+        found = self._by_key.get(_normalize_name(name))
         return self.nodes[found] if found else None
 
-    def nearest(self, name: str, embedder: Embedder, min_sim: float = 0.0) -> Node | None:
+    def nearest(self, name: str, embedder: Embedder, min_sim: float) -> Node | None:
         """名稱 embedding 最接近的節點；節點的正式名稱和每個別名都拿來比，取最像的那個。
 
         最像的 cosine 低於 min_sim 時回傳 None。
@@ -110,26 +110,41 @@ class Hierarchy:
         sim, best = max((cosine(qvec, v), node) for v, (_, node) in zip(vecs, pairs))
         return self.nodes[best] if sim >= min_sim else None
 
-    def parent(self, node: Node) -> Node | None:
-        return self.nodes[node.parent] if node.parent else None
+    def canonical(self, name: str) -> str:
+        """名稱或別名所屬節點的正式名稱；不在階層裡就原樣傳回。"""
+        node = self.lookup(name)
+        return node.name if node else name
 
-    def names_under(self, node: Node) -> frozenset[str]:
+    def scopes(self, name: str, embedder: Embedder, min_sim: float) -> list[frozenset[str]]:
+        """名稱解析成節點後，依序要查的片段景點名稱：先是節點和子孫；退讓時改查母節點和子孫（有母節點才有）。
+
+        先比別名，比不到再用名稱 embedding 找最近的節點；都不夠像時只有一個空集合，什麼都查不到。
+        """
+        node = self.lookup(name) or self.nearest(name, embedder, min_sim)
+        if node is None:
+            return [frozenset()]
+        parent = self.nodes[node.parent] if node.parent else None
+        return [self._names_under(n) for n in (node, parent) if n]
+
+    def children(self, node: Node) -> list[Node]:
+        return [self.nodes[c] for c in self._children.get(node.name, ())]
+
+    def _names_under(self, node: Node) -> frozenset[str]:
         """節點和所有子孫節點的名稱（含別名），用來比對片段的景點名稱。"""
         out: set[str] = set()
-        stack = [node.name]
+        stack = [node]
         while stack:
-            n = self.nodes[stack.pop()]
+            n = stack.pop()
             out.update((n.name, *n.aliases))
-            stack.extend(self._children.get(n.name, ()))
+            stack.extend(self.children(n))
         return frozenset(out)
 
 
-def _tree(h: Hierarchy, name: str, depth: int = 0):
-    n = h.nodes[name]
+def _tree(h: Hierarchy, n: Node, depth: int = 0):
     kind = f"（{n.kind}）" if n.kind != "景點" else ""
     aliases = f"　別名：{''.join(f'「{a}」' for a in n.aliases)}" if n.aliases else ""
     yield f"{'  ' * depth}- {n.name}{kind}{aliases}"
-    for child in h._children.get(name, ()):
+    for child in h.children(n):
         yield from _tree(h, child, depth + 1)
 
 
@@ -144,7 +159,7 @@ def main(argv=None) -> int:
     except HierarchyError as e:
         print(f"階層檔有錯：{e}", file=sys.stderr)
         return 1
-    for root in [n.name for n in h.nodes.values() if not n.parent]:
+    for root in [n for n in h.nodes.values() if not n.parent]:
         print("\n".join(_tree(h, root)))
 
     conn = sqlite3.connect(a.db)

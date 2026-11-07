@@ -6,6 +6,7 @@
   組內照分數排序。
 """
 from .evidence import Evidence, Group, Section, SubQueryResult
+from .hierarchy import Hierarchy
 from .params import DEFAULT, Params
 from .plan import Plan
 from .timedist import DAY_TYPES, N_DAY, N_HOUR, N_MONTH, TimeDist, to_dist
@@ -34,10 +35,12 @@ _TIME_AXES: dict[str, tuple[int, dict[str, range]]] = {
 }
 
 
-def build_sections(plan: Plan, results: list[SubQueryResult], params: Params = DEFAULT) -> list[Section]:
+def build_sections(plan: Plan, results: list[SubQueryResult], places: Hierarchy,
+                   params: Params = DEFAULT) -> list[Section]:
+    """places 是已對應 DB 景點名稱的階層，`group_by=place` 依片段景點所屬的節點分組，組名用正式名稱。"""
     if plan.compose == "contrast":
-        return [Section([r], _group(r.evidence, plan.group_by, params)) for r in results]
-    return [Section(results, _group(_merged(results), plan.group_by, params))]
+        return [Section([r], _group(r.evidence, plan.group_by, places, params)) for r in results]
+    return [Section(results, _group(_merged(results), plan.group_by, places, params))]
 
 
 def _merged(results: list[SubQueryResult]) -> list[Evidence]:
@@ -49,21 +52,21 @@ def _merged(results: list[SubQueryResult]) -> list[Evidence]:
     return sorted(best.values(), key=lambda e: (-e.score, e.content_id))
 
 
-def _group(evidence: list[Evidence], dims: tuple[str, ...], params: Params) -> list[Group]:
+def _group(evidence: list[Evidence], dims: tuple[str, ...], places: Hierarchy, params: Params) -> list[Group]:
     buckets: dict[tuple[str, ...], list[Evidence]] = {}
     for e in evidence:
-        buckets.setdefault(tuple(_label(e, d, params) for d in dims), []).append(e)
+        buckets.setdefault(tuple(_label(e, d, places, params) for d in dims), []).append(e)
     # 時間維度照固定順序；地點照該地點最高分的證據排（證據已依分數排好，先出現的就是分數高的）
     order = {d: list(_TIME_AXES[d][1]) + [UNKNOWN] if d in _TIME_AXES
-             else list(dict.fromkeys(e.place for e in evidence)) for d in dims}
+             else list(dict.fromkeys(places.canonical(e.place) for e in evidence)) for d in dims}
     keys = sorted(buckets, key=lambda k: [order[d].index(v) for d, v in zip(dims, k)])
     return [Group(dict(zip(dims, k)), buckets[k]) for k in keys]
 
 
-def _label(e: Evidence, dim: str, params: Params) -> str:
+def _label(e: Evidence, dim: str, places: Hierarchy, params: Params) -> str:
     """片段在該維度上分到哪一組：邊際分布質量最大的組，並列時取順序在前的；均勻分布（不明）另成一組。"""
     if dim == "place":
-        return e.place
+        return places.canonical(e.place)
     axis, groups = _TIME_AXES[dim]
     marginal = _marginal(to_dist(e.month, e.day_type, e.time, params), axis)
     if max(marginal) - min(marginal) < 1e-9:

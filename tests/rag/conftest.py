@@ -1,6 +1,9 @@
 """檢索 seam 測試共用的假 embedder 和 fixture：記憶體內 SQLite，不打外部 API。"""
+import textwrap
+
 import pytest
 
+from strag_v3.rag.hierarchy import Hierarchy
 from strag_v3.rag.params import Params
 from strag_v3.rag.plan import Plan
 from strag_v3.rag.retrieve import Retriever
@@ -35,6 +38,16 @@ def add(conn):
             "INSERT INTO content (article_id, poi_id, poi_name, day_type, time, month, content)"
             " VALUES (?, ?, ?, ?, ?, ?, ?)", (article, pid, place, day_type, time, month, content)).lastrowid
     return add
+
+
+@pytest.fixture
+def hierarchy(tmp_path):
+    """把 TOML 字串寫成階層檔再載入：測試用的小型階層。"""
+    def hierarchy(toml: str) -> Hierarchy:
+        path = tmp_path / "hierarchy.toml"
+        path.write_text(textwrap.dedent(toml))
+        return Hierarchy.load(path)
+    return hierarchy
 
 
 @pytest.fixture

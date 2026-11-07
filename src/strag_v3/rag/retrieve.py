@@ -31,32 +31,23 @@ class Retriever:
 
     def retrieve(self, plan: Plan, question: str) -> list[Section]:
         """依計畫逐一跑子查詢，再依 compose 和 group_by 把證據整理成交給生成器的段和分組。"""
-        results = [self._retrieve_one(sq, question) for sq in plan.sub_queries]
-        return build_sections(plan, results, self.params)
+        places = self.hierarchy.with_places(name for (name,) in self.conn.execute("SELECT name FROM place ORDER BY id"))
+        results = [self._retrieve_one(sq, question, places) for sq in plan.sub_queries]
+        return build_sections(plan, results, places, self.params)
 
-    def _retrieve_one(self, sq: SubQuery, question: str) -> SubQueryResult:
+    def _retrieve_one(self, sq: SubQuery, question: str, places: Hierarchy) -> SubQueryResult:
         """先查 space 的節點；一筆都沒過門檻時退一層到母節點再查，取回的證據標成退讓。
 
         還是沒有就回傳空結果，附上查過的範圍裡最接近的時段。時間門檻不放寬。
+        space 留空時不限地點（範圍是 None）。
         """
-        scopes = self._place_scopes(sq.space)
+        scopes = [None] if sq.space is None else places.scopes(sq.space, self.embedder, self.params.place_min_sim)
         evidence = self._run(sq, question, scopes[0])
         if not evidence and len(scopes) > 1:
             evidence = [replace(e, backoff=True) for e in self._run(sq, question, scopes[1])]
         if evidence:
             return SubQueryResult(sq, evidence)
         return SubQueryResult(sq, [], nearest=nearest_times(self.conn, scopes[-1], sq.time, self.params))
-
-    def _place_scopes(self, space: str | None) -> list[frozenset[str] | None]:
-        """[space 要比對的片段景點名稱, 母節點的（有母節點才有）]；None 代表不限地點。"""
-        if space is None:
-            return [None]
-        h = self.hierarchy.with_places(name for (name,) in self.conn.execute("SELECT name FROM place ORDER BY id"))
-        node = h.lookup(space) or h.nearest(space, self.embedder, self.params.place_min_sim)
-        if node is None:
-            return [frozenset({space})]
-        parent = h.parent(node)
-        return [h.names_under(n) for n in (node, parent) if n]
 
     def _run(self, sq: SubQuery, question: str, places: frozenset[str] | None = None) -> list[Evidence]:
         p = self.params

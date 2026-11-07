@@ -62,6 +62,36 @@ def test_group_by_place_puts_the_place_with_the_best_evidence_first(add, retriev
     ]]
 
 
+FUSHIMI = """
+    [[node]]
+    name = "伏見稻荷大社"
+
+    [[node]]
+    name = "伏見稻荷大社表參道"
+    parent = "伏見稻荷大社"
+    aliases = ["伏見稻荷表參道"]
+
+    [[node]]
+    name = "千本鳥居"
+    parent = "伏見稻荷大社"
+    aliases = ["伏見稻荷大社 千本鳥居"]
+"""
+
+
+def test_group_by_place_puts_aliases_of_one_place_together_under_its_canonical_name(add, retrieve, sub, hierarchy):
+    gate = add("千本鳥居")
+    gate_alias = add("伏見稻荷大社 千本鳥居")
+    approach_alias = add("伏見稻荷表參道")
+    approach_spaced = add("伏見稻荷大社 表參道")  # 只差空白
+
+    sections = retrieve(sub(space="伏見稻荷大社"), group_by=["place"], hierarchy=hierarchy(FUSHIMI))
+
+    assert layout(sections) == [[
+        ({"place": "千本鳥居"}, [gate, gate_alias]),
+        ({"place": "伏見稻荷大社表參道"}, [approach_alias, approach_spaced]),
+    ]]
+
+
 def test_group_by_several_dimensions_at_once(add, retrieve):
     weekend_night = add("晴空塔", "假日", "20", "12")
     weekday_morning = add("晴空塔", "平日", "9", "12")
