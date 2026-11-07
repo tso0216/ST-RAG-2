@@ -1,0 +1,2290 @@
+{
+  "config": {
+    "name": "dense",
+    "system": "dense",
+    "oracle": false,
+    "answer": true,
+    "k": 5
+  },
+  "created_at": "2026-11-07T22:18:36+08:00",
+  "questions_path": "data/mock_article/eval",
+  "split": null,
+  "db": "/Users/yentso/Research-Project/ST-RAG-2/data/main.db",
+  "summary": {
+    "overall": {
+      "n": 9,
+      "recall": 0.5814814814814815,
+      "precision": 0.3111111111111111,
+      "f1": 0.38018278018278023,
+      "time_violation_rate": 0.6888888888888889,
+      "answered_rate": 1.0,
+      "retrieved": 45,
+      "violations": 31,
+      "labelled": 9,
+      "errors": 0
+    },
+    "by_split": {
+      "未標": {
+        "n": 9,
+        "recall": 0.5814814814814815,
+        "precision": 0.3111111111111111,
+        "f1": 0.38018278018278023,
+        "time_violation_rate": 0.6888888888888889,
+        "answered_rate": 1.0,
+        "retrieved": 45,
+        "violations": 31,
+        "labelled": 9,
+        "errors": 0
+      }
+    },
+    "by_type": {
+      "未標": {
+        "n": 9,
+        "recall": 0.5814814814814815,
+        "precision": 0.3111111111111111,
+        "f1": 0.38018278018278023,
+        "time_violation_rate": 0.6888888888888889,
+        "answered_rate": 1.0,
+        "retrieved": 45,
+        "violations": 31,
+        "labelled": 9,
+        "errors": 0
+      }
+    }
+  },
+  "questions": [
+    {
+      "key": "fushimiinari/q1",
+      "question": "十一月平日一大早去伏見稻荷，千本鳥居拍得到沒人的照片嗎？附近有早餐可以吃嗎？",
+      "type": null,
+      "split": null,
+      "when": {
+        "month": [
+          "11"
+        ],
+        "day_type": "平日",
+        "time": [
+          "早上"
+        ]
+      },
+      "relevant": [
+        8,
+        9,
+        10
+      ],
+      "retrieved": [
+        6,
+        8,
+        9,
+        12,
+        13
+      ],
+      "hits": [
+        8,
+        9
+      ],
+      "recall": 0.6666666666666666,
+      "precision": 0.4,
+      "f1": 0.5,
+      "violations": [
+        6,
+        12,
+        13
+      ],
+      "answered": true,
+      "error": null,
+      "plan": null,
+      "sections": [
+        {
+          "results": [
+            {
+              "sub_query": {
+                "space": null,
+                "time": null,
+                "aspect": null
+              },
+              "evidence": [
+                {
+                  "content_id": 8,
+                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "6 點 40 分左右走進樓門，天剛亮、空氣很冰，本殿前只有一位神職人員在掃落葉。千本鳥居一個人都沒有，可以拍到整排空鳥居；7 點多太陽升起，光線從鳥居縫隙斜照進來，地上有一條條光影，很好拍。",
+                  "semantic": 0.6434608150325912,
+                  "score": 0.6434608150325912,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 6,
+                  "article_id": "mock_fushimiinari_may_weekend_noon_heat",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "5",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "12 點多走進千本鳥居，入口段整排都是人，一步一步往前挪，有人停下拍照整條就塞住，拍不到空鳥居。過了奧社奉拜所後人少了一半。",
+                  "semantic": 0.5957267505341483,
+                  "score": 0.5957267505341483,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 12,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "三連休週六快 12 點出稻荷站，人潮從車站門口一路延伸到樓門，樓門前想拍沒有路人的照片等了很久還是放棄。表參道的狐狸烏龍麵店門口排了約 30 分鐘才進去。",
+                  "semantic": 0.569164297354769,
+                  "score": 0.569164297354769,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 13,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "下午一點左右走進千本鳥居，入口那段幾乎是排隊前進，前後都是人，大家停下拍照，走不快也停不下來，不可能拍到空鳥居。到奧社奉拜所很多人拍完就折返。",
+                  "semantic": 0.565850425822998,
+                  "score": 0.565850425822998,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 9,
+                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "表參道上的狐狸烏龍麵、稻荷壽司店家早上還沒開門，聽說大多 9 點以後才營業，只能回車站旁便利商店買早餐。",
+                  "semantic": 0.5441466346120998,
+                  "score": 0.5441466346120998,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ],
+              "available": {
+                "time": [],
+                "month": []
+              }
+            }
+          ],
+          "groups": [
+            {
+              "key": {},
+              "evidence": [
+                {
+                  "content_id": 8,
+                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "6 點 40 分左右走進樓門，天剛亮、空氣很冰，本殿前只有一位神職人員在掃落葉。千本鳥居一個人都沒有，可以拍到整排空鳥居；7 點多太陽升起，光線從鳥居縫隙斜照進來，地上有一條條光影，很好拍。",
+                  "semantic": 0.6434608150325912,
+                  "score": 0.6434608150325912,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 6,
+                  "article_id": "mock_fushimiinari_may_weekend_noon_heat",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "5",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "12 點多走進千本鳥居，入口段整排都是人，一步一步往前挪，有人停下拍照整條就塞住，拍不到空鳥居。過了奧社奉拜所後人少了一半。",
+                  "semantic": 0.5957267505341483,
+                  "score": 0.5957267505341483,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 12,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "三連休週六快 12 點出稻荷站，人潮從車站門口一路延伸到樓門，樓門前想拍沒有路人的照片等了很久還是放棄。表參道的狐狸烏龍麵店門口排了約 30 分鐘才進去。",
+                  "semantic": 0.569164297354769,
+                  "score": 0.569164297354769,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 13,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "下午一點左右走進千本鳥居，入口那段幾乎是排隊前進，前後都是人，大家停下拍照，走不快也停不下來，不可能拍到空鳥居。到奧社奉拜所很多人拍完就折返。",
+                  "semantic": 0.565850425822998,
+                  "score": 0.565850425822998,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 9,
+                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "表參道上的狐狸烏龍麵、稻荷壽司店家早上還沒開門，聽說大多 9 點以後才營業，只能回車站旁便利商店買早餐。",
+                  "semantic": 0.5441466346120998,
+                  "score": 0.5441466346120998,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "answer": "可以。十一月平日一大早的千本鳥居可以拍到空的，不過早餐要回車站旁的便利商店買。\n\n**沒人的千本鳥居照片：拍得到**\n有一位旅客十一月平日 6 點 40 分左右進樓門，那時天剛亮、空氣很冰，本殿前只有一位神職人員在掃落葉。千本鳥居一個人都沒有，整排空鳥居都拍得到 [8]。7 點多太陽升起，光線從鳥居縫隙斜照進來，地上有一條條光影，很好拍 [8]。\n\n可以比較一下其他旅客的中午經驗，那時人很多：\n- 另一位旅客在十一月的假日（三連休週六）來，快 12 點出稻荷站時，人潮從車站一路排到樓門 [12]。下午一點左右進千本鳥居，入口那段幾乎是排隊前進，不可能拍到空鳥居 [13]。\n- 還有一位旅客在五月假日 12 點多來，入口段整排都是人，也拍不到空鳥居 [6]。\n\n**附近早餐：表參道的店還沒開**\n同一位十一月平日早上去的旅客說，表參道的狐狸烏龍麵和稻荷壽司店家早上都還沒開門，聽說大多 9 點以後才營業。他最後是回車站旁的便利商店買早餐 [9]。所以想吃這些店的話，可以先拍完鳥居，等 9 點以後再下來吃。"
+    },
+    {
+      "key": "fushimiinari/q2",
+      "question": "十一月週末中午去伏見稻荷，千本鳥居會不會擠到走不動？值得爬到四ツ辻嗎？",
+      "type": null,
+      "split": null,
+      "when": {
+        "month": [
+          "11"
+        ],
+        "day_type": "假日",
+        "time": [
+          "中午"
+        ]
+      },
+      "relevant": [
+        12,
+        13
+      ],
+      "retrieved": [
+        6,
+        7,
+        12,
+        13,
+        14
+      ],
+      "hits": [
+        12,
+        13
+      ],
+      "recall": 1.0,
+      "precision": 0.4,
+      "f1": 0.5714285714285715,
+      "violations": [
+        6,
+        7,
+        14
+      ],
+      "answered": true,
+      "error": null,
+      "plan": null,
+      "sections": [
+        {
+          "results": [
+            {
+              "sub_query": {
+                "space": null,
+                "time": null,
+                "aspect": null
+              },
+              "evidence": [
+                {
+                  "content_id": 6,
+                  "article_id": "mock_fushimiinari_may_weekend_noon_heat",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "5",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "12 點多走進千本鳥居，入口段整排都是人，一步一步往前挪，有人停下拍照整條就塞住，拍不到空鳥居。過了奧社奉拜所後人少了一半。",
+                  "semantic": 0.6325671391578427,
+                  "score": 0.6325671391578427,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 13,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "下午一點左右走進千本鳥居，入口那段幾乎是排隊前進，前後都是人，大家停下拍照，走不快也停不下來，不可能拍到空鳥居。到奧社奉拜所很多人拍完就折返。",
+                  "semantic": 0.6198193341544874,
+                  "score": 0.6198193341544874,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 14,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "過了奧社奉拜所再往上人明顯變少，鳥居之間有空隙。從奧社奉拜所走到四ツ辻約 40 分鐘，階梯不少，十一月爬起來不會太熱。四ツ辻視野開闊可眺望整個京都市區，茶屋旁休息看風景很舒服，人比入口少很多。",
+                  "semantic": 0.6127946713989871,
+                  "score": 0.6127946713989871,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 7,
+                  "article_id": "mock_fushimiinari_may_weekend_noon_heat",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "5",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "五月中午太陽很大，鳥居內雖有些遮蔭，爬階梯仍一直流汗，到四ツ辻約花 50 分鐘，途中在茶屋買了兩次彈珠汽水。四ツ辻眺望京都市區時有點霧，遠山看不清楚。之後直接下山沒上山頂。建議帶水和毛巾，天氣熱比人多更累。",
+                  "semantic": 0.5785319302175558,
+                  "score": 0.5785319302175558,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 12,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "三連休週六快 12 點出稻荷站，人潮從車站門口一路延伸到樓門，樓門前想拍沒有路人的照片等了很久還是放棄。表參道的狐狸烏龍麵店門口排了約 30 分鐘才進去。",
+                  "semantic": 0.5392141375097228,
+                  "score": 0.5392141375097228,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ],
+              "available": {
+                "time": [],
+                "month": []
+              }
+            }
+          ],
+          "groups": [
+            {
+              "key": {},
+              "evidence": [
+                {
+                  "content_id": 6,
+                  "article_id": "mock_fushimiinari_may_weekend_noon_heat",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "5",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "12 點多走進千本鳥居，入口段整排都是人，一步一步往前挪，有人停下拍照整條就塞住，拍不到空鳥居。過了奧社奉拜所後人少了一半。",
+                  "semantic": 0.6325671391578427,
+                  "score": 0.6325671391578427,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 13,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "下午一點左右走進千本鳥居，入口那段幾乎是排隊前進，前後都是人，大家停下拍照，走不快也停不下來，不可能拍到空鳥居。到奧社奉拜所很多人拍完就折返。",
+                  "semantic": 0.6198193341544874,
+                  "score": 0.6198193341544874,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 14,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "過了奧社奉拜所再往上人明顯變少，鳥居之間有空隙。從奧社奉拜所走到四ツ辻約 40 分鐘，階梯不少，十一月爬起來不會太熱。四ツ辻視野開闊可眺望整個京都市區，茶屋旁休息看風景很舒服，人比入口少很多。",
+                  "semantic": 0.6127946713989871,
+                  "score": 0.6127946713989871,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 7,
+                  "article_id": "mock_fushimiinari_may_weekend_noon_heat",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "5",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "五月中午太陽很大，鳥居內雖有些遮蔭，爬階梯仍一直流汗，到四ツ辻約花 50 分鐘，途中在茶屋買了兩次彈珠汽水。四ツ辻眺望京都市區時有點霧，遠山看不清楚。之後直接下山沒上山頂。建議帶水和毛巾，天氣熱比人多更累。",
+                  "semantic": 0.5785319302175558,
+                  "score": 0.5785319302175558,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 12,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "三連休週六快 12 點出稻荷站，人潮從車站門口一路延伸到樓門，樓門前想拍沒有路人的照片等了很久還是放棄。表參道的狐狸烏龍麵店門口排了約 30 分鐘才進去。",
+                  "semantic": 0.5392141375097228,
+                  "score": 0.5392141375097228,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "answer": "**千本鳥居會很擠，但不至於完全走不動，大概是排隊慢慢往前挪。** 有位旅客十一月三連休的週六去，快 12 點出稻荷站，人潮從車站門口一路排到樓門。樓門前想拍沒有路人的照片，等很久還是放棄了。表參道的狐狸烏龍麵也排了約 30 分鐘 [12]。大概下午一點走進千本鳥居時，入口那段幾乎是排隊前進，前後都是人。大家會停下來拍照，所以走不快也停不下來，不可能拍到空鳥居 [13]。\n\n另一位旅客是五月週末去，12 點多進千本鳥居，狀況也差不多。入口段整排都是人，只能一步一步往前挪，有人停下拍照整條就塞住 [6]。\n\n**很值得爬到四ツ辻，而且越往上人越少。**\n- **十一月那位旅客：** 到奧社奉拜所後，很多人拍完就折返 [13]。再往上人明顯變少，鳥居之間也有空隙了 [14]。從奧社奉拜所走到四ツ辻約 40 分鐘，階梯不少，但十一月爬起來不會太熱。四ツ辻視野開闊，可以眺望整個京都市區，在茶屋旁邊休息看風景很舒服，人也比入口少很多 [14]。\n- **五月那位旅客：** 過了奧社奉拜所後人少了一半 [6]。不過五月中午太陽大，到四ツ辻花了約 50 分鐘，一路流汗。在四ツ辻看京都市區時有點霧，遠山看不清楚 [7]。\n\n**結論：** 十一月週末中午去，入口段一定人擠人，要有排隊慢慢走的心理準備 [12][13]。過了奧社奉拜所人就會少很多，十一月天氣涼，爬到四ツ辻不會太辛苦，還能在那裡看京都市景，滿值得的 [14]。"
+    },
+    {
+      "key": "fushimiinari/q3",
+      "question": "秋天去伏見稻荷，想拍千本鳥居又不想人擠人，什麼時候去比較好？",
+      "type": null,
+      "split": null,
+      "when": {
+        "month": [
+          "秋"
+        ]
+      },
+      "relevant": [
+        8,
+        9,
+        10,
+        12,
+        13,
+        14
+      ],
+      "retrieved": [
+        2,
+        6,
+        8,
+        10,
+        13
+      ],
+      "hits": [
+        8,
+        10,
+        13
+      ],
+      "recall": 0.5,
+      "precision": 0.6,
+      "f1": 0.5454545454545454,
+      "violations": [
+        2,
+        6
+      ],
+      "answered": true,
+      "error": null,
+      "plan": null,
+      "sections": [
+        {
+          "results": [
+            {
+              "sub_query": {
+                "space": null,
+                "time": null,
+                "aspect": null
+              },
+              "evidence": [
+                {
+                  "content_id": 6,
+                  "article_id": "mock_fushimiinari_may_weekend_noon_heat",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "5",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "12 點多走進千本鳥居，入口段整排都是人，一步一步往前挪，有人停下拍照整條就塞住，拍不到空鳥居。過了奧社奉拜所後人少了一半。",
+                  "semantic": 0.6225866007472556,
+                  "score": 0.6225866007472556,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 13,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "下午一點左右走進千本鳥居，入口那段幾乎是排隊前進，前後都是人，大家停下拍照，走不快也停不下來，不可能拍到空鳥居。到奧社奉拜所很多人拍完就折返。",
+                  "semantic": 0.6184634210728062,
+                  "score": 0.6184634210728062,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 10,
+                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "8 點半左右旅行團與穿制服的學生陸續上來，千本鳥居入口一帶瞬間變得很擠，已經無法拍到空鳥居。建議 8 點前拍完。",
+                  "semantic": 0.5906544171372631,
+                  "score": 0.5906544171372631,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 8,
+                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "6 點 40 分左右走進樓門，天剛亮、空氣很冰，本殿前只有一位神職人員在掃落葉。千本鳥居一個人都沒有，可以拍到整排空鳥居；7 點多太陽升起，光線從鳥居縫隙斜照進來，地上有一條條光影，很好拍。",
+                  "semantic": 0.5846390638031105,
+                  "score": 0.5846390638031105,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 2,
+                  "article_id": "mock_fushimiinari_january_weekday_dawn_snow",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "1",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "千本鳥居幾乎沒人，可以拍到空鳥居；石階上的雪踩過後結成冰，非常滑，要扶著鳥居柱慢慢走，走不到一半就放棄往上爬。天氣陰沒太陽，光線平，橘色鳥居配白雪很漂亮但拍不出光影。建議穿防滑鞋。",
+                  "semantic": 0.5569154180191445,
+                  "score": 0.5569154180191445,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ],
+              "available": {
+                "time": [],
+                "month": []
+              }
+            }
+          ],
+          "groups": [
+            {
+              "key": {},
+              "evidence": [
+                {
+                  "content_id": 6,
+                  "article_id": "mock_fushimiinari_may_weekend_noon_heat",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "5",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "12 點多走進千本鳥居，入口段整排都是人，一步一步往前挪，有人停下拍照整條就塞住，拍不到空鳥居。過了奧社奉拜所後人少了一半。",
+                  "semantic": 0.6225866007472556,
+                  "score": 0.6225866007472556,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 13,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "下午一點左右走進千本鳥居，入口那段幾乎是排隊前進，前後都是人，大家停下拍照，走不快也停不下來，不可能拍到空鳥居。到奧社奉拜所很多人拍完就折返。",
+                  "semantic": 0.6184634210728062,
+                  "score": 0.6184634210728062,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 10,
+                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "8 點半左右旅行團與穿制服的學生陸續上來，千本鳥居入口一帶瞬間變得很擠，已經無法拍到空鳥居。建議 8 點前拍完。",
+                  "semantic": 0.5906544171372631,
+                  "score": 0.5906544171372631,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 8,
+                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "6 點 40 分左右走進樓門，天剛亮、空氣很冰，本殿前只有一位神職人員在掃落葉。千本鳥居一個人都沒有，可以拍到整排空鳥居；7 點多太陽升起，光線從鳥居縫隙斜照進來，地上有一條條光影，很好拍。",
+                  "semantic": 0.5846390638031105,
+                  "score": 0.5846390638031105,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 2,
+                  "article_id": "mock_fushimiinari_january_weekday_dawn_snow",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "1",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "千本鳥居幾乎沒人，可以拍到空鳥居；石階上的雪踩過後結成冰，非常滑，要扶著鳥居柱慢慢走，走不到一半就放棄往上爬。天氣陰沒太陽，光線平，橘色鳥居配白雪很漂亮但拍不出光影。建議穿防滑鞋。",
+                  "semantic": 0.5569154180191445,
+                  "score": 0.5569154180191445,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "answer": "**建議平日一大早去，最好 8 點前拍完。**\n\n**秋天（十一月）平日早上**（下面兩段是同一位旅客同一天的經驗）\n- 大約 6 點 40 分進樓門時天剛亮，千本鳥居一個人都沒有，可以拍到整排空鳥居。7 點多太陽升起，光從鳥居縫隙斜照進來，地上有一條條光影，很好拍 [8]。\n- 8 點半左右，旅行團和穿制服的學生陸續上來，入口一帶一下子變得很擠，就拍不到空鳥居了。這位旅客建議 8 點前拍完 [10]。\n\n**秋天（十一月）假日中午**（另一位旅客、另一天）\n- 大約下午 1 點走進千本鳥居，入口那段幾乎要排隊前進，不可能拍到空鳥居。很多人走到奧社奉拜所拍完就折返 [13]。\n\n**其他季節（不是秋天，僅供參考）**\n- 五月假日中午 12 點多，入口段整排都是人，有人停下拍照整條就塞住。過了奧社奉拜所，人就少了一半 [6]。\n- 一月平日早上，千本鳥居幾乎沒人，拍得到空鳥居。不過石階積雪結冰很滑，而且陰天拍不出光影 [2]。\n\n**整理一下：** 秋天想拍空鳥居，就選平日、天一亮就到，大約 6 點半到 7 點多最理想，8 點半以後人就多了 [8][10]。假日中午最擠 [13]。資料裡沒有秋天假日早上的經驗，所以不確定假日一早的人潮如何。如果中午才到，可以參考其他旅客的經驗，過了奧社奉拜所以後人會比較少 [6][13]。"
+    },
+    {
+      "key": "shibuyasky/q1",
+      "question": "十二月週末傍晚想去澀谷 SKY 看夕陽，現場買得到票嗎？頂樓會不會很擠？",
+      "type": null,
+      "split": null,
+      "when": {
+        "month": [
+          "12"
+        ],
+        "day_type": "假日",
+        "time": [
+          "下午",
+          "晚上"
+        ]
+      },
+      "relevant": [
+        19,
+        20,
+        21,
+        22
+      ],
+      "retrieved": [
+        15,
+        16,
+        17,
+        25,
+        35
+      ],
+      "hits": [],
+      "recall": 0.0,
+      "precision": 0.0,
+      "f1": 0.0,
+      "violations": [
+        15,
+        16,
+        17,
+        25,
+        35
+      ],
+      "answered": true,
+      "error": null,
+      "plan": null,
+      "sections": [
+        {
+          "results": [
+            {
+              "sub_query": {
+                "space": null,
+                "time": null,
+                "aspect": null
+              },
+              "evidence": [
+                {
+                  "content_id": 15,
+                  "article_id": "mock_shibuyasky_april_weekday_night_clear",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "4",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "四月中的週二晚上八點多抵達，14 樓售票處前只有一組人，現場買票不用等。白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。寄完包包直接上去，不冷不熱、風很舒服。頂樓人不算多，草皮區還有空位，可躺著看天空，往東看得到亮著橘色燈的東京鐵塔，更遠處是晴空塔。角落拍十字路口的位置排了大約五分鐘，人潮比白天少，車燈持續流動。雨後空氣乾淨，夜景清楚。待到九點半才下樓。聽說週末晚上情侶很多，平日安靜許多。",
+                  "semantic": 0.6731874330769296,
+                  "score": 0.6731874330769296,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 16,
+                  "article_id": "mock_shibuyasky_december_weekday_night_rain",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "週二晚上 8 點左右到 14 樓售票處，前面只有兩三組人，現場直接買到票。因下雨頂樓戶外區暫停開放，只能在 46 樓室內看夜景。室內人很少，窗邊可隨意站、慢慢看，但玻璃上都是雨痕，十字路口燈光拍起來糊成一片。整體氣氛很安靜。",
+                  "semantic": 0.6356263783909646,
+                  "score": 0.6356263783909646,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 17,
+                  "article_id": "mock_shibuyasky_december_weekday_night_rain",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "約 9 點雨停，廣播宣布頂樓重新開放。地板還有點濕、風很冷，但只有十幾個人，角落拍十字路口的位置完全不用排，往下看車燈和人潮流動，比室內清楚很多。待到快 9 點半下樓。平日晚上人很少，不用預約也買得到票，但下雨天頂樓可能關閉。",
+                  "semantic": 0.6066600633974537,
+                  "score": 0.6066600633974537,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 35,
+                  "article_id": "mock_skytree_weekday_opening_fuji",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "一月底週二，9 點 40 分到四樓售票處，前面約十個人，10 點開賣後五分鐘買好票上去。早上很冷但空氣乾淨，往西南看富士山整座清楚可見，山頂積雪一清二楚。甲板人很少，可慢慢找角度拍照。加購天望回廊，450 公尺玻璃斜坡在早晨斜射的陽光下，地上有塔骨架影子，很好拍。",
+                  "semantic": 0.5993869281228785,
+                  "score": 0.5993869281228785,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 25,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "6 點多上頂樓，風是熱的，地板吸了一整天的熱，站著不動也一直流汗。草皮區坐滿等日落的人，角落拍十字路口的位置大概排 30 分鐘。約 6 點 50 分日落，當天濕氣重、遠方灰濛，看不到富士山，夕陽只是淡淡粉橘色。天黑後人潮沒減少，大家都在等夜景，7 點半就下樓。頂樓沒有遮蔽，建議帶水，6 點半前上去即可。",
+                  "semantic": 0.5929724717853784,
+                  "score": 0.5929724717853784,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ],
+              "available": {
+                "time": [],
+                "month": []
+              }
+            }
+          ],
+          "groups": [
+            {
+              "key": {},
+              "evidence": [
+                {
+                  "content_id": 15,
+                  "article_id": "mock_shibuyasky_april_weekday_night_clear",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "4",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "四月中的週二晚上八點多抵達，14 樓售票處前只有一組人，現場買票不用等。白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。寄完包包直接上去，不冷不熱、風很舒服。頂樓人不算多，草皮區還有空位，可躺著看天空，往東看得到亮著橘色燈的東京鐵塔，更遠處是晴空塔。角落拍十字路口的位置排了大約五分鐘，人潮比白天少，車燈持續流動。雨後空氣乾淨，夜景清楚。待到九點半才下樓。聽說週末晚上情侶很多，平日安靜許多。",
+                  "semantic": 0.6731874330769296,
+                  "score": 0.6731874330769296,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 16,
+                  "article_id": "mock_shibuyasky_december_weekday_night_rain",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "週二晚上 8 點左右到 14 樓售票處，前面只有兩三組人，現場直接買到票。因下雨頂樓戶外區暫停開放，只能在 46 樓室內看夜景。室內人很少，窗邊可隨意站、慢慢看，但玻璃上都是雨痕，十字路口燈光拍起來糊成一片。整體氣氛很安靜。",
+                  "semantic": 0.6356263783909646,
+                  "score": 0.6356263783909646,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 17,
+                  "article_id": "mock_shibuyasky_december_weekday_night_rain",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "約 9 點雨停，廣播宣布頂樓重新開放。地板還有點濕、風很冷，但只有十幾個人，角落拍十字路口的位置完全不用排，往下看車燈和人潮流動，比室內清楚很多。待到快 9 點半下樓。平日晚上人很少，不用預約也買得到票，但下雨天頂樓可能關閉。",
+                  "semantic": 0.6066600633974537,
+                  "score": 0.6066600633974537,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 35,
+                  "article_id": "mock_skytree_weekday_opening_fuji",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "一月底週二，9 點 40 分到四樓售票處，前面約十個人，10 點開賣後五分鐘買好票上去。早上很冷但空氣乾淨，往西南看富士山整座清楚可見，山頂積雪一清二楚。甲板人很少，可慢慢找角度拍照。加購天望回廊，450 公尺玻璃斜坡在早晨斜射的陽光下，地上有塔骨架影子，很好拍。",
+                  "semantic": 0.5993869281228785,
+                  "score": 0.5993869281228785,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 25,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "6 點多上頂樓，風是熱的，地板吸了一整天的熱，站著不動也一直流汗。草皮區坐滿等日落的人，角落拍十字路口的位置大概排 30 分鐘。約 6 點 50 分日落，當天濕氣重、遠方灰濛，看不到富士山，夕陽只是淡淡粉橘色。天黑後人潮沒減少，大家都在等夜景，7 點半就下樓。頂樓沒有遮蔽，建議帶水，6 點半前上去即可。",
+                  "semantic": 0.5929724717853784,
+                  "score": 0.5929724717853784,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "answer": "沒有完全符合「十二月週末傍晚」的經驗。十二月的資料是平日晚上，週末傍晚的資料是七月，以下三篇是不同旅客、不同天的經驗，給你參考：\n\n**現場買得到票嗎？**\n- 十二月平日晚上：一位旅客週二晚上 8 點左右到 14 樓售票處，前面只有兩三組人，現場直接買到票 [16]。他說平日晚上不用預約也買得到 [17]。\n- 四月平日晚上：另一位旅客晚上八點多到，售票處前只有一組人，現場買票不用等 [15]。\n- 週末傍晚現場買票的狀況，資料裡沒有寫。七月那篇週末的經驗只提到頂樓，沒提到買票 [25]。\n\n**頂樓會不會很擠？**\n- 七月週末傍晚：草皮區坐滿等日落的人，角落拍十字路口的位置大概要排 30 分鐘。那天約 6 點 50 分日落，天黑後人潮也沒減少。旅客建議 6 點半前上去 [25]。不過這是七月的經驗，你問的是十二月。\n- 十二月平日晚上：約 9 點時頂樓只有十幾個人，拍照位置完全不用排，但風很冷 [17]。\n- 四月平日晚上：頂樓人不多，拍照位置排約五分鐘。那位旅客也聽說週末晚上情侶很多，平日安靜許多 [15]。\n\n**整理一下：** 平日晚上現場買票都很順，頂樓也空。週末傍晚看夕陽的時段，頂樓會很擠，拍照位置要排隊。不過週末的經驗是七月的，十二月週末的狀況沒有資料。還有一點：十二月那次遇到下雨，頂樓戶外區暫停開放，只能先在 46 樓室內看，約 9 點雨停才重新開放 [16][17]。"
+    },
+    {
+      "key": "shibuyasky/q2",
+      "question": "十二月平日晚上去澀谷 SKY，如果下雨頂樓還會開嗎？人多嗎？",
+      "type": null,
+      "split": null,
+      "when": {
+        "month": [
+          "12"
+        ],
+        "day_type": "平日",
+        "time": [
+          "晚上"
+        ]
+      },
+      "relevant": [
+        16,
+        17
+      ],
+      "retrieved": [
+        3,
+        15,
+        16,
+        17,
+        23
+      ],
+      "hits": [
+        16,
+        17
+      ],
+      "recall": 1.0,
+      "precision": 0.4,
+      "f1": 0.5714285714285715,
+      "violations": [
+        3,
+        15,
+        23
+      ],
+      "answered": true,
+      "error": null,
+      "plan": null,
+      "sections": [
+        {
+          "results": [
+            {
+              "sub_query": {
+                "space": null,
+                "time": null,
+                "aspect": null
+              },
+              "evidence": [
+                {
+                  "content_id": 17,
+                  "article_id": "mock_shibuyasky_december_weekday_night_rain",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "約 9 點雨停，廣播宣布頂樓重新開放。地板還有點濕、風很冷，但只有十幾個人，角落拍十字路口的位置完全不用排，往下看車燈和人潮流動，比室內清楚很多。待到快 9 點半下樓。平日晚上人很少，不用預約也買得到票，但下雨天頂樓可能關閉。",
+                  "semantic": 0.5921545894974248,
+                  "score": 0.5921545894974248,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 15,
+                  "article_id": "mock_shibuyasky_april_weekday_night_clear",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "4",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "四月中的週二晚上八點多抵達，14 樓售票處前只有一組人，現場買票不用等。白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。寄完包包直接上去，不冷不熱、風很舒服。頂樓人不算多，草皮區還有空位，可躺著看天空，往東看得到亮著橘色燈的東京鐵塔，更遠處是晴空塔。角落拍十字路口的位置排了大約五分鐘，人潮比白天少，車燈持續流動。雨後空氣乾淨，夜景清楚。待到九點半才下樓。聽說週末晚上情侶很多，平日安靜許多。",
+                  "semantic": 0.5862765912807896,
+                  "score": 0.5862765912807896,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 16,
+                  "article_id": "mock_shibuyasky_december_weekday_night_rain",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "週二晚上 8 點左右到 14 樓售票處，前面只有兩三組人，現場直接買到票。因下雨頂樓戶外區暫停開放，只能在 46 樓室內看夜景。室內人很少，窗邊可隨意站、慢慢看，但玻璃上都是雨痕，十字路口燈光拍起來糊成一片。整體氣氛很安靜。",
+                  "semantic": 0.5275048608591179,
+                  "score": 0.5275048608591179,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 3,
+                  "article_id": "mock_fushimiinari_january_weekday_dawn_snow",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "1",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "約 6 點半至 7 點表參道的店家都還沒開；8 點半再回來人仍不多，9 點後雪開始融化。聽說一月平日除了初詣那幾天，早上都蠻空的。",
+                  "semantic": 0.47331104032619176,
+                  "score": 0.47331104032619176,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 23,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 13,
+                  "place": "澀谷十字路口",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "週六下午逛完表參道走回澀谷，十字路口一樣人擠人。",
+                  "semantic": 0.4696422444405859,
+                  "score": 0.4696422444405859,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ],
+              "available": {
+                "time": [],
+                "month": []
+              }
+            }
+          ],
+          "groups": [
+            {
+              "key": {},
+              "evidence": [
+                {
+                  "content_id": 17,
+                  "article_id": "mock_shibuyasky_december_weekday_night_rain",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "約 9 點雨停，廣播宣布頂樓重新開放。地板還有點濕、風很冷，但只有十幾個人，角落拍十字路口的位置完全不用排，往下看車燈和人潮流動，比室內清楚很多。待到快 9 點半下樓。平日晚上人很少，不用預約也買得到票，但下雨天頂樓可能關閉。",
+                  "semantic": 0.5921545894974248,
+                  "score": 0.5921545894974248,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 15,
+                  "article_id": "mock_shibuyasky_april_weekday_night_clear",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "4",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "四月中的週二晚上八點多抵達，14 樓售票處前只有一組人，現場買票不用等。白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。寄完包包直接上去，不冷不熱、風很舒服。頂樓人不算多，草皮區還有空位，可躺著看天空，往東看得到亮著橘色燈的東京鐵塔，更遠處是晴空塔。角落拍十字路口的位置排了大約五分鐘，人潮比白天少，車燈持續流動。雨後空氣乾淨，夜景清楚。待到九點半才下樓。聽說週末晚上情侶很多，平日安靜許多。",
+                  "semantic": 0.5862765912807896,
+                  "score": 0.5862765912807896,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 16,
+                  "article_id": "mock_shibuyasky_december_weekday_night_rain",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "週二晚上 8 點左右到 14 樓售票處，前面只有兩三組人，現場直接買到票。因下雨頂樓戶外區暫停開放，只能在 46 樓室內看夜景。室內人很少，窗邊可隨意站、慢慢看，但玻璃上都是雨痕，十字路口燈光拍起來糊成一片。整體氣氛很安靜。",
+                  "semantic": 0.5275048608591179,
+                  "score": 0.5275048608591179,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 3,
+                  "article_id": "mock_fushimiinari_january_weekday_dawn_snow",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "1",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "約 6 點半至 7 點表參道的店家都還沒開；8 點半再回來人仍不多，9 點後雪開始融化。聽說一月平日除了初詣那幾天，早上都蠻空的。",
+                  "semantic": 0.47331104032619176,
+                  "score": 0.47331104032619176,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 23,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 13,
+                  "place": "澀谷十字路口",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "週六下午逛完表參道走回澀谷，十字路口一樣人擠人。",
+                  "semantic": 0.4696422444405859,
+                  "score": 0.4696422444405859,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "answer": "有一位旅客剛好是十二月平日（週二）晚上碰到下雨去的，可以直接參考：\n\n**下雨時頂樓會不會開？**\n- 不一定會開。這位旅客 8 點左右到的時候，因為下雨，頂樓戶外區暫停開放，只能在 46 樓室內看夜景。玻璃上都是雨痕，拍十字路口的燈光會糊成一片 [16]。\n- 後來大約 9 點雨停，廣播宣布頂樓重新開放。地板還有點濕、風很冷 [17]。\n- 他自己的結論是：下雨天頂樓可能會關 [17]。\n\n**人多不多？**\n- 很少。14 樓售票處前面只有兩三組人，現場直接買得到票。室內窗邊可以隨便站，整體很安靜 [16]。\n- 頂樓重新開放後只有十幾個人，角落拍十字路口的位置完全不用排 [17]。\n- 他也說平日晚上人很少，不用預約也買得到票 [17]。\n\n**另一位旅客的經驗（四月，不是你問的十二月）**\n另一位旅客是四月的週二晚上去的。那天白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。售票處前只有一組人，頂樓人不算多，角落拍照位置排了大約五分鐘 [15]。這只代表雨停之後的狀況，而且月份不同，只能當參考。\n\n**總結**\n十二月平日晚上人很少，現場買票就行。如果在下雨，頂樓可能會暫停開放，只能在室內看。雨停之後有可能重新開放，所以時間不趕的話可以等一下 [16][17]。"
+    },
+    {
+      "key": "shibuyasky/q3",
+      "question": "十二月去澀谷 SKY，傍晚跟晚上哪個時段比較不擠？",
+      "type": null,
+      "split": null,
+      "when": {
+        "month": [
+          "12"
+        ]
+      },
+      "relevant": [
+        16,
+        17,
+        19,
+        21,
+        22
+      ],
+      "retrieved": [
+        15,
+        23,
+        25,
+        40,
+        41
+      ],
+      "hits": [],
+      "recall": 0.0,
+      "precision": 0.0,
+      "f1": 0.0,
+      "violations": [
+        15,
+        23,
+        25,
+        40,
+        41
+      ],
+      "answered": true,
+      "error": null,
+      "plan": null,
+      "sections": [
+        {
+          "results": [
+            {
+              "sub_query": {
+                "space": null,
+                "time": null,
+                "aspect": null
+              },
+              "evidence": [
+                {
+                  "content_id": 15,
+                  "article_id": "mock_shibuyasky_april_weekday_night_clear",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "4",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "四月中的週二晚上八點多抵達，14 樓售票處前只有一組人，現場買票不用等。白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。寄完包包直接上去，不冷不熱、風很舒服。頂樓人不算多，草皮區還有空位，可躺著看天空，往東看得到亮著橘色燈的東京鐵塔，更遠處是晴空塔。角落拍十字路口的位置排了大約五分鐘，人潮比白天少，車燈持續流動。雨後空氣乾淨，夜景清楚。待到九點半才下樓。聽說週末晚上情侶很多，平日安靜許多。",
+                  "semantic": 0.6029876131892329,
+                  "score": 0.6029876131892329,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 25,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "6 點多上頂樓，風是熱的，地板吸了一整天的熱，站著不動也一直流汗。草皮區坐滿等日落的人，角落拍十字路口的位置大概排 30 分鐘。約 6 點 50 分日落，當天濕氣重、遠方灰濛，看不到富士山，夕陽只是淡淡粉橘色。天黑後人潮沒減少，大家都在等夜景，7 點半就下樓。頂樓沒有遮蔽，建議帶水，6 點半前上去即可。",
+                  "semantic": 0.5595720562755688,
+                  "score": 0.5595720562755688,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 41,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "天黑後市區夜景很好看，但人太多，快五點半就下樓了。整體排隊加擠窗邊，花掉兩個多小時，週末傍晚不推薦。",
+                  "semantic": 0.5341119639926085,
+                  "score": 0.5341119639926085,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 23,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 13,
+                  "place": "澀谷十字路口",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "週六下午逛完表參道走回澀谷，十字路口一樣人擠人。",
+                  "semantic": 0.5287531821015271,
+                  "score": 0.5287531821015271,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 40,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
+                  "semantic": 0.5279211052691055,
+                  "score": 0.5279211052691055,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ],
+              "available": {
+                "time": [],
+                "month": []
+              }
+            }
+          ],
+          "groups": [
+            {
+              "key": {},
+              "evidence": [
+                {
+                  "content_id": 15,
+                  "article_id": "mock_shibuyasky_april_weekday_night_clear",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "4",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "四月中的週二晚上八點多抵達，14 樓售票處前只有一組人，現場買票不用等。白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。寄完包包直接上去，不冷不熱、風很舒服。頂樓人不算多，草皮區還有空位，可躺著看天空，往東看得到亮著橘色燈的東京鐵塔，更遠處是晴空塔。角落拍十字路口的位置排了大約五分鐘，人潮比白天少，車燈持續流動。雨後空氣乾淨，夜景清楚。待到九點半才下樓。聽說週末晚上情侶很多，平日安靜許多。",
+                  "semantic": 0.6029876131892329,
+                  "score": 0.6029876131892329,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 25,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "6 點多上頂樓，風是熱的，地板吸了一整天的熱，站著不動也一直流汗。草皮區坐滿等日落的人，角落拍十字路口的位置大概排 30 分鐘。約 6 點 50 分日落，當天濕氣重、遠方灰濛，看不到富士山，夕陽只是淡淡粉橘色。天黑後人潮沒減少，大家都在等夜景，7 點半就下樓。頂樓沒有遮蔽，建議帶水，6 點半前上去即可。",
+                  "semantic": 0.5595720562755688,
+                  "score": 0.5595720562755688,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 41,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "天黑後市區夜景很好看，但人太多，快五點半就下樓了。整體排隊加擠窗邊，花掉兩個多小時，週末傍晚不推薦。",
+                  "semantic": 0.5341119639926085,
+                  "score": 0.5341119639926085,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 23,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 13,
+                  "place": "澀谷十字路口",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "週六下午逛完表參道走回澀谷，十字路口一樣人擠人。",
+                  "semantic": 0.5287531821015271,
+                  "score": 0.5287531821015271,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 40,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
+                  "semantic": 0.5279211052691055,
+                  "score": 0.5279211052691055,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "answer": "**簡單說：沒有十二月的經驗，也沒辦法直接比較傍晚和晚上。**手上兩篇澀谷 SKY 的遊記是四月和七月的，而且是不同旅客、不同天的經驗：\n\n- **七月假日（日落前後）**：這位旅客 6 點多上頂樓，草皮區坐滿等日落的人。角落拍十字路口的位置大概要排 30 分鐘。約 6 點 50 分日落，天黑後人也沒變少，因為大家都在等夜景。他 7 點半就下樓了 [25]。\n- **四月平日晚上**：另一位旅客週二晚上八點多到。售票處前只有一組人，不用等。頂樓人不多，草皮區還有空位，拍十字路口的位置大約排五分鐘。他說人比白天少，還聽說週末晚上情侶很多，平日安靜許多 [15]。\n\n**兩篇放在一起看：**\n- 七月週末日落那段時間很擠，天黑後也沒有馬上變少 [25]。\n- 四月平日晚上八點後就輕鬆很多 [15]。\n\n不過兩篇的月份和平日／假日都不一樣，看不出差別是時段造成的，還是平日跟假日的差別。\n\n其他片段寫的是東京晴空塔和澀谷十字路口，不是澀谷 SKY，所以沒拿來回答。"
+    },
+    {
+      "key": "skytree/q1",
+      "question": "一月平日早上去晴空塔，看得到富士山嗎？要排多久？",
+      "type": null,
+      "split": null,
+      "when": {
+        "month": [
+          "1"
+        ],
+        "day_type": "平日",
+        "time": [
+          "早上"
+        ]
+      },
+      "relevant": [
+        35
+      ],
+      "retrieved": [
+        15,
+        25,
+        32,
+        35,
+        40
+      ],
+      "hits": [
+        35
+      ],
+      "recall": 1.0,
+      "precision": 0.2,
+      "f1": 0.33333333333333337,
+      "violations": [
+        15,
+        25,
+        32,
+        40
+      ],
+      "answered": true,
+      "error": null,
+      "plan": null,
+      "sections": [
+        {
+          "results": [
+            {
+              "sub_query": {
+                "space": null,
+                "time": null,
+                "aspect": null
+              },
+              "evidence": [
+                {
+                  "content_id": 35,
+                  "article_id": "mock_skytree_weekday_opening_fuji",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "一月底週二，9 點 40 分到四樓售票處，前面約十個人，10 點開賣後五分鐘買好票上去。早上很冷但空氣乾淨，往西南看富士山整座清楚可見，山頂積雪一清二楚。甲板人很少，可慢慢找角度拍照。加購天望回廊，450 公尺玻璃斜坡在早晨斜射的陽光下，地上有塔骨架影子，很好拍。",
+                  "semantic": 0.6888053514966265,
+                  "score": 0.6888053514966265,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 32,
+                  "article_id": "mock_skytree_may_weekday_morning_haze",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "5",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "天望甲板晴天但遠方一片白霧，工作人員說春天常如此，西南方完全看不到富士山，只看得到近處的新宿高樓。甲板人不多，靠窗位置還有空。",
+                  "semantic": 0.6117240085490124,
+                  "score": 0.6117240085490124,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 40,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
+                  "semantic": 0.5916945334697494,
+                  "score": 0.5916945334697494,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 15,
+                  "article_id": "mock_shibuyasky_april_weekday_night_clear",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "4",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "四月中的週二晚上八點多抵達，14 樓售票處前只有一組人，現場買票不用等。白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。寄完包包直接上去，不冷不熱、風很舒服。頂樓人不算多，草皮區還有空位，可躺著看天空，往東看得到亮著橘色燈的東京鐵塔，更遠處是晴空塔。角落拍十字路口的位置排了大約五分鐘，人潮比白天少，車燈持續流動。雨後空氣乾淨，夜景清楚。待到九點半才下樓。聽說週末晚上情侶很多，平日安靜許多。",
+                  "semantic": 0.5811327398823563,
+                  "score": 0.5811327398823563,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 25,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "6 點多上頂樓，風是熱的，地板吸了一整天的熱，站著不動也一直流汗。草皮區坐滿等日落的人，角落拍十字路口的位置大概排 30 分鐘。約 6 點 50 分日落，當天濕氣重、遠方灰濛，看不到富士山，夕陽只是淡淡粉橘色。天黑後人潮沒減少，大家都在等夜景，7 點半就下樓。頂樓沒有遮蔽，建議帶水，6 點半前上去即可。",
+                  "semantic": 0.5494914421346789,
+                  "score": 0.5494914421346789,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ],
+              "available": {
+                "time": [],
+                "month": []
+              }
+            }
+          ],
+          "groups": [
+            {
+              "key": {},
+              "evidence": [
+                {
+                  "content_id": 35,
+                  "article_id": "mock_skytree_weekday_opening_fuji",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "一月底週二，9 點 40 分到四樓售票處，前面約十個人，10 點開賣後五分鐘買好票上去。早上很冷但空氣乾淨，往西南看富士山整座清楚可見，山頂積雪一清二楚。甲板人很少，可慢慢找角度拍照。加購天望回廊，450 公尺玻璃斜坡在早晨斜射的陽光下，地上有塔骨架影子，很好拍。",
+                  "semantic": 0.6888053514966265,
+                  "score": 0.6888053514966265,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 32,
+                  "article_id": "mock_skytree_may_weekday_morning_haze",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "5",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "天望甲板晴天但遠方一片白霧，工作人員說春天常如此，西南方完全看不到富士山，只看得到近處的新宿高樓。甲板人不多，靠窗位置還有空。",
+                  "semantic": 0.6117240085490124,
+                  "score": 0.6117240085490124,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 40,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
+                  "semantic": 0.5916945334697494,
+                  "score": 0.5916945334697494,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 15,
+                  "article_id": "mock_shibuyasky_april_weekday_night_clear",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "4",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "四月中的週二晚上八點多抵達，14 樓售票處前只有一組人，現場買票不用等。白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。寄完包包直接上去，不冷不熱、風很舒服。頂樓人不算多，草皮區還有空位，可躺著看天空，往東看得到亮著橘色燈的東京鐵塔，更遠處是晴空塔。角落拍十字路口的位置排了大約五分鐘，人潮比白天少，車燈持續流動。雨後空氣乾淨，夜景清楚。待到九點半才下樓。聽說週末晚上情侶很多，平日安靜許多。",
+                  "semantic": 0.5811327398823563,
+                  "score": 0.5811327398823563,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 25,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "6 點多上頂樓，風是熱的，地板吸了一整天的熱，站著不動也一直流汗。草皮區坐滿等日落的人，角落拍十字路口的位置大概排 30 分鐘。約 6 點 50 分日落，當天濕氣重、遠方灰濛，看不到富士山，夕陽只是淡淡粉橘色。天黑後人潮沒減少，大家都在等夜景，7 點半就下樓。頂樓沒有遮蔽，建議帶水，6 點半前上去即可。",
+                  "semantic": 0.5494914421346789,
+                  "score": 0.5494914421346789,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "answer": "**看得到。** 有位旅客一月底某個週二早上去晴空塔，往西南看，富士山整座都很清楚，山頂的積雪也看得很清楚。那天早上很冷，但空氣很乾淨 [35]。\n\n**排隊不太久。** 他 9 點 40 分到四樓售票處，前面大約十個人。10 點開賣後，五分鐘就買好票上去了 [35]。甲板人很少，可以慢慢找角度拍照。他還加購了天望回廊，早上的陽光斜斜照進來，地上有塔骨架的影子，很好拍 [35]。\n\n**其他時間的經驗也可以參考，**這些是不同旅客、不同天去的：\n- **五月平日早上：** 有位旅客遇到晴天，但遠方一片白霧，完全看不到富士山 [32]。\n- **一月假日下午：** 另一位旅客四點半上去等日落，窗邊擠滿人，等了十分鐘才擠到窗邊。那天西邊有雲，也看不到富士山 [40]。\n\n整體來說，一月平日早上的那次經驗，富士山看得很清楚，人也最少。不過這只是一位旅客一天的經驗。"
+    },
+    {
+      "key": "skytree/q2",
+      "question": "冬天週末傍晚想上晴空塔看日落，大概要排多久？有什麼要注意的？",
+      "type": null,
+      "split": null,
+      "when": {
+        "month": [
+          "冬"
+        ],
+        "day_type": "假日",
+        "time": [
+          "下午",
+          "晚上"
+        ]
+      },
+      "relevant": [
+        39,
+        40,
+        41
+      ],
+      "retrieved": [
+        15,
+        16,
+        25,
+        40,
+        41
+      ],
+      "hits": [
+        40,
+        41
+      ],
+      "recall": 0.6666666666666666,
+      "precision": 0.4,
+      "f1": 0.5,
+      "violations": [
+        15,
+        16,
+        25
+      ],
+      "answered": true,
+      "error": null,
+      "plan": null,
+      "sections": [
+        {
+          "results": [
+            {
+              "sub_query": {
+                "space": null,
+                "time": null,
+                "aspect": null
+              },
+              "evidence": [
+                {
+                  "content_id": 40,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
+                  "semantic": 0.6403646334883324,
+                  "score": 0.6403646334883324,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 25,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "6 點多上頂樓，風是熱的，地板吸了一整天的熱，站著不動也一直流汗。草皮區坐滿等日落的人，角落拍十字路口的位置大概排 30 分鐘。約 6 點 50 分日落，當天濕氣重、遠方灰濛，看不到富士山，夕陽只是淡淡粉橘色。天黑後人潮沒減少，大家都在等夜景，7 點半就下樓。頂樓沒有遮蔽，建議帶水，6 點半前上去即可。",
+                  "semantic": 0.6365440705866353,
+                  "score": 0.6365440705866353,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 15,
+                  "article_id": "mock_shibuyasky_april_weekday_night_clear",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "4",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "四月中的週二晚上八點多抵達，14 樓售票處前只有一組人，現場買票不用等。白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。寄完包包直接上去，不冷不熱、風很舒服。頂樓人不算多，草皮區還有空位，可躺著看天空，往東看得到亮著橘色燈的東京鐵塔，更遠處是晴空塔。角落拍十字路口的位置排了大約五分鐘，人潮比白天少，車燈持續流動。雨後空氣乾淨，夜景清楚。待到九點半才下樓。聽說週末晚上情侶很多，平日安靜許多。",
+                  "semantic": 0.6322248343329818,
+                  "score": 0.6322248343329818,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 41,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "天黑後市區夜景很好看，但人太多，快五點半就下樓了。整體排隊加擠窗邊，花掉兩個多小時，週末傍晚不推薦。",
+                  "semantic": 0.5888038803819847,
+                  "score": 0.5888038803819847,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 16,
+                  "article_id": "mock_shibuyasky_december_weekday_night_rain",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "週二晚上 8 點左右到 14 樓售票處，前面只有兩三組人，現場直接買到票。因下雨頂樓戶外區暫停開放，只能在 46 樓室內看夜景。室內人很少，窗邊可隨意站、慢慢看，但玻璃上都是雨痕，十字路口燈光拍起來糊成一片。整體氣氛很安靜。",
+                  "semantic": 0.5705834810319804,
+                  "score": 0.5705834810319804,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ],
+              "available": {
+                "time": [],
+                "month": []
+              }
+            }
+          ],
+          "groups": [
+            {
+              "key": {},
+              "evidence": [
+                {
+                  "content_id": 40,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
+                  "semantic": 0.6403646334883324,
+                  "score": 0.6403646334883324,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 25,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "6 點多上頂樓，風是熱的，地板吸了一整天的熱，站著不動也一直流汗。草皮區坐滿等日落的人，角落拍十字路口的位置大概排 30 分鐘。約 6 點 50 分日落，當天濕氣重、遠方灰濛，看不到富士山，夕陽只是淡淡粉橘色。天黑後人潮沒減少，大家都在等夜景，7 點半就下樓。頂樓沒有遮蔽，建議帶水，6 點半前上去即可。",
+                  "semantic": 0.6365440705866353,
+                  "score": 0.6365440705866353,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 15,
+                  "article_id": "mock_shibuyasky_april_weekday_night_clear",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "4",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "四月中的週二晚上八點多抵達，14 樓售票處前只有一組人，現場買票不用等。白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。寄完包包直接上去，不冷不熱、風很舒服。頂樓人不算多，草皮區還有空位，可躺著看天空，往東看得到亮著橘色燈的東京鐵塔，更遠處是晴空塔。角落拍十字路口的位置排了大約五分鐘，人潮比白天少，車燈持續流動。雨後空氣乾淨，夜景清楚。待到九點半才下樓。聽說週末晚上情侶很多，平日安靜許多。",
+                  "semantic": 0.6322248343329818,
+                  "score": 0.6322248343329818,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 41,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "天黑後市區夜景很好看，但人太多，快五點半就下樓了。整體排隊加擠窗邊，花掉兩個多小時，週末傍晚不推薦。",
+                  "semantic": 0.5888038803819847,
+                  "score": 0.5888038803819847,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 16,
+                  "article_id": "mock_shibuyasky_december_weekday_night_rain",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "週二晚上 8 點左右到 14 樓售票處，前面只有兩三組人，現場直接買到票。因下雨頂樓戶外區暫停開放，只能在 46 樓室內看夜景。室內人很少，窗邊可隨意站、慢慢看，但玻璃上都是雨痕，十字路口燈光拍起來糊成一片。整體氣氛很安靜。",
+                  "semantic": 0.5705834810319804,
+                  "score": 0.5705834810319804,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "answer": "**大概要多久：** 只有一位旅客的經驗，是一月的週末傍晚上晴空塔。他從排隊到擠窗邊，前後**花了兩個多小時**，所以不推薦週末傍晚去[41]。他沒有寫光是排隊上塔等了多久。\n\n**這位旅客當天的狀況**（同一篇遊記、同一天）：\n- **擠到窗邊要等：** 他四點半左右上到天望甲板，窗邊整排都是等日落的人，在後面等了十分鐘才擠到窗邊[40]。\n- **日落時間：** 大約四點四十分日落，天空從橘色變成紫色，很漂亮[40]。\n- **不一定看得到富士山：** 當天西邊有雲，看不到富士山的剪影[40]。\n- **風大會晃：** 風大的時候站久了，會覺得腳下微微晃動[40]。\n- **天黑後人更多：** 夜景很好看，但人太多，他快五點半就下樓了[41]。\n\n**總結：** 照這次經驗，冬天日落大約四點四十分。想搶到窗邊位置，最好提早上去。週末傍晚人很多，整趟可能要花兩個多小時，要有心理準備。\n\n另外三筆資料是澀谷 SKY，不是晴空塔，所以沒有拿來回答。"
+    },
+    {
+      "key": "skytree/q3",
+      "question": "冬天去晴空塔，想避開人潮又想看到富士山，該選什麼時候去？",
+      "type": null,
+      "split": null,
+      "when": {
+        "month": [
+          "冬"
+        ]
+      },
+      "relevant": [
+        35,
+        36,
+        39,
+        40,
+        41
+      ],
+      "retrieved": [
+        15,
+        25,
+        32,
+        35,
+        40
+      ],
+      "hits": [
+        35,
+        40
+      ],
+      "recall": 0.4,
+      "precision": 0.4,
+      "f1": 0.4000000000000001,
+      "violations": [
+        15,
+        25,
+        32
+      ],
+      "answered": true,
+      "error": null,
+      "plan": null,
+      "sections": [
+        {
+          "results": [
+            {
+              "sub_query": {
+                "space": null,
+                "time": null,
+                "aspect": null
+              },
+              "evidence": [
+                {
+                  "content_id": 35,
+                  "article_id": "mock_skytree_weekday_opening_fuji",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "一月底週二，9 點 40 分到四樓售票處，前面約十個人，10 點開賣後五分鐘買好票上去。早上很冷但空氣乾淨，往西南看富士山整座清楚可見，山頂積雪一清二楚。甲板人很少，可慢慢找角度拍照。加購天望回廊，450 公尺玻璃斜坡在早晨斜射的陽光下，地上有塔骨架影子，很好拍。",
+                  "semantic": 0.6359739145464784,
+                  "score": 0.6359739145464784,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 15,
+                  "article_id": "mock_shibuyasky_april_weekday_night_clear",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "4",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "四月中的週二晚上八點多抵達，14 樓售票處前只有一組人，現場買票不用等。白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。寄完包包直接上去，不冷不熱、風很舒服。頂樓人不算多，草皮區還有空位，可躺著看天空，往東看得到亮著橘色燈的東京鐵塔，更遠處是晴空塔。角落拍十字路口的位置排了大約五分鐘，人潮比白天少，車燈持續流動。雨後空氣乾淨，夜景清楚。待到九點半才下樓。聽說週末晚上情侶很多，平日安靜許多。",
+                  "semantic": 0.5912801010384956,
+                  "score": 0.5912801010384956,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 32,
+                  "article_id": "mock_skytree_may_weekday_morning_haze",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "5",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "天望甲板晴天但遠方一片白霧，工作人員說春天常如此，西南方完全看不到富士山，只看得到近處的新宿高樓。甲板人不多，靠窗位置還有空。",
+                  "semantic": 0.5787240717646699,
+                  "score": 0.5787240717646699,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 25,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "6 點多上頂樓，風是熱的，地板吸了一整天的熱，站著不動也一直流汗。草皮區坐滿等日落的人，角落拍十字路口的位置大概排 30 分鐘。約 6 點 50 分日落，當天濕氣重、遠方灰濛，看不到富士山，夕陽只是淡淡粉橘色。天黑後人潮沒減少，大家都在等夜景，7 點半就下樓。頂樓沒有遮蔽，建議帶水，6 點半前上去即可。",
+                  "semantic": 0.5677114865201695,
+                  "score": 0.5677114865201695,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 40,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
+                  "semantic": 0.56217779406005,
+                  "score": 0.56217779406005,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ],
+              "available": {
+                "time": [],
+                "month": []
+              }
+            }
+          ],
+          "groups": [
+            {
+              "key": {},
+              "evidence": [
+                {
+                  "content_id": 35,
+                  "article_id": "mock_skytree_weekday_opening_fuji",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "一月底週二，9 點 40 分到四樓售票處，前面約十個人，10 點開賣後五分鐘買好票上去。早上很冷但空氣乾淨，往西南看富士山整座清楚可見，山頂積雪一清二楚。甲板人很少，可慢慢找角度拍照。加購天望回廊，450 公尺玻璃斜坡在早晨斜射的陽光下，地上有塔骨架影子，很好拍。",
+                  "semantic": 0.6359739145464784,
+                  "score": 0.6359739145464784,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 15,
+                  "article_id": "mock_shibuyasky_april_weekday_night_clear",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "4",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "四月中的週二晚上八點多抵達，14 樓售票處前只有一組人，現場買票不用等。白天下過雨，晚上放晴，工作人員說頂樓整晚都會開。寄完包包直接上去，不冷不熱、風很舒服。頂樓人不算多，草皮區還有空位，可躺著看天空，往東看得到亮著橘色燈的東京鐵塔，更遠處是晴空塔。角落拍十字路口的位置排了大約五分鐘，人潮比白天少，車燈持續流動。雨後空氣乾淨，夜景清楚。待到九點半才下樓。聽說週末晚上情侶很多，平日安靜許多。",
+                  "semantic": 0.5912801010384956,
+                  "score": 0.5912801010384956,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 32,
+                  "article_id": "mock_skytree_may_weekday_morning_haze",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "5",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "天望甲板晴天但遠方一片白霧，工作人員說春天常如此，西南方完全看不到富士山，只看得到近處的新宿高樓。甲板人不多，靠窗位置還有空。",
+                  "semantic": 0.5787240717646699,
+                  "score": 0.5787240717646699,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 25,
+                  "article_id": "mock_shibuyasky_july_weekend_sunset",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "7",
+                    "day_type": "假日",
+                    "time": "晚上"
+                  },
+                  "content": "6 點多上頂樓，風是熱的，地板吸了一整天的熱，站著不動也一直流汗。草皮區坐滿等日落的人，角落拍十字路口的位置大概排 30 分鐘。約 6 點 50 分日落，當天濕氣重、遠方灰濛，看不到富士山，夕陽只是淡淡粉橘色。天黑後人潮沒減少，大家都在等夜景，7 點半就下樓。頂樓沒有遮蔽，建議帶水，6 點半前上去即可。",
+                  "semantic": 0.5677114865201695,
+                  "score": 0.5677114865201695,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 40,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
+                  "semantic": 0.56217779406005,
+                  "score": 0.56217779406005,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "answer": "建議挑**冬天平日早上，開門前就到**。\n\n**一月平日早上（一位旅客）**\n- 一月底一個週二，他 9 點 40 分到四樓售票處，前面大約十個人。10 點開賣，五分鐘就買好票上樓 [35]。\n- 早上很冷但空氣乾淨，往西南看得到整座富士山，山頂積雪很清楚 [35]。\n- 甲板上人很少，可以慢慢找角度拍照 [35]。\n- 他還加購了天望回廊，早上的陽光斜照進來，地上有塔骨架的影子，很好拍 [35]。\n\n**一月假日下午看日落（另一位旅客，不同天）**\n- 四點半左右上天望甲板，窗邊整排都是等日落的人，他在後面等了十分鐘才擠到窗邊 [40]。\n- 四點四十分左右日落，天空從橘變紫很漂亮。但那天西邊有雲，看不到富士山的剪影 [40]。\n- 風大時站久了會覺得腳下微微晃動 [40]。\n\n**比較起來**\n平日早上人少，那天富士山也清楚 [35]；假日日落時段比較擠，那天也沒看到富士山 [40]。要避開人潮又想看富士山，平日早上開門時去最穩。不過這兩筆各只是一天的經驗，富士山看不看得到還是要看當天天氣。\n\n另外有一筆五月平日早上的經驗，不是冬天：那天雖然是晴天，但遠方起白霧，完全看不到富士山 [32]。\n\n資料裡另外兩筆是澀谷 SKY 的經驗 [15][25]，跟晴空塔無關，這裡就不參考了。"
+    }
+  ]
+}

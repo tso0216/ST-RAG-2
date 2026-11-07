@@ -11,6 +11,8 @@
   "questions": [
     {
       "id": "q1",
+      "type": "停留",
+      "split": "dev",
       "question": "十二月週末傍晚想去澀谷 SKY 看夕陽，現場買得到票嗎？頂樓會不會很擠？",
       "when": {
         "month": ["12"],
@@ -32,6 +34,8 @@
     },
     {
       "id": "q2",
+      "type": "停留",
+      "split": "test",
       "question": "十二月平日晚上去澀谷 SKY，如果下雨頂樓還會開嗎？人多嗎？",
       "when": {
         "month": ["12"],
@@ -51,6 +55,8 @@
     },
     {
       "id": "q3",
+      "type": "比較",
+      "split": "test",
       "question": "十二月去澀谷 SKY，傍晚跟晚上哪個時段比較不擠？",
       "when": {
         "month": ["12"]

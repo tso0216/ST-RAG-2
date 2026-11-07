@@ -133,6 +133,8 @@ sqlite3 data/main.db "SELECT p.id, p.kind, p.name_zh, p.name_ja, p.osm_type || '
 | `questions[].when` | 時空條件，沒限制的欄位不寫 |
 | `questions[].relevant_contents` | 回答需要檢索到的 `main.db` content id |
 | `questions[].expect` | 答案應包含的重點 |
+| `questions[].type` | 題型：停留、找時間、找地點、比較；只用於分組分析，系統不讀，可以不寫 |
+| `questions[].split` | `dev` 或 `test`；可以不寫，沒寫的題目分組時歸在「未標」 |
 
 `when` 的格式跟檢索計畫子查詢的 `time` 一樣：
 
@@ -141,3 +143,19 @@ sqlite3 data/main.db "SELECT p.id, p.kind, p.name_zh, p.name_ja, p.osm_type || '
 | `month` | 一個或一組月份標籤的列表，每個是 `1`–`12`、範圍 `M-M`（跨年寫 `12-2`）、`春` `夏` `秋` `冬` |
 | `day_type` | `平日`、`假日` |
 | `time` | 一個或一組時段的列表：`早上` `中午` `下午` `晚上` `全天`，鐘點邊界見 `src/strag_v3/time_slots.md` |
+
+## 跑評估
+
+從專案根目錄（需要 `OPENAI_API_KEY`；規劃器和生成器走 Opus）：
+
+```bash
+PYTHONPATH=src:. .venv/bin/python -m strag_v3.eval run data/mock_article/eval --system full
+```
+
+- `--system`：`full` 完整系統、`dense` 只用語意分數取 top-k（`--k`，預設 5）、`hard` 硬過濾不退讓。
+- `--oracle`：用題目的 `when` 取代規劃器解析出來的時間（`full`、`hard` 可用）。
+- `--split dev|test`：只跑一組題目；`--no-answer`：不呼叫生成器，只評估檢索。
+- 印出整體、依 split、依題型的 recall、precision、F1、時間違規率、有回答率，並把每題的計畫、取回集合、證據、答案存到 `data/eval_runs/<時間>_<設定>.json`。
+- 幾次的結果並排比較：`PYTHONPATH=src:. .venv/bin/python -m strag_v3.eval compare data/eval_runs/*.json`。
+
+指標的定義（空集合、沒標註的題目怎麼算）寫在 `src/strag_v3/eval/metrics.py` 開頭。

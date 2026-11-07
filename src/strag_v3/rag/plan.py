@@ -71,14 +71,13 @@ class Plan:
     def from_dict(cls, d: dict) -> "Plan":
         subs = []
         for s in d.get("sub_queries") or []:
-            t = s.get("time") or {}
             try:
-                spec = TimeQuery(_labels(t.get("month")), _clean(t.get("day_type")), _labels(t.get("time")))
+                time = parse_time(s.get("time"))
             except LabelError as e:
                 raise PlanError(str(e)) from None
             subs.append(SubQuery(
                 space=Space.from_dict(s.get("space")),
-                time=spec if spec != TimeQuery() else None,
+                time=time,
                 aspect=_clean(s.get("aspect")),
             ))
         if not subs:
@@ -90,6 +89,15 @@ class Plan:
     def to_dict(self) -> dict:
         return {"sub_queries": [asdict(s) for s in self.sub_queries],
                 "group_by": list(self.group_by), "compose": self.compose}
+
+
+def parse_time(t: dict | None) -> TimeQuery | None:
+    """子查詢 `time`（或 eval 的 `when`）的寫法 → 時間條件；三個維度都沒填時是 None（不限時間）。
+
+    看不懂的標籤丟 LabelError。"""
+    t = t or {}
+    spec = TimeQuery(_labels(t.get("month")), _clean(t.get("day_type")), _labels(t.get("time")))
+    return spec if spec != TimeQuery() else None
 
 
 def _parse[E: StrEnum](enum: type[E], value, what: str) -> E:
