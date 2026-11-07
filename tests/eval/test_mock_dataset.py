@@ -54,3 +54,10 @@ def test_articles_exist_and_each_belongs_to_one_place():
 def test_every_article_has_its_own_author():
     authors = Counter(json.loads(p.read_text())["author"] for p in MOCK.glob("mock_*.json"))
     assert [a for a, n in authors.items() if n > 1] == []
+
+
+def test_articles_match_their_file_name_and_length():
+    for p in MOCK.glob("mock_*.json"):
+        article = json.loads(p.read_text())
+        assert article["id"] == p.stem
+        assert 300 <= len(article["text"]) <= 600, f"{p.stem} 有 {len(article['text'])} 字"
