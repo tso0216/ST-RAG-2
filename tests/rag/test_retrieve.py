@@ -127,7 +127,8 @@ def test_better_time_match_ranks_first_and_evidence_carries_scores(conn):
     exact = add(conn, "晴空塔", "平日", "10", "1")
     vague = add(conn, "晴空塔", "平日", "10", "冬", article="a2")  # 三分之一落在一月
 
-    [result] = Retriever(conn, KeywordEmbedder()).retrieve(plan(month="1"), "排隊")
+    unsmoothed = Params(month_bandwidth=0, hour_bandwidth=0)
+    [result] = Retriever(conn, KeywordEmbedder(), unsmoothed).retrieve(plan(month="1"), "排隊")
     first, second = result.evidence
 
     assert (first.content_id, second.content_id) == (exact, vague)

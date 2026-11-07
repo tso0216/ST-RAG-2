@@ -2,7 +2,9 @@
 
 時間分布定義在「月（12）× 平日／假日（2）× 小時（24）」共 576 格的週期格網上。
 三個維度的標籤各自轉成邊際分布，再取外積。標籤留空或 `不明` 都給均勻分布。
+月份軸和小時軸的邊際分布再套頭尾相接的高斯平滑（頻寬見 Params），平日／假日不平滑。
 """
+import math
 import re
 from dataclasses import dataclass
 
@@ -25,6 +27,11 @@ class LabelError(ValueError):
 
 def _blank(label: str | None) -> bool:
     return label is None or not label.strip() or label.strip() == UNKNOWN
+
+
+def has_unknown(*labels: str | None) -> bool:
+    """任何一個時間標籤是 `不明`（或空的）就是 True。"""
+    return any(_blank(label) for label in labels)
 
 
 def _uniform(n: int) -> list[float]:
@@ -119,11 +126,26 @@ class TimeDist:
         return (month * N_DAY + day) * N_HOUR + hour
 
 
+def smooth_cyclic(w: list[float], bandwidth: float) -> list[float]:
+    """頭尾相接的高斯平滑：距離用週期上的最短距離（十二月和一月相鄰）。
+
+    bandwidth 是高斯核的標準差，單位是格；0 就原樣傳回。
+    """
+    if bandwidth <= 0:
+        return w
+    n = len(w)
+    kernel = [math.exp(-min(d, n - d) ** 2 / (2 * bandwidth ** 2)) for d in range(n)]
+    out = [sum(w[j] * kernel[(i - j) % n] for j in range(n)) for i in range(n)]
+    s = sum(out)
+    return [x / s for x in out]
+
+
 def to_dist(month: str | None = None, day_type: str | None = None, time: str | None = None,
             params: Params = DEFAULT) -> TimeDist:
-    pm = month_marginal(month)
+    """三個維度各自轉成邊際分布；月份軸和小時軸再做週期平滑，平日／假日不平滑。"""
+    pm = smooth_cyclic(month_marginal(month), params.month_bandwidth)
     pd = day_marginal(day_type)
-    ph = hour_marginal(time, params)
+    ph = smooth_cyclic(hour_marginal(time, params), params.hour_bandwidth)
     return TimeDist(tuple(m * d * h for m in pm for d in pd for h in ph))
 
 
