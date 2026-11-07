@@ -4,7 +4,7 @@
 - space：片段的景點名稱要完全相同；留空不限地點。
 - time：轉成時間分布，跟片段的時間分布算時空重疊度；留空不限時間。
 - 語意分數：aspect（沒有就用原問題）跟片段內容的 embedding cosine。
-- 分數 = 語意分數 × (ε + 時空重疊度)。
+- 分數 = 語意分數 × (ε + 時空重疊度)。片段有任何一個時間維度是 `不明` 時，再乘上 unknown_discount。
 - 門檻：時空重疊度 ≥ overlap_min，且語意分數 ≥ 該子查詢最高分 − δ；兩個都過才取，全部取。
 """
 import sqlite3
@@ -14,7 +14,7 @@ from .embedding import Embedder, cosine
 from .group import Section, organize
 from .params import DEFAULT, Params
 from .plan import Plan, SubQuery, TimeSpec
-from .timedist import overlap, to_dist
+from .timedist import has_unknown, overlap, to_dist
 
 
 @dataclass(frozen=True)
@@ -77,7 +77,8 @@ class Retriever:
 
         out = [
             Evidence(row[0], row[1], row[2], row[3], row[4], row[5], row[6] or "",
-                     overlap=ov, semantic=sem, score=sem * (p.epsilon + ov))
+                     overlap=ov, semantic=sem, score=sem * (p.epsilon + ov)
+                     * (p.unknown_discount if has_unknown(row[3], row[4], row[5]) else 1.0))
             for (row, ov), sem in zip(candidates, sems) if sem >= floor
         ]
         out.sort(key=lambda e: (-e.score, e.content_id))

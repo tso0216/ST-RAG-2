@@ -27,6 +27,13 @@ class Params:
     delta: float = 0.3
     # 時段詞的梯形邊界
     periods: dict[str, tuple[float, float, float, float]] = field(default_factory=lambda: dict(DEFAULT_PERIODS))
+    # 週期平滑：月份軸和小時軸各自套頭尾相接的高斯核，數字是標準差（單位為月、小時），0 就不平滑。
+    # 片段和問題的分布都會平滑。月份 0.5：問十二月時一月、十一月能通過門檻，十月、二月不行。
+    month_bandwidth: float = 0.5
+    # 小時 1：問 23 點時 0 點、22 點能通過，問 16–18 點時 14 點能通過、13 點不行。
+    hour_bandwidth: float = 1.0
+    # 片段有任何一個時間維度是 `不明` 時，分數再乘上這個折扣（小於 1；設成 1 就不折扣）
+    unknown_discount: float = 0.8
 
 
 DEFAULT = Params()

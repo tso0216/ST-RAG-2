@@ -144,11 +144,11 @@ def test_merge_pools_sub_queries_into_one_section_without_duplicates(conn):
 def test_contrast_groups_each_section_on_its_own(conn):
     weekday = add(conn, "晴空塔", "平日", "10", "12")
     weekend = add(conn, "晴空塔", "假日", "10", "12")
-    weekend_jan = add(conn, "晴空塔", "假日", "10", "1")
+    weekend_june = add(conn, "晴空塔", "假日", "10", "6")
 
-    sections = grouped(conn, sub(month="12"), sub(month="1"), group_by=["day_type"], compose="contrast")
+    sections = grouped(conn, sub(month="12"), sub(month="6"), group_by=["day_type"], compose="contrast")
 
     assert layout(sections) == [
         [({"day_type": "平日"}, [weekday]), ({"day_type": "假日"}, [weekend])],
-        [({"day_type": "假日"}, [weekend_jan])],
+        [({"day_type": "假日"}, [weekend_june])],
     ]
