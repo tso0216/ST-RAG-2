@@ -3,6 +3,7 @@
 實際的 LLM 呼叫在 `service/llm.py`（專案根目錄）。
 """
 import json
+from dataclasses import asdict
 from pathlib import Path
 
 from service.llm import LLMError, call
@@ -72,7 +73,24 @@ def _evidence_block(e: Evidence) -> dict:
         "時段": e.time,
         "時空重疊度": round(e.overlap, 2),
         "內容": e.content,
+        "來自退讓": e.backoff,
     }
+
+
+def _nearest_block(results: list[SubQueryResult]) -> str:
+    """沒有證據的子查詢：列出問的條件，和查過的範圍裡最接近的時段（只有標籤和筆數）。"""
+    empty = [{
+        "問的地點": r.sub_query.space or "不限",
+        "問的時間": {k: v for k, v in asdict(r.sub_query.time).items() if v} if r.sub_query.time else "不限",
+        "最接近的時段": [{"地點": n.place, "月份": n.month, "平日／假日": n.day_type, "時段": n.time,
+                     "片段數": n.count} for n in r.nearest],
+    } for r in results if not r.evidence]
+    if not empty:
+        return ""
+    return (
+        f"\n\n沒有證據的子查詢（{len(empty)} 個）：\n"
+        f"```json\n{json.dumps(empty, ensure_ascii=False, indent=2)}\n```"
+    )
 
 
 def build_answer_prompt(question: str, results: list[SubQueryResult]) -> str:
@@ -81,7 +99,7 @@ def build_answer_prompt(question: str, results: list[SubQueryResult]) -> str:
         f"旅客的問題：{question}\n\n"
         f"證據（{len(evidence)} 筆）：\n"
         f"```json\n{json.dumps(evidence, ensure_ascii=False, indent=2)}\n```"
-    )
+    ) + _nearest_block(results)
 
 
 async def answer(question: str, results: list[SubQueryResult]) -> str:

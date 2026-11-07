@@ -9,15 +9,17 @@ from pathlib import Path
 from ..extract.paths import DB_PATH
 from . import llm
 from .embedding import CachedEmbedder, EmbeddingError, OpenAIEmbedder
+from .hierarchy import Hierarchy, HierarchyError
 from .plan import PlanError
 from .retrieve import Retriever
 
 
 async def run(question: str, db: Path) -> dict:
+    hierarchy = Hierarchy.load()
     conn = sqlite3.connect(db)
     try:
         plan = await llm.plan(question)
-        retriever = Retriever(conn, CachedEmbedder(OpenAIEmbedder(), conn))
+        retriever = Retriever(conn, CachedEmbedder(OpenAIEmbedder(), conn), hierarchy=hierarchy)
         results = retriever.retrieve(plan, question)
         answer = await llm.answer(question, results)
     finally:
@@ -25,7 +27,8 @@ async def run(question: str, db: Path) -> dict:
     return {
         "question": question,
         "plan": plan.to_dict(),
-        "results": [{"sub_query": asdict(r.sub_query), "evidence": [asdict(e) for e in r.evidence]}
+        "results": [{"sub_query": asdict(r.sub_query), "evidence": [asdict(e) for e in r.evidence],
+                     "nearest": [asdict(n) for n in r.nearest]}
                     for r in results],
         "answer": answer,
     }
@@ -40,6 +43,10 @@ def show(out: dict) -> None:
             print(f"[{e['content_id']}] {e['article_id']}｜{e['place']}｜{e['month']}月 {e['day_type']} {e['time']}"
                   f"｜重疊 {e['overlap']:.3f} 語意 {e['semantic']:.3f} 分數 {e['score']:.3f}")
             print(f"    {e['content']}")
+        if any(e["backoff"] for e in r["evidence"]):
+            print("（問的地點本身沒有證據，以上是退讓到母節點取回的）")
+        for n in r.get("nearest", []):
+            print(f"最接近的時段：{n['place']}｜{n['month']}月 {n['day_type']} {n['time']}｜{n['count']} 筆")
     print("\n## 答案")
     print(out["answer"])
 
@@ -52,7 +59,7 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     try:
         out = asyncio.run(run(a.question, a.db))
-    except (llm.LLMError, EmbeddingError, PlanError) as e:
+    except (llm.LLMError, EmbeddingError, PlanError, HierarchyError) as e:
         print(f"錯誤：{e}", file=sys.stderr)
         return 1
     if a.json:

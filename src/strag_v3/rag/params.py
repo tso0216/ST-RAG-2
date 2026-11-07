@@ -27,6 +27,10 @@ class Params:
     delta: float = 0.3
     # 時段詞的梯形邊界
     periods: dict[str, tuple[float, float, float, float]] = field(default_factory=lambda: dict(DEFAULT_PERIODS))
+    # 地點名稱比對不到別名、改用 embedding 找最近節點時，cosine 至少要這麼高，否則當作階層裡沒有這個地點。
+    # text-embedding-3-large 實測：東京天空樹→東京晴空塔 0.62、伏見稻荷→伏見稻荷大社 0.86；
+    # 大阪城、新宿、上野公園的最近名稱都在 0.6 以下。東京鐵塔→東京晴空塔 0.75 擋不掉，靠生成端揭露地點。
+    place_min_sim: float = 0.6
 
 
 DEFAULT = Params()
