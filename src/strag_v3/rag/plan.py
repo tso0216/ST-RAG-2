@@ -2,6 +2,7 @@
 
 計畫另有 `group_by`（取回的證據依哪些維度分組）和 `compose`（多個子查詢的結果合併或分開對照）。"""
 from dataclasses import asdict, dataclass
+from enum import StrEnum
 
 from .timedist import LabelError, TimeSpec, day_marginal, hour_marginal, month_marginal
 
@@ -10,8 +11,24 @@ class PlanError(ValueError):
     pass
 
 
-GROUP_DIMENSIONS = ("month", "day_type", "time_of_day", "place")
-COMPOSE_MODES = ("merge", "contrast")
+class Dimension(StrEnum):
+    """group_by 可用的分組維度。值是計畫裡的寫法，`label` 是給生成器看的名稱。"""
+    MONTH = "month", "月份"
+    DAY_TYPE = "day_type", "平日／假日"
+    TIME_OF_DAY = "time_of_day", "時段"
+    PLACE = "place", "地點"
+
+    def __new__(cls, value: str, label: str):
+        member = str.__new__(cls, value)
+        member._value_ = value
+        member.label = label
+        return member
+
+
+class Compose(StrEnum):
+    """多個子查詢的證據怎麼交給生成器：合成一段，或每個子查詢一段分開對照。"""
+    MERGE = "merge"
+    CONTRAST = "contrast"
 
 
 @dataclass(frozen=True)
@@ -24,8 +41,8 @@ class SubQuery:
 @dataclass(frozen=True)
 class Plan:
     sub_queries: tuple[SubQuery, ...]
-    group_by: tuple[str, ...] = ()
-    compose: str = "merge"
+    group_by: tuple[Dimension, ...] = ()
+    compose: Compose = Compose.MERGE
 
     @classmethod
     def from_dict(cls, d: dict) -> "Plan":
@@ -44,20 +61,20 @@ class Plan:
             ))
         if not subs:
             raise PlanError("計畫沒有任何子查詢")
-        group_by = []
-        for dim in d.get("group_by") or []:
-            if dim not in GROUP_DIMENSIONS:
-                raise PlanError(f"看不懂的分組維度：{dim}")
-            if dim not in group_by:
-                group_by.append(dim)
-        compose = d.get("compose") or "merge"
-        if compose not in COMPOSE_MODES:
-            raise PlanError(f"看不懂的 compose：{compose}")
-        return cls(tuple(subs), tuple(group_by), compose)
+        group_by = tuple(dict.fromkeys(_parse(Dimension, dim, "分組維度") for dim in d.get("group_by") or []))
+        compose = _parse(Compose, d.get("compose") or Compose.MERGE, " compose")
+        return cls(tuple(subs), group_by, compose)
 
     def to_dict(self) -> dict:
         return {"sub_queries": [asdict(s) for s in self.sub_queries],
                 "group_by": list(self.group_by), "compose": self.compose}
+
+
+def _parse[E: StrEnum](enum: type[E], value, what: str) -> E:
+    try:
+        return enum(value)
+    except ValueError:
+        raise PlanError(f"看不懂的{what}：{value}") from None
 
 
 def _clean(v) -> str | None:

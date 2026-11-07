@@ -7,8 +7,8 @@ from pathlib import Path
 
 from service.llm import LLMError, call
 from .evidence import Evidence, Section, SubQueryResult
-from .plan import COMPOSE_MODES, GROUP_DIMENSIONS, Plan, SubQuery
-from .timedist import TimeSpec
+from .plan import Compose, Dimension, Plan, SubQuery
+from .timedist import DAY_TYPES, TimeSpec
 
 __all__ = ["LLMError", "plan", "answer"]
 
@@ -31,7 +31,7 @@ PLAN_SCHEMA = {
                         "type": "object",
                         "properties": {
                             "month": _NULLABLE_STR,
-                            "day_type": {"anyOf": [{"type": "string", "enum": ["平日", "假日"]}, {"type": "null"}]},
+                            "day_type": {"anyOf": [{"type": "string", "enum": list(DAY_TYPES)}, {"type": "null"}]},
                             "time": _NULLABLE_STR,
                         },
                         "required": ["month", "day_type", "time"],
@@ -43,8 +43,8 @@ PLAN_SCHEMA = {
                 "additionalProperties": False,
             },
         },
-        "group_by": {"type": "array", "items": {"type": "string", "enum": list(GROUP_DIMENSIONS)}},
-        "compose": {"type": "string", "enum": list(COMPOSE_MODES)},
+        "group_by": {"type": "array", "items": {"type": "string", "enum": [d.value for d in Dimension]}},
+        "compose": {"type": "string", "enum": [c.value for c in Compose]},
     },
     "required": ["sub_queries", "group_by", "compose"],
     "additionalProperties": False,
@@ -83,9 +83,6 @@ def _evidence_block(e: Evidence) -> dict:
     }
 
 
-_DIMENSION_NAMES = {"month": "月份", "day_type": "平日／假日", "time_of_day": "時段", "place": "地點"}
-
-
 def _sub_query_block(sq: SubQuery) -> dict:
     return {"地點": sq.space or "不限", **_time_block(sq.time), "面向": sq.aspect or "（同問題）"}
 
@@ -107,9 +104,9 @@ def _section_text(section: Section) -> str:
     n = len(section.evidence)
     conditions = [_sub_query_block(r.sub_query) for r in section.results]
     if any(g.key for g in section.groups):
-        body = [{"分組": {_DIMENSION_NAMES[d]: v for d, v in g.key.items()},
+        body = [{"分組": {d.label: v for d, v in g.key.items()},
                  "證據": [_evidence_block(e) for e in g.evidence]} for g in section.groups]
-        dims = "、".join(_DIMENSION_NAMES[d] for d in section.groups[0].key)
+        dims = "、".join(d.label for d in section.groups[0].key)
         head = f"證據（{n} 筆，依{dims}分組）："
     else:
         body = [_evidence_block(e) for e in section.evidence]

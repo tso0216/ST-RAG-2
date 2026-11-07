@@ -14,7 +14,7 @@ from dataclasses import dataclass, replace
 from .evidence import Evidence, Group, Section, SubQueryResult
 from .hierarchy import Hierarchy
 from .params import DEFAULT, Params
-from .plan import Plan
+from .plan import Compose, Dimension, Plan
 from .timedist import (DAY_TYPES, N_MONTH, UNKNOWN, TimeSpec, day_marginal, hour_marginal, is_unknown,
                        month_marginal)
 
@@ -42,17 +42,17 @@ class _TimeAxis:
     groups: dict[str, Sequence[int]]                       # 組名 → 邊際分布的索引；順序就是輸出的順序，最後接「不明」
 
 
-_TIME_AXES: dict[str, _TimeAxis] = {
-    "month": _TimeAxis(lambda t: t.month, lambda label, _: month_marginal(label), MONTH_GROUPS),
-    "day_type": _TimeAxis(lambda t: t.day_type, lambda label, _: day_marginal(label), DAY_TYPE_GROUPS),
-    "time_of_day": _TimeAxis(lambda t: t.time, hour_marginal, TIME_OF_DAY_GROUPS),
+_TIME_AXES: dict[Dimension, _TimeAxis] = {
+    Dimension.MONTH: _TimeAxis(lambda t: t.month, lambda label, _: month_marginal(label), MONTH_GROUPS),
+    Dimension.DAY_TYPE: _TimeAxis(lambda t: t.day_type, lambda label, _: day_marginal(label), DAY_TYPE_GROUPS),
+    Dimension.TIME_OF_DAY: _TimeAxis(lambda t: t.time, hour_marginal, TIME_OF_DAY_GROUPS),
 }
 
 
 def build_sections(plan: Plan, results: list[SubQueryResult], places: Hierarchy,
                    params: Params = DEFAULT) -> list[Section]:
     """places 是已對應 DB 景點名稱的階層，`group_by=place` 依片段景點所屬的節點分組，組名用正式名稱。"""
-    if plan.compose == "contrast":
+    if plan.compose is Compose.CONTRAST:
         return [Section([r], _group(r.evidence, plan.group_by, places, params)) for r in results]
     return [Section(results, _group(_merged(results), plan.group_by, places, params))]
 
@@ -71,7 +71,7 @@ def _merged(results: list[SubQueryResult]) -> list[Evidence]:
     return sorted(merged, key=lambda e: (-e.score, e.content_id))
 
 
-def _group(evidence: list[Evidence], dims: tuple[str, ...], places: Hierarchy, params: Params) -> list[Group]:
+def _group(evidence: list[Evidence], dims: tuple[Dimension, ...], places: Hierarchy, params: Params) -> list[Group]:
     buckets: dict[tuple[str, ...], list[Evidence]] = {}
     for e in evidence:
         buckets.setdefault(tuple(_label(e, d, places, params) for d in dims), []).append(e)
@@ -82,7 +82,7 @@ def _group(evidence: list[Evidence], dims: tuple[str, ...], places: Hierarchy, p
     return [Group(dict(zip(dims, k)), buckets[k]) for k in keys]
 
 
-def _label(e: Evidence, dim: str, places: Hierarchy, params: Params) -> str:
+def _label(e: Evidence, dim: Dimension, places: Hierarchy, params: Params) -> str:
     """片段在該維度上分到哪一組。"""
     if dim in _TIME_AXES:
         return _time_group(e.time, _TIME_AXES[dim], params)

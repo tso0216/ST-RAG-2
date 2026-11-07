@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 
 from .nearest import NearestTime
-from .plan import SubQuery
+from .plan import Dimension, SubQuery
 from .timedist import TimeSpec
 
 
@@ -32,7 +32,7 @@ class SubQueryResult:
 @dataclass(frozen=True)
 class Group:
     """一組證據。`key` 依 group_by 的順序記錄每個維度的組名；沒有分組時是空的。"""
-    key: dict[str, str]
+    key: dict[Dimension, str]
     evidence: list[Evidence]
 
 
