@@ -1,7 +1,7 @@
 """檢索：輸入檢索計畫，輸出分好組的證據。
 
 每個子查詢：
-- space：用景點階層解析成節點（先比別名，再用名稱 embedding 找最近的），節點和所有子孫的片段都算；留空不限地點。
+- space：用景點階層解析成節點（只比名稱和別名，比不到就什麼都查不到），節點和所有子孫的片段都算；留空不限地點。
   一筆都沒過門檻時退一層到母節點再查，證據標成退讓；還是沒有就回傳空結果，附上最接近的時段。
 - time：轉成時間分布，跟片段的時間分布算時空重疊度；留空不限時間。
 - 語意分數：aspect（沒有就用原問題）跟片段內容的 embedding cosine。
@@ -43,7 +43,7 @@ class Retriever:
         還是沒有就回傳空結果，附上查過的範圍裡最接近的時段。時間門檻不放寬。
         space 留空時不限地點（範圍是 None）。
         """
-        scopes = [None] if sq.space is None else places.scopes(sq.space, self.embedder, self.params.place_min_sim)
+        scopes = [None] if sq.space is None else places.scopes(sq.space)
         pool: list[Content] = []
         for backoff, scope in zip((False, True), scopes):
             pool = contents(self.conn, scope)

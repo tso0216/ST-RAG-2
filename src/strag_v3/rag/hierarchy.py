@@ -13,7 +13,6 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 
 from ..extract.paths import DATA, DB_PATH
-from .embedding import Embedder, cosine
 from .store import place_names
 
 HIERARCHY_PATH = DATA / "place_hierarchy.toml"
@@ -99,29 +98,17 @@ class Hierarchy:
         found = self._owner_by_name.get(_normalize_name(name))
         return self.nodes[found] if found else None
 
-    def nearest(self, name: str, embedder: Embedder, min_sim: float) -> Node | None:
-        """名稱 embedding 最接近的節點；節點的正式名稱和每個別名都拿來比，取最像的那個。
-
-        最像的 cosine 低於 min_sim 時回傳 None。
-        """
-        pairs = [(alias, n.name) for n in self.nodes.values() for alias in (n.name, *n.aliases)]
-        if not pairs:
-            return None
-        qvec, *vecs = embedder.embed([name] + [alias for alias, _ in pairs])
-        sim, best = max((cosine(qvec, v), node) for v, (_, node) in zip(vecs, pairs))
-        return self.nodes[best] if sim >= min_sim else None
-
     def canonical(self, name: str) -> str:
         """名稱或別名所屬節點的正式名稱；不在階層裡就原樣傳回。"""
         node = self.lookup(name)
         return node.name if node else name
 
-    def scopes(self, name: str, embedder: Embedder, min_sim: float) -> list[frozenset[str]]:
+    def scopes(self, name: str) -> list[frozenset[str]]:
         """名稱解析成節點後，依序要查的片段景點名稱：先是節點和子孫；退讓時改查母節點和子孫（有母節點才有）。
 
-        先比別名，比不到再用名稱 embedding 找最近的節點；都不夠像時只有一個空集合，什麼都查不到。
+        只比名稱和別名；比不到就當作階層裡沒有這個地點，只有一個空集合，什麼都查不到。
         """
-        node = self.lookup(name) or self.nearest(name, embedder, min_sim)
+        node = self.lookup(name)
         if node is None:
             return [frozenset()]
         parent = self.nodes[node.parent] if node.parent else None

@@ -8,8 +8,8 @@ from strag_v3.rag.timedist import TimeSpec
 @pytest.fixture
 def retrieve_at(retrieve, sub):
     """只有一個子查詢的計畫：回傳那個子查詢的結果，證據照分數排序。"""
-    def retrieve_at(space, h, embedder=None, **time):
-        [section] = retrieve(sub(space=space, **time), hierarchy=h, embedder=embedder)
+    def retrieve_at(space, h, **time):
+        [section] = retrieve(sub(space=space, **time), hierarchy=h)
         [r] = section.results
         return r
     return retrieve_at
@@ -109,49 +109,25 @@ def test_empty_result_lists_closest_times_first(add, retrieve_at, hierarchy):
     ]
 
 
-class CharEmbedder:
-    """假的 embedding：每個字一維（字數），名稱共用的字越多越接近。"""
+def test_name_matching_no_alias_retrieves_nothing(add, retrieve_at, hierarchy):
+    add("東京晴空塔")
+    add("天望甲板")
+    add("晴空塔城")
 
-    model = "fake-char"
-
-    def embed(self, texts):
-        out = []
-        for t in texts:
-            v = [0.0] * 4096
-            for ch in t:
-                v[ord(ch) % 4096] += 1.0
-            out.append(v)
-        return out
-
-
-def test_unmatched_name_resolves_to_nearest_node_by_embedding(add, retrieve_at, hierarchy):
-    tower = add("東京晴空塔")
-    deck = add("天望甲板")
-    town = add("晴空塔城")
-    h = hierarchy(SKYTREE)
-
-    # 「晴空塔展望台」不是任何別名；字最像的名稱是「晴空塔」，對到東京晴空塔節點（含子節點天望甲板）
-    result = retrieve_at("晴空塔展望台", h, embedder=CharEmbedder())
-
-    assert sorted(ids(result)) == [tower, deck]
-
-
-def test_place_missing_from_hierarchy_still_matches_its_own_name(add, retrieve_at, hierarchy):
-    tower = add("東京晴空塔")
-    mall = add("晴空塔商場")  # 重新抽取後才出現、階層檔還沒收的景點
-
-    result = retrieve_at("晴空塔商場", hierarchy(SKYTREE), embedder=CharEmbedder())
-
-    assert ids(result) == [mall]
-
-
-def test_name_unlike_any_node_is_not_forced_onto_one(add, retrieve_at, hierarchy):
-    add("晴空塔城")  # 跟「大阪城」只共用一個字
-
-    result = retrieve_at("大阪城", hierarchy(SKYTREE), embedder=CharEmbedder())
+    # 「晴空塔展望台」不是任何節點的名稱或別名：不猜最像的節點，當作階層裡沒有這個地點
+    result = retrieve_at("晴空塔展望台", hierarchy(SKYTREE))
 
     assert result.evidence == []
     assert result.nearest == ()
+
+
+def test_place_missing_from_hierarchy_still_matches_its_own_name(add, retrieve_at, hierarchy):
+    add("東京晴空塔")
+    mall = add("晴空塔商場")  # 重新抽取後才出現、階層檔還沒收的景點
+
+    result = retrieve_at("晴空塔商場", hierarchy(SKYTREE))
+
+    assert ids(result) == [mall]
 
 
 def test_canonical_name_retrieves_content_stored_under_alias(add, retrieve_at, hierarchy):
