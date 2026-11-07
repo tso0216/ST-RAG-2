@@ -11,6 +11,7 @@ import sqlite3
 from dataclasses import dataclass
 
 from .embedding import Embedder, cosine
+from .group import Section, organize
 from .params import DEFAULT, Params
 from .plan import Plan, SubQuery, TimeSpec
 from .timedist import has_unknown, overlap, to_dist
@@ -45,6 +46,10 @@ class Retriever:
 
     def retrieve(self, plan: Plan, question: str) -> list[SubQueryResult]:
         return [SubQueryResult(sq, self._run(sq, question)) for sq in plan.sub_queries]
+
+    def retrieve_grouped(self, plan: Plan, question: str) -> list[Section]:
+        """依計畫的 compose 和 group_by，把取回的證據整理成交給生成器的段落和分組。"""
+        return organize(plan, self.retrieve(plan, question), self.params)
 
     def _run(self, sq: SubQuery, question: str) -> list[Evidence]:
         p = self.params
