@@ -13,5 +13,5 @@ PTT Japan_Travel 板的 `[問題]` 文，用來調查旅客實際會問哪些時
 
 注意：
 
-- `pushes` 是字串陣列：每個元素是 PTT 的一行推文，一則長推文會斷成好幾行，也沒有推文者和時間。
+- `pushes` 是物件陣列，每個元素是 PTT 的一行推文：`tag`（推／噓／→）、`user`（推文者）、`content`（內容）、`time`（月/日 時:分，沒有 IP；有 4 行缺時間）。一則長推文會斷成好幾行，同一人連續的幾行要自己合併。由 `.scratch/travel-question-survey/crawl_pushes.py` 在 2026/11/8 重抓，包含只有網址或文章代碼的推文，也包含分類之後才新增的推文。
 - `body` 開頭混有 PTT 的作者、標題、時間 metadata。
