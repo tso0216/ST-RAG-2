@@ -50,6 +50,12 @@ def test_area_takes_its_own_content_and_every_place_inside(add, ids_at):
     assert ids_at("押上", kind=AREA) == [own, block, tower, river]
 
 
+def test_area_crowded_out_by_roads_is_found_by_a_settlement_only_retry(add, ids_at):
+    ward = add("東山区", kind=AREA)
+
+    assert ids_at("東山区", kind=AREA) == [ward]
+
+
 def test_spot_query_leaves_out_the_content_of_the_area_it_sits_in(add, ids_at):
     block = add("押上一丁目", kind=AREA)
     area = add("押上", kind=AREA)

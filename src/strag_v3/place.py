@@ -1,10 +1,12 @@
-"""地點解析：把日文名稱、城市、景點或區域解析成一個 OSM 物件（見 `docs/adr/0002-osm-place-resolution.md`）。
+"""地點解析：把日文名稱、城市、景點或區域解析成一個 OSM 物件。
 
 抽取和規劃器共用這個模組：
 
 - 先查 `nominatim_cache` 表（名稱＋城市＋種類 → 原始回應），查不到才打 Nominatim，回應原樣存進快取。
   快取就是論文用的快照，重跑時只讀快取。
 - 一律取第一筆。景點查 `layer=poi`；區域查 `layer=address`，只接受行政區類型（所以不會對到車站）。
+  區域的前幾筆如果全被地址含這個區名的道路、店家佔滿，再加 `featureType=settlement` 查一次；
+  不一開始就加，是因為 settlement 不含丁目這類小行政區。
 - 解析到的 OSM 物件寫進 `place` 表，一列一個物件；不同寫法解析到同一個物件就是同一個地點。
   景點存座標；區域另存範圍（geojson）。
 - 每個地點記錄外圍行政區：從 `addressdetails` 由小到大找第一個有範圍、而且範圍包住這個地點的行政區
@@ -54,8 +56,8 @@ class PlaceError(Exception):
 
 
 class Nominatim(Protocol):
-    def search(self, name_ja: str, city: str, kind: str) -> str:
-        """回傳 Nominatim `/search` 的原始回應（JSON 陣列的文字）。"""
+    def search(self, name_ja: str, city: str, kind: str, settlement_only: bool = False) -> str:
+        """回傳 Nominatim `/search` 的原始回應（JSON 陣列的文字）。settlement_only：只要地名類，不要道路和店家。"""
         ...
 
 
@@ -69,7 +71,7 @@ class NominatimClient:
     def __init__(self, retries: int = 4):
         self.retries = retries
 
-    def search(self, name_ja: str, city: str, kind: str) -> str:
+    def search(self, name_ja: str, city: str, kind: str, settlement_only: bool = False) -> str:
         params = {
             "q": f"{name_ja} {city}".strip(),
             "format": "jsonv2",
@@ -79,6 +81,8 @@ class NominatimClient:
             "limit": 5,
             "layer": "poi" if kind == SPOT else "address",
         }
+        if settlement_only:
+            params["featureType"] = "settlement"
         if kind == AREA:
             params["polygon_geojson"] = 1
         url = f"{self.URL}?{urllib.parse.urlencode(params)}"
@@ -190,6 +194,10 @@ class Places:
             raise PlaceError(f"快取裡沒有「{name_ja}」（{city or '不限城市'}，{kind}），也沒有設定 Nominatim")
         response = self.nominatim.search(name_ja, city, kind)
         hit = _first(json.loads(response), kind)
+        if hit is None and kind == AREA:
+            retry = self.nominatim.search(name_ja, city, kind, settlement_only=True)
+            if retry_hit := _first(json.loads(retry), kind):
+                response, hit = retry, retry_hit
         with self.conn:
             self.conn.execute(
                 "INSERT INTO nominatim_cache (name_ja, city, kind, response, osm_type, osm_id, fetched_at)"

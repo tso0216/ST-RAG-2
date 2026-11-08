@@ -1,6 +1,6 @@
 # 13: 用 OSM 解析地點，取代手建景點階層
 
-**What to build:** 把地點從手建的階層檔改成用 Nominatim 解析成 OSM 物件（見 `docs/adr/0002-osm-place-resolution.md` 和 spec 的模組 2、模組 4、「資料與 schema 變更」「檢索計畫的形狀」）。取代 03 的階層檔、別名比對和「退到母節點」。
+**What to build:** 把地點從手建的階層檔改成用 Nominatim 解析成 OSM 物件（見 spec 的模組 2、模組 4、「資料與 schema 變更」「檢索計畫的形狀」）。取代 03 的階層檔、別名比對和「退到母節點」。
 
 地點解析：
 

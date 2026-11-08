@@ -2,7 +2,7 @@ import argparse
 import sqlite3
 from pathlib import Path
 
-# place：一列一個 OSM 物件（見 docs/adr/0002-osm-place-resolution.md）
+# place：一列一個 OSM 物件
 # content.poi_name：抽取時寫的原始名稱，只是紀錄；地點以 poi_id 為準
 # embedding 和 nominatim_cache 兩張快取表由用到的模組自己建（rag/embedding.py、place.py）
 SCHEMA = """

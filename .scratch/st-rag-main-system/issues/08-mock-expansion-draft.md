@@ -5,7 +5,7 @@
 - 四種題型都要有：停留、找時間、找地點、比較。
 - 每題補上 `type`、`split`、`gold_plan`；30 題中 10 題是 dev，20 題是 test。
 - `gold_plan` 的 `space` 照 13 的新格式寫。
-- 題目和 `gold_plan` 用到的景點、區域都拿去 Nominatim 確認（見 `docs/adr/0002-osm-place-resolution.md`）：
+- 題目和 `gold_plan` 用到的景點、區域都拿去 Nominatim 確認：
   - 區域要確認解析出來的是行政區，不是車站或公車站；OSM 沒有資料的區域（例如嵐山）換成別的區域。
   - 不用「哲學之道、南禪寺周邊」這種自己取的範圍。
 - 現有晴空塔、澀谷 SKY、伏見稻荷的 9 題不改。
