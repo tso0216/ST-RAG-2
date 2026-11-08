@@ -2,6 +2,5 @@
 
 - `questions.py`：讀題目檔或資料夾。
 - `metrics.py`：題目加上系統輸出 → 每題的指標和分組彙總（評估 seam）。
-- `planner/`：規劃器正確率，拿規劃器的計畫跟題目的 `gold_plan` 比對。
-- `full/`：主系統（full）的設定和逐題執行（`runner.py`）、命令列，`run` 跑評估並存檔到 `full/runs/`，`compare` 並排比較幾次的結果。
+- `full/`：主系統（full）的設定和逐題執行（`runner.py`）、規劃器正確率（`planner.py`，拿規劃器的計畫跟題目的 `gold_plan` 比對）、命令列，`run` 跑評估並存檔到 `full/runs/`，`compare` 並排比較幾次的結果。
 """

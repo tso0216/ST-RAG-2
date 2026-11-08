@@ -15,7 +15,7 @@
 - 時間違規率是所有題目的違規片段數除以取回片段數（pooled），沒有取回任何片段時不算。
 - 有回答率是有回答的題數除以題數。
 - 地點解析失敗是有任何子查詢地點解析不到的題數；每題的紀錄另外列出解析不到的地點。
-- 規劃器正確率（`planner`）：有 `gold_plan` 的題目拿規劃器的計畫跟它比對，規則見 `planner/accuracy.py`。
+- 規劃器正確率（`planner`）：有 `gold_plan` 的題目拿規劃器的計畫跟它比對，規則見 `full/planner.py`。
   沒有傳 `places`（地點解析）時不算。
 沒有 `type` 或 `split` 的題目，分組時歸在「未標」。
 """
@@ -24,7 +24,7 @@ from dataclasses import asdict, dataclass, field
 from ..place import Places
 from ..rag.evidence import Evidence, Section
 from ..rag.plan import Plan
-from .planner.accuracy import PlanScore, aggregate as aggregate_plans, score_plan
+from .full.planner import PlanScore, aggregate as aggregate_plans, score_plan
 from .questions import Question
 
 UNTAGGED = "未標"
