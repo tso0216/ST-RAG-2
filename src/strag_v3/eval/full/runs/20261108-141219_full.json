@@ -1,4 +1,6 @@
+
 {
+  
   "config": {
     "name": "full",
     "system": "full",
@@ -11,19 +13,19 @@
       "space_backoff": true
     }
   },
-  "created_at": "2026-11-08T14:05:04+08:00",
+  "created_at": "2026-11-08T14:12:19+08:00",
   "questions_path": "data/mock_article/eval",
   "split": null,
   "db": "/Users/yentso/Research-Project/ST-RAG-2/data/main.db",
   "summary": {
     "overall": {
       "n": 30,
-      "recall": 0.9722222222222222,
-      "precision": 0.8222222222222223,
-      "f1": 0.8771070650482414,
+      "recall": 0.9583333333333334,
+      "precision": 0.8027777777777777,
+      "f1": 0.861551509492686,
       "time_violation_rate": 0.0,
-      "answered_rate": 1.0,
-      "retrieved": 107,
+      "answered_rate": 0.9666666666666667,
+      "retrieved": 106,
       "violations": 0,
       "labelled": 30,
       "errors": 0,
@@ -32,12 +34,12 @@
     "by_split": {
       "dev": {
         "n": 10,
-        "recall": 0.9666666666666666,
-        "precision": 0.8166666666666667,
-        "f1": 0.868095238095238,
+        "recall": 0.9,
+        "precision": 0.7583333333333333,
+        "f1": 0.8071428571428572,
         "time_violation_rate": 0.0,
-        "answered_rate": 1.0,
-        "retrieved": 33,
+        "answered_rate": 0.9,
+        "retrieved": 31,
         "violations": 0,
         "labelled": 10,
         "errors": 0,
@@ -45,12 +47,12 @@
       },
       "test": {
         "n": 20,
-        "recall": 0.975,
+        "recall": 0.9875,
         "precision": 0.825,
-        "f1": 0.8816129785247432,
+        "f1": 0.8887558356676003,
         "time_violation_rate": 0.0,
         "answered_rate": 1.0,
-        "retrieved": 74,
+        "retrieved": 75,
         "violations": 0,
         "labelled": 20,
         "errors": 0,
@@ -60,16 +62,16 @@
     "by_type": {
       "停留": {
         "n": 12,
-        "recall": 0.9791666666666666,
-        "precision": 0.8541666666666666,
-        "f1": 0.8984126984126984,
+        "recall": 0.9166666666666666,
+        "precision": 0.7986111111111112,
+        "f1": 0.8436507936507937,
         "time_violation_rate": 0.0,
-        "answered_rate": 1.0,
-        "retrieved": 34,
+        "answered_rate": 0.9166666666666666,
+        "retrieved": 32,
         "violations": 0,
         "labelled": 12,
         "errors": 0,
-        "unresolved": 0
+        "unresolved": 1
       },
       "找地點": {
         "n": 5,
@@ -99,16 +101,16 @@
       },
       "比較": {
         "n": 7,
-        "recall": 0.9523809523809524,
-        "precision": 0.8166666666666667,
-        "f1": 0.875016673336001,
+        "recall": 1.0,
+        "precision": 0.8285714285714285,
+        "f1": 0.9022275576897425,
         "time_violation_rate": 0.0,
         "answered_rate": 1.0,
-        "retrieved": 31,
+        "retrieved": 32,
         "violations": 0,
         "labelled": 7,
         "errors": 0,
-        "unresolved": 1
+        "unresolved": 0
       }
     }
   },
@@ -164,7 +166,7 @@
               "day_type": null,
               "time": []
             },
-            "aspect": "年末買海鮮年貨的價格與划算時段、殺價折扣"
+            "aspect": "年末買年貨時海鮮的價格、殺價與划算的購買時間"
           }
         ],
         "group_by": [
@@ -190,7 +192,7 @@
                   "day_type": null,
                   "time": []
                 },
-                "aspect": "年末買海鮮年貨的價格與划算時段、殺價折扣"
+                "aspect": "年末買年貨時海鮮的價格、殺價與划算的購買時間"
               },
               "evidence": [
                 {
@@ -204,8 +206,8 @@
                     "time": "晚上"
                   },
                   "content": "12 月 29 日晚上 6 點多人少了一些，店家開始喊價出清，鮭魚卵從 4000 日圓變 2500 日圓，螃蟹兩隻算一隻的價錢，比白天便宜很多；但好的大塊鮪魚和整箱螃蟹早已賣完，剩下多是小盒，選擇不多。",
-                  "semantic": 0.5947035583658669,
-                  "score": 0.5947035583658669,
+                  "semantic": 0.5919604217210067,
+                  "score": 0.5919604217210067,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -222,8 +224,8 @@
                     "time": "下午"
                   },
                   "content": "12 月 29 日下午 2 點到時整條街已擠滿人，只能被人潮推著走。兩邊海鮮店堆滿鮪魚、螃蟹、鮭魚卵和數之子，老闆拿擴音器叫賣。下午是人最多的時候，價錢還沒降，一盒鮭魚卵要 4000 日圓。",
-                  "semantic": 0.5469033489923948,
-                  "score": 0.5469033489923948,
+                  "semantic": 0.5615858201479191,
+                  "score": 0.5615858201479191,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -240,8 +242,8 @@
                     "time": "早上"
                   },
                   "content": "12 月 28 日（週日）一早經過，整條街就已經變成年貨市場，很多日本人來買過年要吃的海鮮。",
-                  "semantic": 0.5271312388917333,
-                  "score": 0.5271312388917333,
+                  "semantic": 0.5285878188684818,
+                  "score": 0.5285878188684818,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -258,8 +260,8 @@
                     "time": "下午"
                   },
                   "content": "12 月 31 日下午最後一次經過，整條街仍是年貨市場的樣子。",
-                  "semantic": 0.4403951866270006,
-                  "score": 0.4403951866270006,
+                  "semantic": 0.4291183443290777,
+                  "score": 0.4291183443290777,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -290,8 +292,8 @@
                     "time": "早上"
                   },
                   "content": "12 月 28 日（週日）一早經過，整條街就已經變成年貨市場，很多日本人來買過年要吃的海鮮。",
-                  "semantic": 0.5271312388917333,
-                  "score": 0.5271312388917333,
+                  "semantic": 0.5285878188684818,
+                  "score": 0.5285878188684818,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -315,8 +317,8 @@
                     "time": "下午"
                   },
                   "content": "12 月 29 日下午 2 點到時整條街已擠滿人，只能被人潮推著走。兩邊海鮮店堆滿鮪魚、螃蟹、鮭魚卵和數之子，老闆拿擴音器叫賣。下午是人最多的時候，價錢還沒降，一盒鮭魚卵要 4000 日圓。",
-                  "semantic": 0.5469033489923948,
-                  "score": 0.5469033489923948,
+                  "semantic": 0.5615858201479191,
+                  "score": 0.5615858201479191,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -333,8 +335,8 @@
                     "time": "下午"
                   },
                   "content": "12 月 31 日下午最後一次經過，整條街仍是年貨市場的樣子。",
-                  "semantic": 0.4403951866270006,
-                  "score": 0.4403951866270006,
+                  "semantic": 0.4291183443290777,
+                  "score": 0.4291183443290777,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -358,8 +360,8 @@
                     "time": "晚上"
                   },
                   "content": "12 月 29 日晚上 6 點多人少了一些，店家開始喊價出清，鮭魚卵從 4000 日圓變 2500 日圓，螃蟹兩隻算一隻的價錢，比白天便宜很多；但好的大塊鮪魚和整箱螃蟹早已賣完，剩下多是小盒，選擇不多。",
-                  "semantic": 0.5947035583658669,
-                  "score": 0.5947035583658669,
+                  "semantic": 0.5919604217210067,
+                  "score": 0.5919604217210067,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -389,28 +391,23 @@
         162
       ],
       "retrieved": [
+        45,
         161,
         162,
         163
       ],
       "hits": [
+        45,
         161,
         162
       ],
-      "recall": 0.6666666666666666,
-      "precision": 0.6666666666666666,
-      "f1": 0.6666666666666666,
+      "recall": 1.0,
+      "precision": 0.75,
+      "f1": 0.8571428571428571,
       "violations": [],
       "answered": true,
       "error": null,
-      "unresolved_places": [
-        {
-          "name": "阿美橫町",
-          "name_ja": "アメ横商店街",
-          "city": "東京",
-          "kind": "景點"
-        }
-      ],
+      "unresolved_places": [],
       "plan": {
         "sub_queries": [
           {
@@ -427,12 +424,12 @@
                 "早上"
               ]
             },
-            "aspect": "早上店家是否已開門營業、能否買到海鮮"
+            "aspect": "店家是否已開門營業、能否買海鮮"
           },
           {
             "space": {
               "name": "阿美橫町",
-              "name_ja": "アメ横商店街",
+              "name_ja": "アメ横",
               "city": "東京",
               "kind": "景點"
             },
@@ -443,7 +440,7 @@
                 "早上"
               ]
             },
-            "aspect": "早上店家是否已開門營業、能否買到海鮮"
+            "aspect": "店家是否已開門營業、能否買海鮮"
           }
         ],
         "group_by": [],
@@ -467,27 +464,9 @@
                     "早上"
                   ]
                 },
-                "aspect": "早上店家是否已開門營業、能否買到海鮮"
+                "aspect": "店家是否已開門營業、能否買海鮮"
               },
               "evidence": [
-                {
-                  "content_id": 161,
-                  "article_id": "mock_tsukiji_july_weekday_morning",
-                  "place_id": 47,
-                  "place": "築地場外市場",
-                  "time": {
-                    "month": "7",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "早上 7 點半抵達時大部分店都已開，不少店清晨五、六點就開始營業。海鮮丼店門口開始有人排隊，玉子燒攤現場煎，一串一百多日圓。排海鮮丼約等 10 分鐘就入座，鮪魚、海膽、鮭魚卵都還很齊全。",
-                  "semantic": 0.5956533501032539,
-                  "score": 0.5956533501032539,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
                 {
                   "content_id": 162,
                   "article_id": "mock_tsukiji_july_weekday_morning",
@@ -499,8 +478,26 @@
                     "time": "早上"
                   },
                   "content": "8 點左右市場最熱鬧，巷子裡都是邊走邊吃的觀光客，也有餐廳的人推推車來批貨。七月早上有點悶，但太陽還不大，走在巷子裡還算舒服，可吃生蠔和烤扇貝。",
-                  "semantic": 0.5324168239700879,
-                  "score": 0.5324168239700879,
+                  "semantic": 0.5029066563283675,
+                  "score": 0.5029066563283675,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 161,
+                  "article_id": "mock_tsukiji_july_weekday_morning",
+                  "place_id": 47,
+                  "place": "築地場外市場",
+                  "time": {
+                    "month": "7",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "早上 7 點半抵達時大部分店都已開，不少店清晨五、六點就開始營業。海鮮丼店門口開始有人排隊，玉子燒攤現場煎，一串一百多日圓。排海鮮丼約等 10 分鐘就入座，鮪魚、海膽、鮭魚卵都還很齊全。",
+                  "semantic": 0.4956934007081861,
+                  "score": 0.4956934007081861,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -517,8 +514,8 @@
                     "time": "早上"
                   },
                   "content": "9 點半左右開始覺得熱起來，因此搭地鐵回飯店休息。夏天建議早上去，8 點前後店全開、選擇最多，天氣也還受得了。",
-                  "semantic": 0.46737147360239367,
-                  "score": 0.46737147360239367,
+                  "semantic": 0.40855976047364745,
+                  "score": 0.40855976047364745,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -537,24 +534,6 @@
               "key": {},
               "evidence": [
                 {
-                  "content_id": 161,
-                  "article_id": "mock_tsukiji_july_weekday_morning",
-                  "place_id": 47,
-                  "place": "築地場外市場",
-                  "time": {
-                    "month": "7",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "早上 7 點半抵達時大部分店都已開，不少店清晨五、六點就開始營業。海鮮丼店門口開始有人排隊，玉子燒攤現場煎，一串一百多日圓。排海鮮丼約等 10 分鐘就入座，鮪魚、海膽、鮭魚卵都還很齊全。",
-                  "semantic": 0.5956533501032539,
-                  "score": 0.5956533501032539,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
                   "content_id": 162,
                   "article_id": "mock_tsukiji_july_weekday_morning",
                   "place_id": 47,
@@ -565,8 +544,26 @@
                     "time": "早上"
                   },
                   "content": "8 點左右市場最熱鬧，巷子裡都是邊走邊吃的觀光客，也有餐廳的人推推車來批貨。七月早上有點悶，但太陽還不大，走在巷子裡還算舒服，可吃生蠔和烤扇貝。",
-                  "semantic": 0.5324168239700879,
-                  "score": 0.5324168239700879,
+                  "semantic": 0.5029066563283675,
+                  "score": 0.5029066563283675,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 161,
+                  "article_id": "mock_tsukiji_july_weekday_morning",
+                  "place_id": 47,
+                  "place": "築地場外市場",
+                  "time": {
+                    "month": "7",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "早上 7 點半抵達時大部分店都已開，不少店清晨五、六點就開始營業。海鮮丼店門口開始有人排隊，玉子燒攤現場煎，一串一百多日圓。排海鮮丼約等 10 分鐘就入座，鮪魚、海膽、鮭魚卵都還很齊全。",
+                  "semantic": 0.4956934007081861,
+                  "score": 0.4956934007081861,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -583,8 +580,8 @@
                     "time": "早上"
                   },
                   "content": "9 點半左右開始覺得熱起來，因此搭地鐵回飯店休息。夏天建議早上去，8 點前後店全開、選擇最多，天氣也還受得了。",
-                  "semantic": 0.46737147360239367,
-                  "score": 0.46737147360239367,
+                  "semantic": 0.40855976047364745,
+                  "score": 0.40855976047364745,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -600,7 +597,7 @@
               "sub_query": {
                 "space": {
                   "name": "阿美橫町",
-                  "name_ja": "アメ横商店街",
+                  "name_ja": "アメ横",
                   "city": "東京",
                   "kind": "景點"
                 },
@@ -611,17 +608,60 @@
                     "早上"
                   ]
                 },
-                "aspect": "早上店家是否已開門營業、能否買到海鮮"
+                "aspect": "店家是否已開門營業、能否買海鮮"
               },
-              "evidence": [],
+              "evidence": [
+                {
+                  "content_id": 45,
+                  "article_id": "mock_ameyoko_february_weekday_morning_night",
+                  "place_id": 28,
+                  "place": "阿美橫町",
+                  "time": {
+                    "month": "2",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "週二早上八點大部分鐵捲門還拉著，只有一兩家在搬貨，路上幾乎都是趕著上班的人。水果攤老闆說大部分店（含海鮮店）要十點左右才開，想買東西別太早來。",
+                  "semantic": 0.5445452997689105,
+                  "score": 0.5445452997689105,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ],
               "available": {
                 "time": [],
                 "month": []
               },
-              "place_unresolved": true
+              "place_unresolved": false
             }
           ],
-          "groups": []
+          "groups": [
+            {
+              "key": {},
+              "evidence": [
+                {
+                  "content_id": 45,
+                  "article_id": "mock_ameyoko_february_weekday_morning_night",
+                  "place_id": 28,
+                  "place": "阿美橫町",
+                  "time": {
+                    "month": "2",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "週二早上八點大部分鐵捲門還拉著，只有一兩家在搬貨，路上幾乎都是趕著上班的人。水果攤老闆說大部分店（含海鮮店）要十點左右才開，想買東西別太早來。",
+                  "semantic": 0.5445452997689105,
+                  "score": 0.5445452997689105,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ]
+            }
+          ]
         }
       ],
       "answer": null
@@ -682,7 +722,7 @@
                 "晚上"
               ]
             },
-            "aspect": "晚上還開著可以逛、可以吃東西的地方"
+            "aspect": "晚上還能逛街、營業中的店家與吃東西的地方"
           }
         ],
         "group_by": [
@@ -710,7 +750,7 @@
                     "晚上"
                   ]
                 },
-                "aspect": "晚上還開著可以逛、可以吃東西的地方"
+                "aspect": "晚上還能逛街、營業中的店家與吃東西的地方"
               },
               "evidence": [
                 {
@@ -724,8 +764,8 @@
                     "time": "晚上"
                   },
                   "content": "晚上七點半乾貨、海鮮店已陸續收攤，八點前後整排鐵捲門又拉下來。高架橋下的居酒屋最熱鬧，塑膠椅擺到路邊坐滿下班上班族，有暖爐，二月晚上坐外面還撐得住。店員說開到很晚，十一點以後還有客人。",
-                  "semantic": 0.5344911206850971,
-                  "score": 0.5344911206850971,
+                  "semantic": 0.5696306213148754,
+                  "score": 0.5696306213148754,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -742,8 +782,8 @@
                     "time": "晚上"
                   },
                   "content": "仲見世通的店家傍晚就陸續打烊，晚上兩側都是拉下的鐵捲門，門上畫著淺草的祭典和街景，可以一扇一扇慢慢看。",
-                  "semantic": 0.44053063981261553,
-                  "score": 0.44053063981261553,
+                  "semantic": 0.4683117901508806,
+                  "score": 0.4683117901508806,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -760,26 +800,8 @@
                     "time": "晚上"
                   },
                   "content": "晚上七點多到雷門，大燈籠有打燈，前面只有幾個人在拍照，和白天擠到走不動完全不同；回程經過雷門時也拍得到幾乎沒有人的照片。",
-                  "semantic": 0.4028751048658728,
-                  "score": 0.4028751048658728,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 91,
-                  "article_id": "mock_sensoji_february_weekday_night_lightup",
-                  "place_id": 19,
-                  "place": "淺草寺",
-                  "time": {
-                    "month": "2",
-                    "day_type": "平日",
-                    "time": "晚上"
-                  },
-                  "content": "點燈的金紅色五重塔配深藍色夜空很漂亮，在旁邊拍了快半小時；整個境內約只有二三十人，拍照完全不用等。二月晚上很冷，風一吹手就僵。",
-                  "semantic": 0.32336621884153,
-                  "score": 0.32336621884153,
+                  "semantic": 0.390720773484221,
+                  "score": 0.390720773484221,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -796,8 +818,26 @@
                     "time": "晚上"
                   },
                   "content": "七點多本堂已關門（冬季本堂下午五點關），只能在外面階梯下合掌參拜；境內仍可自由走動，本堂、寶藏門和五重塔都有點燈。",
-                  "semantic": 0.30109542159015484,
-                  "score": 0.30109542159015484,
+                  "semantic": 0.3107863528288865,
+                  "score": 0.3107863528288865,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 91,
+                  "article_id": "mock_sensoji_february_weekday_night_lightup",
+                  "place_id": 19,
+                  "place": "淺草寺",
+                  "time": {
+                    "month": "2",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "點燈的金紅色五重塔配深藍色夜空很漂亮，在旁邊拍了快半小時；整個境內約只有二三十人，拍照完全不用等。二月晚上很冷，風一吹手就僵。",
+                  "semantic": 0.27775746174951677,
+                  "score": 0.27775746174951677,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -828,8 +868,8 @@
                     "time": "晚上"
                   },
                   "content": "晚上七點半乾貨、海鮮店已陸續收攤，八點前後整排鐵捲門又拉下來。高架橋下的居酒屋最熱鬧，塑膠椅擺到路邊坐滿下班上班族，有暖爐，二月晚上坐外面還撐得住。店員說開到很晚，十一點以後還有客人。",
-                  "semantic": 0.5344911206850971,
-                  "score": 0.5344911206850971,
+                  "semantic": 0.5696306213148754,
+                  "score": 0.5696306213148754,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -853,8 +893,8 @@
                     "time": "晚上"
                   },
                   "content": "仲見世通的店家傍晚就陸續打烊，晚上兩側都是拉下的鐵捲門，門上畫著淺草的祭典和街景，可以一扇一扇慢慢看。",
-                  "semantic": 0.44053063981261553,
-                  "score": 0.44053063981261553,
+                  "semantic": 0.4683117901508806,
+                  "score": 0.4683117901508806,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -871,26 +911,8 @@
                     "time": "晚上"
                   },
                   "content": "晚上七點多到雷門，大燈籠有打燈，前面只有幾個人在拍照，和白天擠到走不動完全不同；回程經過雷門時也拍得到幾乎沒有人的照片。",
-                  "semantic": 0.4028751048658728,
-                  "score": 0.4028751048658728,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 91,
-                  "article_id": "mock_sensoji_february_weekday_night_lightup",
-                  "place_id": 19,
-                  "place": "淺草寺",
-                  "time": {
-                    "month": "2",
-                    "day_type": "平日",
-                    "time": "晚上"
-                  },
-                  "content": "點燈的金紅色五重塔配深藍色夜空很漂亮，在旁邊拍了快半小時；整個境內約只有二三十人，拍照完全不用等。二月晚上很冷，風一吹手就僵。",
-                  "semantic": 0.32336621884153,
-                  "score": 0.32336621884153,
+                  "semantic": 0.390720773484221,
+                  "score": 0.390720773484221,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -907,8 +929,26 @@
                     "time": "晚上"
                   },
                   "content": "七點多本堂已關門（冬季本堂下午五點關），只能在外面階梯下合掌參拜；境內仍可自由走動，本堂、寶藏門和五重塔都有點燈。",
-                  "semantic": 0.30109542159015484,
-                  "score": 0.30109542159015484,
+                  "semantic": 0.3107863528288865,
+                  "score": 0.3107863528288865,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 91,
+                  "article_id": "mock_sensoji_february_weekday_night_lightup",
+                  "place_id": 19,
+                  "place": "淺草寺",
+                  "time": {
+                    "month": "2",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "點燈的金紅色五重塔配深藍色夜空很漂亮，在旁邊拍了快半小時；整個境內約只有二三十人，拍照完全不用等。二月晚上很冷，風一吹手就僵。",
+                  "semantic": 0.27775746174951677,
+                  "score": 0.27775746174951677,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1000,7 +1040,7 @@
           }
         ],
         "group_by": [],
-        "compose": "contrast"
+        "compose": "merge"
       },
       "sections": [
         {
@@ -1067,54 +1107,7 @@
                 "month": []
               },
               "place_unresolved": false
-            }
-          ],
-          "groups": [
-            {
-              "key": {},
-              "evidence": [
-                {
-                  "content_id": 125,
-                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
-                  "place_id": 26,
-                  "place": "伏見稻荷大社",
-                  "time": {
-                    "month": "11",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "千本鳥居一個人都沒有，來回走好幾趟都能拍到整排空鳥居；7 點多太陽升起，光線斜照穿過鳥居縫隙，地上有一條條光影，很好拍。",
-                  "semantic": 0.7132886435338903,
-                  "score": 0.7132886435338903,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 127,
-                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
-                  "place_id": 26,
-                  "place": "伏見稻荷大社",
-                  "time": {
-                    "month": "11",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "8 點半左右旅行團與穿制服的學生陸續上來，千本鳥居入口段一下變得很擠，已無法拍空鳥居；建議 8 點前拍完。",
-                  "semantic": 0.6079560524354469,
-                  "score": 0.6079560524354469,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "results": [
+            },
             {
               "sub_query": {
                 "space": {
@@ -1220,6 +1213,42 @@
               "key": {},
               "evidence": [
                 {
+                  "content_id": 125,
+                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "千本鳥居一個人都沒有，來回走好幾趟都能拍到整排空鳥居；7 點多太陽升起，光線斜照穿過鳥居縫隙，地上有一條條光影，很好拍。",
+                  "semantic": 0.7132886435338903,
+                  "score": 0.7132886435338903,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 127,
+                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "8 點半左右旅行團與穿制服的學生陸續上來，千本鳥居入口段一下變得很擠，已無法拍空鳥居；建議 8 點前拍完。",
+                  "semantic": 0.6079560524354469,
+                  "score": 0.6079560524354469,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
                   "content_id": 126,
                   "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
                   "place_id": 26,
@@ -1238,24 +1267,6 @@
                   "time_unknown": false
                 },
                 {
-                  "content_id": 125,
-                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
-                  "place_id": 26,
-                  "place": "伏見稻荷大社",
-                  "time": {
-                    "month": "11",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "千本鳥居一個人都沒有，來回走好幾趟都能拍到整排空鳥居；7 點多太陽升起，光線斜照穿過鳥居縫隙，地上有一條條光影，很好拍。",
-                  "semantic": 0.24649027872079896,
-                  "score": 0.24649027872079896,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
                   "content_id": 124,
                   "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
                   "place_id": 26,
@@ -1268,24 +1279,6 @@
                   "content": "6 點 40 分左右走進樓門，天剛亮、空氣很冰，本殿前只有一位神職人員在掃落葉。",
                   "semantic": 0.19974522508428588,
                   "score": 0.19974522508428588,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 127,
-                  "article_id": "mock_fushimiinari_november_weekday_dawn_empty",
-                  "place_id": 26,
-                  "place": "伏見稻荷大社",
-                  "time": {
-                    "month": "11",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "8 點半左右旅行團與穿制服的學生陸續上來，千本鳥居入口段一下變得很擠，已無法拍空鳥居；建議 8 點前拍完。",
-                  "semantic": 0.1730567282350605,
-                  "score": 0.1730567282350605,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1320,17 +1313,19 @@
       ],
       "retrieved": [
         188,
+        189,
         190,
         191
       ],
       "hits": [
         188,
+        189,
         190,
         191
       ],
-      "recall": 0.75,
+      "recall": 1.0,
       "precision": 1.0,
-      "f1": 0.8571428571428571,
+      "f1": 1.0,
       "violations": [],
       "answered": true,
       "error": null,
@@ -1353,7 +1348,7 @@
                 "中午"
               ]
             },
-            "aspect": "千本鳥居的人潮擁擠程度"
+            "aspect": "千本鳥居的人潮擁擠程度，是否擠到走不動"
           },
           {
             "space": {
@@ -1371,7 +1366,7 @@
                 "中午"
               ]
             },
-            "aspect": "爬到四ツ辻是否值得、沿途體力與景色"
+            "aspect": "爬到四ツ辻值不值得，沿途體力負擔、人潮與景色"
           }
         ],
         "group_by": [],
@@ -1397,7 +1392,7 @@
                     "中午"
                   ]
                 },
-                "aspect": "千本鳥居的人潮擁擠程度"
+                "aspect": "千本鳥居的人潮擁擠程度，是否擠到走不動"
               },
               "evidence": [
                 {
@@ -1411,8 +1406,8 @@
                     "time": "中午"
                   },
                   "content": "12 點左右走進千本鳥居，入口那段幾乎是排隊前進，前後都是人，大家停下來拍照，走不快也停不下來，不可能拍到空鳥居。到奧社奉拜所很多人拍完就折返，再往上人明顯變少、鳥居間開始有空隙。",
-                  "semantic": 0.6700895197008321,
-                  "score": 0.6700895197008321,
+                  "semantic": 0.6550185450137351,
+                  "score": 0.6550185450137351,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1429,8 +1424,8 @@
                     "time": "中午"
                   },
                   "content": "11 點出頭出稻荷站，人潮從車站門口一路延伸到樓門，樓門前想拍沒有路人的照片，等了很久還是放棄。",
-                  "semantic": 0.4685859601195018,
-                  "score": 0.4685859601195018,
+                  "semantic": 0.4543655759436591,
+                  "score": 0.4543655759436591,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1447,8 +1442,8 @@
                     "time": "中午"
                   },
                   "content": "從奧社奉拜所走到四ツ辻約四十分鐘，一點多抵達，階梯不少但 11 月不會太熱。四ツ辻視野開闊可眺望京都市區，茶屋旁坐著休息很舒服，人比入口少很多，風景最好；往山頂還要約一小時，風景不如四ツ辻。",
-                  "semantic": 0.4144239225782017,
-                  "score": 0.4144239225782017,
+                  "semantic": 0.39650382456868394,
+                  "score": 0.39650382456868394,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1478,7 +1473,7 @@
                     "中午"
                   ]
                 },
-                "aspect": "爬到四ツ辻是否值得、沿途體力與景色"
+                "aspect": "爬到四ツ辻值不值得，沿途體力負擔、人潮與景色"
               },
               "evidence": [
                 {
@@ -1492,8 +1487,8 @@
                     "time": "中午"
                   },
                   "content": "從奧社奉拜所走到四ツ辻約四十分鐘，一點多抵達，階梯不少但 11 月不會太熱。四ツ辻視野開闊可眺望京都市區，茶屋旁坐著休息很舒服，人比入口少很多，風景最好；往山頂還要約一小時，風景不如四ツ辻。",
-                  "semantic": 0.6006630638941154,
-                  "score": 0.6006630638941154,
+                  "semantic": 0.5301419917436603,
+                  "score": 0.5301419917436603,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1510,8 +1505,8 @@
                     "time": "中午"
                   },
                   "content": "12 點左右走進千本鳥居，入口那段幾乎是排隊前進，前後都是人，大家停下來拍照，走不快也停不下來，不可能拍到空鳥居。到奧社奉拜所很多人拍完就折返，再往上人明顯變少、鳥居間開始有空隙。",
-                  "semantic": 0.4062438531234578,
-                  "score": 0.4062438531234578,
+                  "semantic": 0.43827876982990693,
+                  "score": 0.43827876982990693,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1528,8 +1523,26 @@
                     "time": "中午"
                   },
                   "content": "11 點出頭出稻荷站，人潮從車站門口一路延伸到樓門，樓門前想拍沒有路人的照片，等了很久還是放棄。",
-                  "semantic": 0.3332106004656185,
-                  "score": 0.3332106004656185,
+                  "semantic": 0.4217328679072203,
+                  "score": 0.4217328679072203,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 189,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "表參道上賣烏龍麵的店門口都在排隊，狐狸烏龍麵排了大約三十分鐘才進去，豆皮很甜、湯頭很清。",
+                  "semantic": 0.2837457906333025,
+                  "score": 0.2837457906333025,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1558,8 +1571,8 @@
                     "time": "中午"
                   },
                   "content": "12 點左右走進千本鳥居，入口那段幾乎是排隊前進，前後都是人，大家停下來拍照，走不快也停不下來，不可能拍到空鳥居。到奧社奉拜所很多人拍完就折返，再往上人明顯變少、鳥居間開始有空隙。",
-                  "semantic": 0.6700895197008321,
-                  "score": 0.6700895197008321,
+                  "semantic": 0.6550185450137351,
+                  "score": 0.6550185450137351,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1576,8 +1589,8 @@
                     "time": "中午"
                   },
                   "content": "從奧社奉拜所走到四ツ辻約四十分鐘，一點多抵達，階梯不少但 11 月不會太熱。四ツ辻視野開闊可眺望京都市區，茶屋旁坐著休息很舒服，人比入口少很多，風景最好；往山頂還要約一小時，風景不如四ツ辻。",
-                  "semantic": 0.6006630638941154,
-                  "score": 0.6006630638941154,
+                  "semantic": 0.5301419917436603,
+                  "score": 0.5301419917436603,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1594,8 +1607,26 @@
                     "time": "中午"
                   },
                   "content": "11 點出頭出稻荷站，人潮從車站門口一路延伸到樓門，樓門前想拍沒有路人的照片，等了很久還是放棄。",
-                  "semantic": 0.4685859601195018,
-                  "score": 0.4685859601195018,
+                  "semantic": 0.4543655759436591,
+                  "score": 0.4543655759436591,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 189,
+                  "article_id": "mock_fushimiinari_november_weekend_noon_crowd",
+                  "place_id": 26,
+                  "place": "伏見稻荷大社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "假日",
+                    "time": "中午"
+                  },
+                  "content": "表參道上賣烏龍麵的店門口都在排隊，狐狸烏龍麵排了大約三十分鐘才進去，豆皮很甜、湯頭很清。",
+                  "semantic": 0.2837457906333025,
+                  "score": 0.2837457906333025,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1658,7 +1689,7 @@
               "day_type": null,
               "time": []
             },
-            "aspect": "千本鳥居拍照時的人潮擁擠程度"
+            "aspect": "千本鳥居的人潮擁擠程度與拍照"
           }
         ],
         "group_by": [
@@ -1685,7 +1716,7 @@
                   "day_type": null,
                   "time": []
                 },
-                "aspect": "千本鳥居拍照時的人潮擁擠程度"
+                "aspect": "千本鳥居的人潮擁擠程度與拍照"
               },
               "evidence": [
                 {
@@ -1699,8 +1730,8 @@
                     "time": "中午"
                   },
                   "content": "12 點左右走進千本鳥居，入口那段幾乎是排隊前進，前後都是人，大家停下來拍照，走不快也停不下來，不可能拍到空鳥居。到奧社奉拜所很多人拍完就折返，再往上人明顯變少、鳥居間開始有空隙。",
-                  "semantic": 0.7147505903816578,
-                  "score": 0.7147505903816578,
+                  "semantic": 0.7156256780593317,
+                  "score": 0.7156256780593317,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1717,8 +1748,8 @@
                     "time": "早上"
                   },
                   "content": "千本鳥居一個人都沒有，來回走好幾趟都能拍到整排空鳥居；7 點多太陽升起，光線斜照穿過鳥居縫隙，地上有一條條光影，很好拍。",
-                  "semantic": 0.6339177913322487,
-                  "score": 0.6339177913322487,
+                  "semantic": 0.6515562851954757,
+                  "score": 0.6515562851954757,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1735,8 +1766,8 @@
                     "time": "早上"
                   },
                   "content": "8 點半左右旅行團與穿制服的學生陸續上來，千本鳥居入口段一下變得很擠，已無法拍空鳥居；建議 8 點前拍完。",
-                  "semantic": 0.630420384417831,
-                  "score": 0.630420384417831,
+                  "semantic": 0.6267155582229956,
+                  "score": 0.6267155582229956,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1753,8 +1784,8 @@
                     "time": "中午"
                   },
                   "content": "11 點出頭出稻荷站，人潮從車站門口一路延伸到樓門，樓門前想拍沒有路人的照片，等了很久還是放棄。",
-                  "semantic": 0.53690153938573,
-                  "score": 0.53690153938573,
+                  "semantic": 0.5411609524679946,
+                  "score": 0.5411609524679946,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1786,8 +1817,8 @@
                     "time": "早上"
                   },
                   "content": "千本鳥居一個人都沒有，來回走好幾趟都能拍到整排空鳥居；7 點多太陽升起，光線斜照穿過鳥居縫隙，地上有一條條光影，很好拍。",
-                  "semantic": 0.6339177913322487,
-                  "score": 0.6339177913322487,
+                  "semantic": 0.6515562851954757,
+                  "score": 0.6515562851954757,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1804,8 +1835,8 @@
                     "time": "早上"
                   },
                   "content": "8 點半左右旅行團與穿制服的學生陸續上來，千本鳥居入口段一下變得很擠，已無法拍空鳥居；建議 8 點前拍完。",
-                  "semantic": 0.630420384417831,
-                  "score": 0.630420384417831,
+                  "semantic": 0.6267155582229956,
+                  "score": 0.6267155582229956,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1830,8 +1861,8 @@
                     "time": "中午"
                   },
                   "content": "12 點左右走進千本鳥居，入口那段幾乎是排隊前進，前後都是人，大家停下來拍照，走不快也停不下來，不可能拍到空鳥居。到奧社奉拜所很多人拍完就折返，再往上人明顯變少、鳥居間開始有空隙。",
-                  "semantic": 0.7147505903816578,
-                  "score": 0.7147505903816578,
+                  "semantic": 0.7156256780593317,
+                  "score": 0.7156256780593317,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1848,8 +1879,8 @@
                     "time": "中午"
                   },
                   "content": "11 點出頭出稻荷站，人潮從車站門口一路延伸到樓門，樓門前想拍沒有路人的照片，等了很久還是放棄。",
-                  "semantic": 0.53690153938573,
-                  "score": 0.53690153938573,
+                  "semantic": 0.5411609524679946,
+                  "score": 0.5411609524679946,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1917,7 +1948,7 @@
                 "早上"
               ]
             },
-            "aspect": "一開門時賞紅葉的體驗與人潮"
+            "aspect": "一開門時賞紅葉的人潮與景色"
           },
           {
             "space": {
@@ -1935,7 +1966,7 @@
                 "晚上"
               ]
             },
-            "aspect": "夜間點燈賞紅葉的體驗與人潮"
+            "aspect": "夜間點燈賞紅葉的人潮與景色"
           }
         ],
         "group_by": [],
@@ -1961,7 +1992,7 @@
                     "早上"
                   ]
                 },
-                "aspect": "一開門時賞紅葉的體驗與人潮"
+                "aspect": "一開門時賞紅葉的人潮與景色"
               },
               "evidence": [
                 {
@@ -1975,8 +2006,8 @@
                     "time": "早上"
                   },
                   "content": "十一月下旬週六，早上 6 點開門，6 點 05 分進場時舞台上只有十幾個人，多半是帶腳架的攝影師。日出後山谷紅葉被慢慢照亮，層次從深紅到橘黃，遠處京都市區還有晨霧，正值紅葉高峰。",
-                  "semantic": 0.6169897193498526,
-                  "score": 0.6169897193498526,
+                  "semantic": 0.6292455294127715,
+                  "score": 0.6292455294127715,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -1993,8 +2024,8 @@
                     "time": "早上"
                   },
                   "content": "7 點前舞台仍很空，可以慢慢找角度拍照；7 點半後人開始變多，8 點舞台欄杆前已站滿人，要等一下才擠得到前面。對面小山坡拍舞台和紅葉的地方人也開始增加。7 點前人少且光線最好，8 點以後就跟白天一樣擠。",
-                  "semantic": 0.5588893576458241,
-                  "score": 0.5588893576458241,
+                  "semantic": 0.5524055494990118,
+                  "score": 0.5524055494990118,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2011,8 +2042,8 @@
                     "time": "早上"
                   },
                   "content": "早上 5 點半從飯店出發，走上坡道時天還沒亮，兩旁的店都還沒開。",
-                  "semantic": 0.3455314725679286,
-                  "score": 0.3455314725679286,
+                  "semantic": 0.33572764139373695,
+                  "score": 0.33572764139373695,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2041,8 +2072,8 @@
                     "time": "早上"
                   },
                   "content": "十一月下旬週六，早上 6 點開門，6 點 05 分進場時舞台上只有十幾個人，多半是帶腳架的攝影師。日出後山谷紅葉被慢慢照亮，層次從深紅到橘黃，遠處京都市區還有晨霧，正值紅葉高峰。",
-                  "semantic": 0.6169897193498526,
-                  "score": 0.6169897193498526,
+                  "semantic": 0.6292455294127715,
+                  "score": 0.6292455294127715,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2059,8 +2090,8 @@
                     "time": "早上"
                   },
                   "content": "7 點前舞台仍很空，可以慢慢找角度拍照；7 點半後人開始變多，8 點舞台欄杆前已站滿人，要等一下才擠得到前面。對面小山坡拍舞台和紅葉的地方人也開始增加。7 點前人少且光線最好，8 點以後就跟白天一樣擠。",
-                  "semantic": 0.5588893576458241,
-                  "score": 0.5588893576458241,
+                  "semantic": 0.5524055494990118,
+                  "score": 0.5524055494990118,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2077,8 +2108,8 @@
                     "time": "早上"
                   },
                   "content": "早上 5 點半從飯店出發，走上坡道時天還沒亮，兩旁的店都還沒開。",
-                  "semantic": 0.3455314725679286,
-                  "score": 0.3455314725679286,
+                  "semantic": 0.33572764139373695,
+                  "score": 0.33572764139373695,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2107,7 +2138,7 @@
                     "晚上"
                   ]
                 },
-                "aspect": "夜間點燈賞紅葉的體驗與人潮"
+                "aspect": "夜間點燈賞紅葉的人潮與景色"
               },
               "evidence": [
                 {
@@ -2121,8 +2152,8 @@
                     "time": "晚上"
                   },
                   "content": "秋季夜間特別拜觀 17:30 至 21:00，聽說 17:30 一開始就要排很久。18:30 到入口時已排成長長一條，排了約二十分鐘才買到票進場。紅葉打燈後整片山谷紅得發亮，與白天感覺完全不同，夜空還有一道藍色光束從寺裡射出，很多人拍照。舞台上非常擠，欄杆前站了好幾層人，要等前面的人拍完才擠得進去，只拍了幾張就被後面的人推著往前走。",
-                  "semantic": 0.664788142722805,
-                  "score": 0.664788142722805,
+                  "semantic": 0.6584132409627783,
+                  "score": 0.6584132409627783,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2151,8 +2182,8 @@
                     "time": "晚上"
                   },
                   "content": "秋季夜間特別拜觀 17:30 至 21:00，聽說 17:30 一開始就要排很久。18:30 到入口時已排成長長一條，排了約二十分鐘才買到票進場。紅葉打燈後整片山谷紅得發亮，與白天感覺完全不同，夜空還有一道藍色光束從寺裡射出，很多人拍照。舞台上非常擠，欄杆前站了好幾層人，要等前面的人拍完才擠得進去，只拍了幾張就被後面的人推著往前走。",
-                  "semantic": 0.664788142722805,
-                  "score": 0.664788142722805,
+                  "semantic": 0.6584132409627783,
+                  "score": 0.6584132409627783,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2213,7 +2244,7 @@
               "day_type": null,
               "time": []
             },
-            "aspect": "雪景、下雪、積雪"
+            "aspect": "雪景、下雪的情況"
           }
         ],
         "group_by": [
@@ -2240,7 +2271,7 @@
                   "day_type": null,
                   "time": []
                 },
-                "aspect": "雪景、下雪、積雪"
+                "aspect": "雪景、下雪的情況"
               },
               "evidence": [
                 {
@@ -2254,26 +2285,8 @@
                     "time": "早上"
                   },
                   "content": "京都下雪隔天（週三）早上 5 點半出門，6 點開門就進去。舞台和本堂屋頂蓋著白雪，對面的山也是白的，只有三重塔的朱紅色特別顯眼。舞台上大約只有二十幾人，大家安靜拍照，偶爾聽到樹枝上的雪掉落聲。石階和舞台木板很滑，要扶欄杆慢慢走。",
-                  "semantic": 0.46364732002601833,
-                  "score": 0.46364732002601833,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 175,
-                  "article_id": "mock_kiyomizudera_february_weekday_dawn_snow",
-                  "place_id": 31,
-                  "place": "清水寺",
-                  "time": {
-                    "month": "2",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "9 點左右太陽出來，屋頂的雪開始一塊一塊往下掉；10 點多舞台前面的雪已融了大半。",
-                  "semantic": 0.3988049698836463,
-                  "score": 0.3988049698836463,
+                  "semantic": 0.49808010547793835,
+                  "score": 0.49808010547793835,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2290,8 +2303,26 @@
                     "time": "中午"
                   },
                   "content": "中午 12 點左右離開前又繞回舞台看一眼，屋頂只剩濕濕的一片，雪已經全部融光。",
-                  "semantic": 0.3966363152579842,
-                  "score": 0.3966363152579842,
+                  "semantic": 0.44659564042156735,
+                  "score": 0.44659564042156735,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 175,
+                  "article_id": "mock_kiyomizudera_february_weekday_dawn_snow",
+                  "place_id": 31,
+                  "place": "清水寺",
+                  "time": {
+                    "month": "2",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "9 點左右太陽出來，屋頂的雪開始一塊一塊往下掉；10 點多舞台前面的雪已融了大半。",
+                  "semantic": 0.43872970245947734,
+                  "score": 0.43872970245947734,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2323,8 +2354,8 @@
                     "time": "早上"
                   },
                   "content": "京都下雪隔天（週三）早上 5 點半出門，6 點開門就進去。舞台和本堂屋頂蓋著白雪，對面的山也是白的，只有三重塔的朱紅色特別顯眼。舞台上大約只有二十幾人，大家安靜拍照，偶爾聽到樹枝上的雪掉落聲。石階和舞台木板很滑，要扶欄杆慢慢走。",
-                  "semantic": 0.46364732002601833,
-                  "score": 0.46364732002601833,
+                  "semantic": 0.49808010547793835,
+                  "score": 0.49808010547793835,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2341,8 +2372,8 @@
                     "time": "早上"
                   },
                   "content": "9 點左右太陽出來，屋頂的雪開始一塊一塊往下掉；10 點多舞台前面的雪已融了大半。",
-                  "semantic": 0.3988049698836463,
-                  "score": 0.3988049698836463,
+                  "semantic": 0.43872970245947734,
+                  "score": 0.43872970245947734,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2367,8 +2398,8 @@
                     "time": "中午"
                   },
                   "content": "中午 12 點左右離開前又繞回舞台看一眼，屋頂只剩濕濕的一片，雪已經全部融光。",
-                  "semantic": 0.3966363152579842,
-                  "score": 0.3966363152579842,
+                  "semantic": 0.44659564042156735,
+                  "score": 0.44659564042156735,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2432,7 +2463,7 @@
                 "晚上"
               ]
             },
-            "aspect": "晚上開放、夜間還能入場參觀的地方"
+            "aspect": "晚上還能進入參觀的地方，例如夜間開放或夜間特別拜觀"
           }
         ],
         "group_by": [
@@ -2460,27 +2491,9 @@
                     "晚上"
                   ]
                 },
-                "aspect": "晚上開放、夜間還能入場參觀的地方"
+                "aspect": "晚上還能進入參觀的地方，例如夜間開放或夜間特別拜觀"
               },
               "evidence": [
-                {
-                  "content_id": 60,
-                  "article_id": "mock_kiyomizudera_november_weekday_night_lightup",
-                  "place_id": 34,
-                  "place": "八坂神社",
-                  "time": {
-                    "month": "11",
-                    "day_type": "平日",
-                    "time": "晚上"
-                  },
-                  "content": "20 點多從清水寺下山後走到，晚上神社 24 小時開放，燈籠全部亮起，本殿前還有人在參拜，比清水寺安靜很多。",
-                  "semantic": 0.4496351193816041,
-                  "score": 0.4496351193816041,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
                 {
                   "content_id": 59,
                   "article_id": "mock_kiyomizudera_november_weekday_night_lightup",
@@ -2492,8 +2505,26 @@
                     "time": "晚上"
                   },
                   "content": "秋季夜間特別拜觀 17:30 至 21:00，聽說 17:30 一開始就要排很久。18:30 到入口時已排成長長一條，排了約二十分鐘才買到票進場。紅葉打燈後整片山谷紅得發亮，與白天感覺完全不同，夜空還有一道藍色光束從寺裡射出，很多人拍照。舞台上非常擠，欄杆前站了好幾層人，要等前面的人拍完才擠得進去，只拍了幾張就被後面的人推著往前走。",
-                  "semantic": 0.4428563856064669,
-                  "score": 0.4428563856064669,
+                  "semantic": 0.5469319873311353,
+                  "score": 0.5469319873311353,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 60,
+                  "article_id": "mock_kiyomizudera_november_weekday_night_lightup",
+                  "place_id": 34,
+                  "place": "八坂神社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "20 點多從清水寺下山後走到，晚上神社 24 小時開放，燈籠全部亮起，本殿前還有人在參拜，比清水寺安靜很多。",
+                  "semantic": 0.5070777075376555,
+                  "score": 0.5070777075376555,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2510,31 +2541,6 @@
           "groups": [
             {
               "key": {
-                "place": "八坂神社"
-              },
-              "evidence": [
-                {
-                  "content_id": 60,
-                  "article_id": "mock_kiyomizudera_november_weekday_night_lightup",
-                  "place_id": 34,
-                  "place": "八坂神社",
-                  "time": {
-                    "month": "11",
-                    "day_type": "平日",
-                    "time": "晚上"
-                  },
-                  "content": "20 點多從清水寺下山後走到，晚上神社 24 小時開放，燈籠全部亮起，本殿前還有人在參拜，比清水寺安靜很多。",
-                  "semantic": 0.4496351193816041,
-                  "score": 0.4496351193816041,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                }
-              ]
-            },
-            {
-              "key": {
                 "place": "清水寺"
               },
               "evidence": [
@@ -2549,8 +2555,33 @@
                     "time": "晚上"
                   },
                   "content": "秋季夜間特別拜觀 17:30 至 21:00，聽說 17:30 一開始就要排很久。18:30 到入口時已排成長長一條，排了約二十分鐘才買到票進場。紅葉打燈後整片山谷紅得發亮，與白天感覺完全不同，夜空還有一道藍色光束從寺裡射出，很多人拍照。舞台上非常擠，欄杆前站了好幾層人，要等前面的人拍完才擠得進去，只拍了幾張就被後面的人推著往前走。",
-                  "semantic": 0.4428563856064669,
-                  "score": 0.4428563856064669,
+                  "semantic": 0.5469319873311353,
+                  "score": 0.5469319873311353,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                }
+              ]
+            },
+            {
+              "key": {
+                "place": "八坂神社"
+              },
+              "evidence": [
+                {
+                  "content_id": 60,
+                  "article_id": "mock_kiyomizudera_november_weekday_night_lightup",
+                  "place_id": 34,
+                  "place": "八坂神社",
+                  "time": {
+                    "month": "11",
+                    "day_type": "平日",
+                    "time": "晚上"
+                  },
+                  "content": "20 點多從清水寺下山後走到，晚上神社 24 小時開放，燈籠全部亮起，本殿前還有人在參拜，比清水寺安靜很多。",
+                  "semantic": 0.5070777075376555,
+                  "score": 0.5070777075376555,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2615,7 +2646,7 @@
                 "早上"
               ]
             },
-            "aspect": "梅雨季下雨天參觀的體驗與是否值得"
+            "aspect": "梅雨季雨天參拜的體驗與是否值得去"
           },
           {
             "space": {
@@ -2633,7 +2664,7 @@
                 "早上"
               ]
             },
-            "aspect": "御苑花菖蒲開花狀況"
+            "aspect": "御苑花菖蒲的開花狀況"
           }
         ],
         "group_by": [],
@@ -2659,7 +2690,7 @@
                     "早上"
                   ]
                 },
-                "aspect": "梅雨季下雨天參觀的體驗與是否值得"
+                "aspect": "梅雨季雨天參拜的體驗與是否值得去"
               },
               "evidence": [
                 {
@@ -2673,8 +2704,8 @@
                     "time": "早上"
                   },
                   "content": "六月中旬週二，梅雨季一早下小雨，7 點半從原宿站走進參道。大樹吸掉雨聲，非常安靜，偶爾才遇到一兩個撐傘的人，和週末擠滿觀光客的樣子完全不同。砂石參道下雨時很多地方積水，穿布鞋沒多久就濕透，建議穿不怕濕的鞋。",
-                  "semantic": 0.5523268850928811,
-                  "score": 0.5523268850928811,
+                  "semantic": 0.5758963741825173,
+                  "score": 0.5758963741825173,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2691,8 +2722,8 @@
                     "time": "早上"
                   },
                   "content": "參拜完後去境內種花菖蒲的庭園（御苑），需另付入苑費；平常 9 點才開，花菖蒲季節提早到 8 點開。菖蒲田剛好盛開，紫色、白色花朵成片，花瓣沾著雨滴，比晴天更好看。工作人員說六月中旬前後最美，再過一兩週就開始謝。",
-                  "semantic": 0.46874451664718775,
-                  "score": 0.46874451664718775,
+                  "semantic": 0.5045846984209031,
+                  "score": 0.5045846984209031,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2709,8 +2740,8 @@
                     "time": "早上"
                   },
                   "content": "9 點多雨停後，境內庭園的人慢慢變多，大多是拿著大砲相機的長輩。",
-                  "semantic": 0.41520507904083087,
-                  "score": 0.41520507904083087,
+                  "semantic": 0.3752945141415378,
+                  "score": 0.3752945141415378,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2740,7 +2771,7 @@
                     "早上"
                   ]
                 },
-                "aspect": "御苑花菖蒲開花狀況"
+                "aspect": "御苑花菖蒲的開花狀況"
               },
               "evidence": [
                 {
@@ -2754,8 +2785,8 @@
                     "time": "早上"
                   },
                   "content": "參拜完後去境內種花菖蒲的庭園（御苑），需另付入苑費；平常 9 點才開，花菖蒲季節提早到 8 點開。菖蒲田剛好盛開，紫色、白色花朵成片，花瓣沾著雨滴，比晴天更好看。工作人員說六月中旬前後最美，再過一兩週就開始謝。",
-                  "semantic": 0.6274316763418907,
-                  "score": 0.6274316763418907,
+                  "semantic": 0.6176885853413059,
+                  "score": 0.6176885853413059,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2784,8 +2815,8 @@
                     "time": "早上"
                   },
                   "content": "參拜完後去境內種花菖蒲的庭園（御苑），需另付入苑費；平常 9 點才開，花菖蒲季節提早到 8 點開。菖蒲田剛好盛開，紫色、白色花朵成片，花瓣沾著雨滴，比晴天更好看。工作人員說六月中旬前後最美，再過一兩週就開始謝。",
-                  "semantic": 0.6274316763418907,
-                  "score": 0.6274316763418907,
+                  "semantic": 0.6176885853413059,
+                  "score": 0.6176885853413059,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2802,8 +2833,8 @@
                     "time": "早上"
                   },
                   "content": "六月中旬週二，梅雨季一早下小雨，7 點半從原宿站走進參道。大樹吸掉雨聲，非常安靜，偶爾才遇到一兩個撐傘的人，和週末擠滿觀光客的樣子完全不同。砂石參道下雨時很多地方積水，穿布鞋沒多久就濕透，建議穿不怕濕的鞋。",
-                  "semantic": 0.5523268850928811,
-                  "score": 0.5523268850928811,
+                  "semantic": 0.5758963741825173,
+                  "score": 0.5758963741825173,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2820,8 +2851,8 @@
                     "time": "早上"
                   },
                   "content": "9 點多雨停後，境內庭園的人慢慢變多，大多是拿著大砲相機的長輩。",
-                  "semantic": 0.41520507904083087,
-                  "score": 0.41520507904083087,
+                  "semantic": 0.3752945141415378,
+                  "score": 0.3752945141415378,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2879,7 +2910,7 @@
                 "晚上"
               ]
             },
-            "aspect": "關門時間、最晚入場時間，傍晚是否還能進入"
+            "aspect": "關門時間與傍晚能否入園參拜"
           }
         ],
         "group_by": [
@@ -2908,7 +2939,7 @@
                     "晚上"
                   ]
                 },
-                "aspect": "關門時間、最晚入場時間，傍晚是否還能進入"
+                "aspect": "關門時間與傍晚能否入園參拜"
               },
               "evidence": [
                 {
@@ -2922,8 +2953,8 @@
                     "time": "下午"
                   },
                   "content": "十二月第二個週六下午 3 點半才從原宿站走到大鳥居，入口看板寫開關門時間隨日出日落調整，12 月約早上 6 點 40 開、下午 4 點關門。從鳥居走到本殿要十幾分鐘，參道寬但很長，幾乎是快走，3 點 50 左右才到本殿前。授與所也在排隊，買完御守已快 4 點。天色開始變暗，工作人員拿擴音器請大家往出口走，後面想進場的人被擋在門外；回程參道兩旁森林很暗，被人群引導出去像在趕場。原本想在神宮內等日落拍照，但 4 點關門根本無法停留。建議冬天最晚 3 點前到才從容。",
-                  "semantic": 0.5267983172291231,
-                  "score": 0.5267983172291231,
+                  "semantic": 0.607746441292122,
+                  "score": 0.607746441292122,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -2954,8 +2985,8 @@
                     "time": "下午"
                   },
                   "content": "十二月第二個週六下午 3 點半才從原宿站走到大鳥居，入口看板寫開關門時間隨日出日落調整，12 月約早上 6 點 40 開、下午 4 點關門。從鳥居走到本殿要十幾分鐘，參道寬但很長，幾乎是快走，3 點 50 左右才到本殿前。授與所也在排隊，買完御守已快 4 點。天色開始變暗，工作人員拿擴音器請大家往出口走，後面想進場的人被擋在門外；回程參道兩旁森林很暗，被人群引導出去像在趕場。原本想在神宮內等日落拍照，但 4 點關門根本無法停留。建議冬天最晚 3 點前到才從容。",
-                  "semantic": 0.5267983172291231,
-                  "score": 0.5267983172291231,
+                  "semantic": 0.607746441292122,
+                  "score": 0.607746441292122,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3025,7 +3056,7 @@
                 "晚上"
               ]
             },
-            "aspect": "看日落的地點"
+            "aspect": "可以看日落的地點"
           }
         ],
         "group_by": [
@@ -3054,27 +3085,9 @@
                     "晚上"
                   ]
                 },
-                "aspect": "看日落的地點"
+                "aspect": "可以看日落的地點"
               },
               "evidence": [
-                {
-                  "content_id": 133,
-                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
-                  "place_id": 9,
-                  "place": "澀谷 SKY",
-                  "time": {
-                    "month": "12",
-                    "day_type": "假日",
-                    "time": "下午"
-                  },
-                  "content": "頂樓角落可往下拍十字路口的位置最熱門，排隊約 40 分鐘，每人只能拍一下就要讓位。4 點半左右日落，西邊天空乾淨，看得到富士山黑色剪影浮在橘色天空，大家都在尖叫。",
-                  "semantic": 0.46874544321467615,
-                  "score": 0.46874544321467615,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
                 {
                   "content_id": 134,
                   "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
@@ -3086,26 +3099,26 @@
                     "time": "晚上"
                   },
                   "content": "天黑後草皮區整個擠滿，想躺下看天空沒有位子。",
-                  "semantic": 0.42978932866057856,
-                  "score": 0.42978932866057856,
+                  "semantic": 0.4387329113621602,
+                  "score": 0.4387329113621602,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
                   "time_unknown": false
                 },
                 {
-                  "content_id": 67,
-                  "article_id": "mock_meijijingu_december_weekend_afternoon_closing",
-                  "place_id": 36,
-                  "place": "明治神宮",
+                  "content_id": 133,
+                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
                   "time": {
                     "month": "12",
                     "day_type": "假日",
                     "time": "下午"
                   },
-                  "content": "十二月第二個週六下午 3 點半才從原宿站走到大鳥居，入口看板寫開關門時間隨日出日落調整，12 月約早上 6 點 40 開、下午 4 點關門。從鳥居走到本殿要十幾分鐘，參道寬但很長，幾乎是快走，3 點 50 左右才到本殿前。授與所也在排隊，買完御守已快 4 點。天色開始變暗，工作人員拿擴音器請大家往出口走，後面想進場的人被擋在門外；回程參道兩旁森林很暗，被人群引導出去像在趕場。原本想在神宮內等日落拍照，但 4 點關門根本無法停留。建議冬天最晚 3 點前到才從容。",
-                  "semantic": 0.3710839373174104,
-                  "score": 0.3710839373174104,
+                  "content": "頂樓角落可往下拍十字路口的位置最熱門，排隊約 40 分鐘，每人只能拍一下就要讓位。4 點半左右日落，西邊天空乾淨，看得到富士山黑色剪影浮在橘色天空，大家都在尖叫。",
+                  "semantic": 0.4386917892912195,
+                  "score": 0.4386917892912195,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3122,8 +3135,26 @@
                     "time": "下午"
                   },
                   "content": "十二月第一個週六，三週前在官網預約下午 3 點 40 的票。3 點半到 14 樓入口，掃 QR code 直接進場；現場售票看板寫日落前後時段全部售完，朋友現場只買得到晚上 7 點以後的票。上頂樓前除帽子、圍巾外都要放置物櫃，包包和手機架不能帶，只能手拿手機。頂樓風很大、很冷，耳朵很快凍痛。",
-                  "semantic": 0.3444598591403216,
-                  "score": 0.3444598591403216,
+                  "semantic": 0.33878293485218464,
+                  "score": 0.33878293485218464,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 67,
+                  "article_id": "mock_meijijingu_december_weekend_afternoon_closing",
+                  "place_id": 36,
+                  "place": "明治神宮",
+                  "time": {
+                    "month": "12",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "十二月第二個週六下午 3 點半才從原宿站走到大鳥居，入口看板寫開關門時間隨日出日落調整，12 月約早上 6 點 40 開、下午 4 點關門。從鳥居走到本殿要十幾分鐘，參道寬但很長，幾乎是快走，3 點 50 左右才到本殿前。授與所也在排隊，買完御守已快 4 點。天色開始變暗，工作人員拿擴音器請大家往出口走，後面想進場的人被擋在門外；回程參道兩旁森林很暗，被人群引導出去像在趕場。原本想在神宮內等日落拍照，但 4 點關門根本無法停留。建議冬天最晚 3 點前到才從容。",
+                  "semantic": 0.33635260527021343,
+                  "score": 0.33635260527021343,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3144,24 +3175,6 @@
               },
               "evidence": [
                 {
-                  "content_id": 133,
-                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
-                  "place_id": 9,
-                  "place": "澀谷 SKY",
-                  "time": {
-                    "month": "12",
-                    "day_type": "假日",
-                    "time": "下午"
-                  },
-                  "content": "頂樓角落可往下拍十字路口的位置最熱門，排隊約 40 分鐘，每人只能拍一下就要讓位。4 點半左右日落，西邊天空乾淨，看得到富士山黑色剪影浮在橘色天空，大家都在尖叫。",
-                  "semantic": 0.46874544321467615,
-                  "score": 0.46874544321467615,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
                   "content_id": 134,
                   "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
                   "place_id": 9,
@@ -3172,8 +3185,26 @@
                     "time": "晚上"
                   },
                   "content": "天黑後草皮區整個擠滿，想躺下看天空沒有位子。",
-                  "semantic": 0.42978932866057856,
-                  "score": 0.42978932866057856,
+                  "semantic": 0.4387329113621602,
+                  "score": 0.4387329113621602,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 133,
+                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
+                  "place_id": 9,
+                  "place": "澀谷 SKY",
+                  "time": {
+                    "month": "12",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "頂樓角落可往下拍十字路口的位置最熱門，排隊約 40 分鐘，每人只能拍一下就要讓位。4 點半左右日落，西邊天空乾淨，看得到富士山黑色剪影浮在橘色天空，大家都在尖叫。",
+                  "semantic": 0.4386917892912195,
+                  "score": 0.4386917892912195,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3190,8 +3221,8 @@
                     "time": "下午"
                   },
                   "content": "十二月第一個週六，三週前在官網預約下午 3 點 40 的票。3 點半到 14 樓入口，掃 QR code 直接進場；現場售票看板寫日落前後時段全部售完，朋友現場只買得到晚上 7 點以後的票。上頂樓前除帽子、圍巾外都要放置物櫃，包包和手機架不能帶，只能手拿手機。頂樓風很大、很冷，耳朵很快凍痛。",
-                  "semantic": 0.3444598591403216,
-                  "score": 0.3444598591403216,
+                  "semantic": 0.33878293485218464,
+                  "score": 0.33878293485218464,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3215,8 +3246,8 @@
                     "time": "下午"
                   },
                   "content": "十二月第二個週六下午 3 點半才從原宿站走到大鳥居，入口看板寫開關門時間隨日出日落調整，12 月約早上 6 點 40 開、下午 4 點關門。從鳥居走到本殿要十幾分鐘，參道寬但很長，幾乎是快走，3 點 50 左右才到本殿前。授與所也在排隊，買完御守已快 4 點。天色開始變暗，工作人員拿擴音器請大家往出口走，後面想進場的人被擋在門外；回程參道兩旁森林很暗，被人群引導出去像在趕場。原本想在神宮內等日落拍照，但 4 點關門根本無法停留。建議冬天最晚 3 點前到才從容。",
-                  "semantic": 0.3710839373174104,
-                  "score": 0.3710839373174104,
+                  "semantic": 0.33635260527021343,
+                  "score": 0.33635260527021343,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3447,7 +3478,7 @@
               "day_type": null,
               "time": []
             },
-            "aspect": "只有年底才有的活動、市集或限定體驗"
+            "aspect": "只有年底才有的活動、景象或限定事物"
           }
         ],
         "group_by": [
@@ -3473,7 +3504,7 @@
                   "day_type": null,
                   "time": []
                 },
-                "aspect": "只有年底才有的活動、市集或限定體驗"
+                "aspect": "只有年底才有的活動、景象或限定事物"
               },
               "evidence": [
                 {
@@ -3487,8 +3518,8 @@
                     "time": "下午"
                   },
                   "content": "12 月 30 日下午 2 點左右，一進去就被人潮卡住。平常以觀光客居多，這幾天幾乎都是提著購物袋來買年菜的在地人，走道擠到只能跟著人群慢慢移動。店家門口擺滿數之子、棒鱈、黑豆、紅白魚板、雜煮用的白味噌和年糕，很多店標示「年末限定」。店家說每年約 28 到 30 號最擠，31 號下午很多店會提早收。",
-                  "semantic": 0.44184036677811406,
-                  "score": 0.35347229342249126,
+                  "semantic": 0.38720260668170103,
+                  "score": 0.30976208534536087,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3505,48 +3536,12 @@
                     "time": "下午"
                   },
                   "content": "12 月 30 日下午邊走邊吃的攤子人反而比較少，大家都專心採買年菜食材。",
-                  "semantic": 0.41932697051160234,
-                  "score": 0.33546157640928187,
+                  "semantic": 0.35583133500644015,
+                  "score": 0.2846650680051521,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
                   "time_unknown": true
-                },
-                {
-                  "content_id": 76,
-                  "article_id": "mock_nishiki_december_weekday_morning_opening",
-                  "place_id": 39,
-                  "place": "錦市場",
-                  "time": {
-                    "month": "12",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "早上 8 點大部分店還沒開，鐵捲門一路拉著，整條市場很安靜。只有少數魚店和醃菜店亮燈，老闆在搬剛送來的魚和蔬菜，入口有小貨車卸貨。觀光客很少，可以近看店家準備的過程。店家說大部分店 9 點到 10 點之後才陸續開門，想吃東西最好 10 點以後再來。",
-                  "semantic": 0.30077571115712487,
-                  "score": 0.30077571115712487,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 77,
-                  "article_id": "mock_nishiki_december_weekday_morning_opening",
-                  "place_id": 39,
-                  "place": "錦市場",
-                  "time": {
-                    "month": "12",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "9 點半已有一半的店開門，豆乳甜甜圈和玉子燒攤開始排隊，10 點以後人明顯變多。",
-                  "semantic": 0.28958170406479206,
-                  "score": 0.28958170406479206,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
                 },
                 {
                   "content_id": 178,
@@ -3559,12 +3554,48 @@
                     "time": "晚上"
                   },
                   "content": "接近 12 點時人越來越多，大家準備新年參拜，作者 11 點半就先離開。",
-                  "semantic": 0.3219533072054355,
-                  "score": 0.25756264576434845,
+                  "semantic": 0.3110239427902464,
+                  "score": 0.24881915423219714,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
                   "time_unknown": true
+                },
+                {
+                  "content_id": 77,
+                  "article_id": "mock_nishiki_december_weekday_morning_opening",
+                  "place_id": 39,
+                  "place": "錦市場",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "9 點半已有一半的店開門，豆乳甜甜圈和玉子燒攤開始排隊，10 點以後人明顯變多。",
+                  "semantic": 0.23037846216857605,
+                  "score": 0.23037846216857605,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 76,
+                  "article_id": "mock_nishiki_december_weekday_morning_opening",
+                  "place_id": 39,
+                  "place": "錦市場",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "早上 8 點大部分店還沒開，鐵捲門一路拉著，整條市場很安靜。只有少數魚店和醃菜店亮燈，老闆在搬剛送來的魚和蔬菜，入口有小貨車卸貨。觀光客很少，可以近看店家準備的過程。店家說大部分店 9 點到 10 點之後才陸續開門，想吃東西最好 10 點以後再來。",
+                  "semantic": 0.206027627331309,
+                  "score": 0.206027627331309,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
                 },
                 {
                   "content_id": 177,
@@ -3577,8 +3608,8 @@
                     "time": "晚上"
                   },
                   "content": "除夕夜 9 點多到達，西樓門前已人山人海，進入境內後排了將近 30 分鐘才走到白朮詣的點火處。吉兆繩一條 1000 日圓，點火後要不斷轉動繩子以免熄滅，境內滿是一圈圈小火光，空氣中都是煙味。電車上不能帶火繩，作者一路轉著繩子走回飯店。",
-                  "semantic": 0.27861954883574247,
-                  "score": 0.222895639068594,
+                  "semantic": 0.25218221823149684,
+                  "score": 0.2017457745851975,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3609,8 +3640,8 @@
                     "time": "下午"
                   },
                   "content": "12 月 30 日下午 2 點左右，一進去就被人潮卡住。平常以觀光客居多，這幾天幾乎都是提著購物袋來買年菜的在地人，走道擠到只能跟著人群慢慢移動。店家門口擺滿數之子、棒鱈、黑豆、紅白魚板、雜煮用的白味噌和年糕，很多店標示「年末限定」。店家說每年約 28 到 30 號最擠，31 號下午很多店會提早收。",
-                  "semantic": 0.44184036677811406,
-                  "score": 0.35347229342249126,
+                  "semantic": 0.38720260668170103,
+                  "score": 0.30976208534536087,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3627,30 +3658,12 @@
                     "time": "下午"
                   },
                   "content": "12 月 30 日下午邊走邊吃的攤子人反而比較少，大家都專心採買年菜食材。",
-                  "semantic": 0.41932697051160234,
-                  "score": 0.33546157640928187,
+                  "semantic": 0.35583133500644015,
+                  "score": 0.2846650680051521,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
                   "time_unknown": true
-                },
-                {
-                  "content_id": 76,
-                  "article_id": "mock_nishiki_december_weekday_morning_opening",
-                  "place_id": 39,
-                  "place": "錦市場",
-                  "time": {
-                    "month": "12",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "早上 8 點大部分店還沒開，鐵捲門一路拉著，整條市場很安靜。只有少數魚店和醃菜店亮燈，老闆在搬剛送來的魚和蔬菜，入口有小貨車卸貨。觀光客很少，可以近看店家準備的過程。店家說大部分店 9 點到 10 點之後才陸續開門，想吃東西最好 10 點以後再來。",
-                  "semantic": 0.30077571115712487,
-                  "score": 0.30077571115712487,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
                 },
                 {
                   "content_id": 77,
@@ -3663,8 +3676,26 @@
                     "time": "早上"
                   },
                   "content": "9 點半已有一半的店開門，豆乳甜甜圈和玉子燒攤開始排隊，10 點以後人明顯變多。",
-                  "semantic": 0.28958170406479206,
-                  "score": 0.28958170406479206,
+                  "semantic": 0.23037846216857605,
+                  "score": 0.23037846216857605,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 76,
+                  "article_id": "mock_nishiki_december_weekday_morning_opening",
+                  "place_id": 39,
+                  "place": "錦市場",
+                  "time": {
+                    "month": "12",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "早上 8 點大部分店還沒開，鐵捲門一路拉著，整條市場很安靜。只有少數魚店和醃菜店亮燈，老闆在搬剛送來的魚和蔬菜，入口有小貨車卸貨。觀光客很少，可以近看店家準備的過程。店家說大部分店 9 點到 10 點之後才陸續開門，想吃東西最好 10 點以後再來。",
+                  "semantic": 0.206027627331309,
+                  "score": 0.206027627331309,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3688,8 +3719,8 @@
                     "time": "晚上"
                   },
                   "content": "接近 12 點時人越來越多，大家準備新年參拜，作者 11 點半就先離開。",
-                  "semantic": 0.3219533072054355,
-                  "score": 0.25756264576434845,
+                  "semantic": 0.3110239427902464,
+                  "score": 0.24881915423219714,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3706,8 +3737,8 @@
                     "time": "晚上"
                   },
                   "content": "除夕夜 9 點多到達，西樓門前已人山人海，進入境內後排了將近 30 分鐘才走到白朮詣的點火處。吉兆繩一條 1000 日圓，點火後要不斷轉動繩子以免熄滅，境內滿是一圈圈小火光，空氣中都是煙味。電車上不能帶火繩，作者一路轉著繩子走回飯店。",
-                  "semantic": 0.27861954883574247,
-                  "score": 0.222895639068594,
+                  "semantic": 0.25218221823149684,
+                  "score": 0.2017457745851975,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3771,7 +3802,7 @@
                 "下午"
               ]
             },
-            "aspect": "下雨天參觀的體驗與適合程度"
+            "aspect": "雨天遊覽的體驗與適合程度"
           },
           {
             "space": {
@@ -3789,7 +3820,7 @@
                 "下午"
               ]
             },
-            "aspect": "下雨天參觀的體驗與適合程度"
+            "aspect": "雨天遊覽的體驗與適合程度"
           }
         ],
         "group_by": [],
@@ -3815,7 +3846,7 @@
                     "下午"
                   ]
                 },
-                "aspect": "下雨天參觀的體驗與適合程度"
+                "aspect": "雨天遊覽的體驗與適合程度"
               },
               "evidence": [
                 {
@@ -3829,8 +3860,8 @@
                     "time": "下午"
                   },
                   "content": "六月第三個週六下雨天，下午 2 點左右去。整條有玻璃屋頂，可收傘慢慢逛、地板不濕；但附近避雨的觀光客全擠進來，本來就窄的走道比平常更擠，常要側身讓人，邊走邊吃的攤位前圍了一圈人。很多人拿濕雨傘，容易被碰濕褲子，有幾家店在門口放傘桶請客人收傘。吃章魚串、豆乳甜甜圈、玉子燒排隊都不算久，但停下拍照很難，會擋到後面的人。4 點多雨變小後人潮才慢慢散去。",
-                  "semantic": 0.5778684541120209,
-                  "score": 0.5778684541120209,
+                  "semantic": 0.5033740627937463,
+                  "score": 0.5033740627937463,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3859,8 +3890,8 @@
                     "time": "下午"
                   },
                   "content": "六月第三個週六下雨天，下午 2 點左右去。整條有玻璃屋頂，可收傘慢慢逛、地板不濕；但附近避雨的觀光客全擠進來，本來就窄的走道比平常更擠，常要側身讓人，邊走邊吃的攤位前圍了一圈人。很多人拿濕雨傘，容易被碰濕褲子，有幾家店在門口放傘桶請客人收傘。吃章魚串、豆乳甜甜圈、玉子燒排隊都不算久，但停下拍照很難，會擋到後面的人。4 點多雨變小後人潮才慢慢散去。",
-                  "semantic": 0.5778684541120209,
-                  "score": 0.5778684541120209,
+                  "semantic": 0.5033740627937463,
+                  "score": 0.5033740627937463,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3889,7 +3920,7 @@
                     "下午"
                   ]
                 },
-                "aspect": "下雨天參觀的體驗與適合程度"
+                "aspect": "雨天遊覽的體驗與適合程度"
               },
               "evidence": [
                 {
@@ -3903,8 +3934,8 @@
                     "time": "下午"
                   },
                   "content": "梅雨季下雨的週六下午 2 點左右前往，坡道和石階被雨淋得很濕滑，店家在門口鋪紙箱，需慢慢走，有幾次差點滑倒。舞台上全是撐傘的人，傘互相卡住，想站到欄杆前要等一下。遠方京都市區霧濛濛看不清，山谷的樹被雨洗得很綠。人比預期少很多，約平常的一半，參拜和拍照不用排太久。本堂內很乾爽。3 點半雨變大，在寺內屋簷下躲了約二十分鐘。建議穿止滑的鞋。",
-                  "semantic": 0.5864004672283727,
-                  "score": 0.5864004672283727,
+                  "semantic": 0.458785915799621,
+                  "score": 0.458785915799621,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -3933,8 +3964,8 @@
                     "time": "下午"
                   },
                   "content": "梅雨季下雨的週六下午 2 點左右前往，坡道和石階被雨淋得很濕滑，店家在門口鋪紙箱，需慢慢走，有幾次差點滑倒。舞台上全是撐傘的人，傘互相卡住，想站到欄杆前要等一下。遠方京都市區霧濛濛看不清，山谷的樹被雨洗得很綠。人比預期少很多，約平常的一半，參拜和拍照不用排太久。本堂內很乾爽。3 點半雨變大，在寺內屋簷下躲了約二十分鐘。建議穿止滑的鞋。",
-                  "semantic": 0.5864004672283727,
-                  "score": 0.5864004672283727,
+                  "semantic": 0.458785915799621,
+                  "score": 0.458785915799621,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4022,7 +4053,7 @@
                 "晚上"
               ]
             },
-            "aspect": "晚上參觀的看點，例如夜間點燈、夜景與氣氛"
+            "aspect": "晚上參觀的看點，例如夜間點燈與夜景"
           }
         ],
         "group_by": [],
@@ -4111,7 +4142,7 @@
                     "晚上"
                   ]
                 },
-                "aspect": "晚上參觀的看點，例如夜間點燈、夜景與氣氛"
+                "aspect": "晚上參觀的看點，例如夜間點燈與夜景"
               },
               "evidence": [
                 {
@@ -4125,8 +4156,8 @@
                     "time": "晚上"
                   },
                   "content": "晚上七點多到雷門，大燈籠有打燈，前面只有幾個人在拍照，和白天擠到走不動完全不同；回程經過雷門時也拍得到幾乎沒有人的照片。",
-                  "semantic": 0.5063924153960255,
-                  "score": 0.5063924153960255,
+                  "semantic": 0.5018221050877173,
+                  "score": 0.5018221050877173,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4143,8 +4174,8 @@
                     "time": "晚上"
                   },
                   "content": "點燈的金紅色五重塔配深藍色夜空很漂亮，在旁邊拍了快半小時；整個境內約只有二三十人，拍照完全不用等。二月晚上很冷，風一吹手就僵。",
-                  "semantic": 0.4895513852948476,
-                  "score": 0.4895513852948476,
+                  "semantic": 0.4835665313676203,
+                  "score": 0.4835665313676203,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4161,8 +4192,8 @@
                     "time": "晚上"
                   },
                   "content": "仲見世通的店家傍晚就陸續打烊，晚上兩側都是拉下的鐵捲門，門上畫著淺草的祭典和街景，可以一扇一扇慢慢看。",
-                  "semantic": 0.40129634827170263,
-                  "score": 0.40129634827170263,
+                  "semantic": 0.3859176787748967,
+                  "score": 0.3859176787748967,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4179,8 +4210,8 @@
                     "time": "晚上"
                   },
                   "content": "七點多本堂已關門（冬季本堂下午五點關），只能在外面階梯下合掌參拜；境內仍可自由走動，本堂、寶藏門和五重塔都有點燈。",
-                  "semantic": 0.3721324986749904,
-                  "score": 0.3721324986749904,
+                  "semantic": 0.3855500402100395,
+                  "score": 0.3855500402100395,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4227,8 +4258,8 @@
                     "time": "晚上"
                   },
                   "content": "晚上七點多到雷門，大燈籠有打燈，前面只有幾個人在拍照，和白天擠到走不動完全不同；回程經過雷門時也拍得到幾乎沒有人的照片。",
-                  "semantic": 0.5063924153960255,
-                  "score": 0.5063924153960255,
+                  "semantic": 0.5018221050877173,
+                  "score": 0.5018221050877173,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4245,8 +4276,8 @@
                     "time": "晚上"
                   },
                   "content": "點燈的金紅色五重塔配深藍色夜空很漂亮，在旁邊拍了快半小時；整個境內約只有二三十人，拍照完全不用等。二月晚上很冷，風一吹手就僵。",
-                  "semantic": 0.4895513852948476,
-                  "score": 0.4895513852948476,
+                  "semantic": 0.4835665313676203,
+                  "score": 0.4835665313676203,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4263,8 +4294,8 @@
                     "time": "晚上"
                   },
                   "content": "仲見世通的店家傍晚就陸續打烊，晚上兩側都是拉下的鐵捲門，門上畫著淺草的祭典和街景，可以一扇一扇慢慢看。",
-                  "semantic": 0.40129634827170263,
-                  "score": 0.40129634827170263,
+                  "semantic": 0.3859176787748967,
+                  "score": 0.3859176787748967,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4326,7 +4357,7 @@
               "day_type": null,
               "time": []
             },
-            "aspect": "年底限定的活動與舉辦日期（如羽子板市、除夕敲鐘）"
+            "aspect": "年底限定的活動（如羽子板市、除夜之鐘）與舉辦日期"
           }
         ],
         "group_by": [],
@@ -4350,7 +4381,7 @@
                   "day_type": null,
                   "time": []
                 },
-                "aspect": "年底限定的活動與舉辦日期（如羽子板市、除夕敲鐘）"
+                "aspect": "年底限定的活動（如羽子板市、除夜之鐘）與舉辦日期"
               },
               "evidence": [
                 {
@@ -4364,8 +4395,8 @@
                     "time": "下午"
                   },
                   "content": "十二月初的週六下午兩點多，境內只有一般參拜的人，年底氣氛不明顯，只在本堂旁公告欄看到羽子板市的海報（12/17–19，只有三天）。",
-                  "semantic": 0.5458216115086838,
-                  "score": 0.5458216115086838,
+                  "semantic": 0.5573610942030883,
+                  "score": 0.5573610942030883,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4382,8 +4413,8 @@
                     "time": "早上"
                   },
                   "content": "12 月 20 日早上，羽子板攤子已經全部收掉，只剩平常的參拜人潮。",
-                  "semantic": 0.4574776775901749,
-                  "score": 0.4574776775901749,
+                  "semantic": 0.47362355800375805,
+                  "score": 0.47362355800375805,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4400,8 +4431,8 @@
                     "time": "晚上"
                   },
                   "content": "羽子板市期間的週四（18 日）晚上六點多，本堂前面和兩側擺滿攤子，每攤掛滿裝飾用羽子板，有歌舞伎演員、藝妓等立體押繪，大的比人還高。攤子從早上開到晚上九點左右，夜間打燈後金線和布料閃閃發亮，比白天照片更漂亮。",
-                  "semantic": 0.41033356071206734,
-                  "score": 0.41033356071206734,
+                  "semantic": 0.46998577723282203,
+                  "score": 0.46998577723282203,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4418,8 +4449,8 @@
                     "time": "晚上"
                   },
                   "content": "羽子板市當晚有人買大羽子板，店家會帶大家拍手祝賀，氣氛熱鬧。人潮比想像中多，走道要側身才過得去，但還不到走不動。手掌大小的羽子板約三千日圓。",
-                  "semantic": 0.3901161429041882,
-                  "score": 0.3901161429041882,
+                  "semantic": 0.4424213417787167,
+                  "score": 0.4424213417787167,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4448,8 +4479,8 @@
                     "time": "下午"
                   },
                   "content": "十二月初的週六下午兩點多，境內只有一般參拜的人，年底氣氛不明顯，只在本堂旁公告欄看到羽子板市的海報（12/17–19，只有三天）。",
-                  "semantic": 0.5458216115086838,
-                  "score": 0.5458216115086838,
+                  "semantic": 0.5573610942030883,
+                  "score": 0.5573610942030883,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4466,8 +4497,8 @@
                     "time": "早上"
                   },
                   "content": "12 月 20 日早上，羽子板攤子已經全部收掉，只剩平常的參拜人潮。",
-                  "semantic": 0.4574776775901749,
-                  "score": 0.4574776775901749,
+                  "semantic": 0.47362355800375805,
+                  "score": 0.47362355800375805,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4484,8 +4515,8 @@
                     "time": "晚上"
                   },
                   "content": "羽子板市期間的週四（18 日）晚上六點多，本堂前面和兩側擺滿攤子，每攤掛滿裝飾用羽子板，有歌舞伎演員、藝妓等立體押繪，大的比人還高。攤子從早上開到晚上九點左右，夜間打燈後金線和布料閃閃發亮，比白天照片更漂亮。",
-                  "semantic": 0.41033356071206734,
-                  "score": 0.41033356071206734,
+                  "semantic": 0.46998577723282203,
+                  "score": 0.46998577723282203,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -4502,8 +4533,8 @@
                     "time": "晚上"
                   },
                   "content": "羽子板市當晚有人買大羽子板，店家會帶大家拍手祝賀，氣氛熱鬧。人潮比想像中多，走道要側身才過得去，但還不到走不動。手掌大小的羽子板約三千日圓。",
-                  "semantic": 0.3901161429041882,
-                  "score": 0.3901161429041882,
+                  "semantic": 0.4424213417787167,
+                  "score": 0.4424213417787167,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -5068,28 +5099,28 @@
         132,
         133
       ],
-      "retrieved": [
-        132,
-        133,
-        134
-      ],
-      "hits": [
-        132,
-        133
-      ],
-      "recall": 1.0,
-      "precision": 0.6666666666666666,
-      "f1": 0.8,
+      "retrieved": [],
+      "hits": [],
+      "recall": 0.0,
+      "precision": 0.0,
+      "f1": 0.0,
       "violations": [],
-      "answered": true,
+      "answered": false,
       "error": null,
-      "unresolved_places": [],
+      "unresolved_places": [
+        {
+          "name": "澀谷SKY",
+          "name_ja": "SHIBUYA SKY（渋谷スカイ）",
+          "city": "東京",
+          "kind": "景點"
+        }
+      ],
       "plan": {
         "sub_queries": [
           {
             "space": {
-              "name": "澀谷 SKY",
-              "name_ja": "渋谷スカイ",
+              "name": "澀谷SKY",
+              "name_ja": "SHIBUYA SKY（渋谷スカイ）",
               "city": "東京",
               "kind": "景點"
             },
@@ -5103,12 +5134,12 @@
                 "晚上"
               ]
             },
-            "aspect": "現場能否買到門票、售票情況"
+            "aspect": "夕陽時段現場能否買到門票、是否需要事先預約"
           },
           {
             "space": {
-              "name": "澀谷 SKY",
-              "name_ja": "渋谷スカイ",
+              "name": "澀谷SKY",
+              "name_ja": "SHIBUYA SKY（渋谷スカイ）",
               "city": "東京",
               "kind": "景點"
             },
@@ -5122,7 +5153,7 @@
                 "晚上"
               ]
             },
-            "aspect": "頂樓展望台看夕陽時的人潮擁擠程度"
+            "aspect": "頂樓露天展望台看夕陽時的擁擠程度"
           }
         ],
         "group_by": [],
@@ -5134,8 +5165,8 @@
             {
               "sub_query": {
                 "space": {
-                  "name": "澀谷 SKY",
-                  "name_ja": "渋谷スカイ",
+                  "name": "澀谷SKY",
+                  "name_ja": "SHIBUYA SKY（渋谷スカイ）",
                   "city": "東京",
                   "kind": "景點"
                 },
@@ -5149,75 +5180,20 @@
                     "晚上"
                   ]
                 },
-                "aspect": "現場能否買到門票、售票情況"
+                "aspect": "夕陽時段現場能否買到門票、是否需要事先預約"
               },
-              "evidence": [
-                {
-                  "content_id": 132,
-                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
-                  "place_id": 9,
-                  "place": "澀谷 SKY",
-                  "time": {
-                    "month": "12",
-                    "day_type": "假日",
-                    "time": "下午"
-                  },
-                  "content": "十二月第一個週六，三週前在官網預約下午 3 點 40 的票。3 點半到 14 樓入口，掃 QR code 直接進場；現場售票看板寫日落前後時段全部售完，朋友現場只買得到晚上 7 點以後的票。上頂樓前除帽子、圍巾外都要放置物櫃，包包和手機架不能帶，只能手拿手機。頂樓風很大、很冷，耳朵很快凍痛。",
-                  "semantic": 0.46701325736977295,
-                  "score": 0.46701325736977295,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 134,
-                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
-                  "place_id": 9,
-                  "place": "澀谷 SKY",
-                  "time": {
-                    "month": "12",
-                    "day_type": "假日",
-                    "time": "晚上"
-                  },
-                  "content": "天黑後草皮區整個擠滿，想躺下看天空沒有位子。",
-                  "semantic": 0.30242463117974516,
-                  "score": 0.30242463117974516,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 133,
-                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
-                  "place_id": 9,
-                  "place": "澀谷 SKY",
-                  "time": {
-                    "month": "12",
-                    "day_type": "假日",
-                    "time": "下午"
-                  },
-                  "content": "頂樓角落可往下拍十字路口的位置最熱門，排隊約 40 分鐘，每人只能拍一下就要讓位。4 點半左右日落，西邊天空乾淨，看得到富士山黑色剪影浮在橘色天空，大家都在尖叫。",
-                  "semantic": 0.2737870864897279,
-                  "score": 0.2737870864897279,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                }
-              ],
+              "evidence": [],
               "available": {
                 "time": [],
                 "month": []
               },
-              "place_unresolved": false
+              "place_unresolved": true
             },
             {
               "sub_query": {
                 "space": {
-                  "name": "澀谷 SKY",
-                  "name_ja": "渋谷スカイ",
+                  "name": "澀谷SKY",
+                  "name_ja": "SHIBUYA SKY（渋谷スカイ）",
                   "city": "東京",
                   "kind": "景點"
                 },
@@ -5231,132 +5207,17 @@
                     "晚上"
                   ]
                 },
-                "aspect": "頂樓展望台看夕陽時的人潮擁擠程度"
+                "aspect": "頂樓露天展望台看夕陽時的擁擠程度"
               },
-              "evidence": [
-                {
-                  "content_id": 133,
-                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
-                  "place_id": 9,
-                  "place": "澀谷 SKY",
-                  "time": {
-                    "month": "12",
-                    "day_type": "假日",
-                    "time": "下午"
-                  },
-                  "content": "頂樓角落可往下拍十字路口的位置最熱門，排隊約 40 分鐘，每人只能拍一下就要讓位。4 點半左右日落，西邊天空乾淨，看得到富士山黑色剪影浮在橘色天空，大家都在尖叫。",
-                  "semantic": 0.5474029479205247,
-                  "score": 0.5474029479205247,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 132,
-                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
-                  "place_id": 9,
-                  "place": "澀谷 SKY",
-                  "time": {
-                    "month": "12",
-                    "day_type": "假日",
-                    "time": "下午"
-                  },
-                  "content": "十二月第一個週六，三週前在官網預約下午 3 點 40 的票。3 點半到 14 樓入口，掃 QR code 直接進場；現場售票看板寫日落前後時段全部售完，朋友現場只買得到晚上 7 點以後的票。上頂樓前除帽子、圍巾外都要放置物櫃，包包和手機架不能帶，只能手拿手機。頂樓風很大、很冷，耳朵很快凍痛。",
-                  "semantic": 0.5062679238543917,
-                  "score": 0.5062679238543917,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 134,
-                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
-                  "place_id": 9,
-                  "place": "澀谷 SKY",
-                  "time": {
-                    "month": "12",
-                    "day_type": "假日",
-                    "time": "晚上"
-                  },
-                  "content": "天黑後草皮區整個擠滿，想躺下看天空沒有位子。",
-                  "semantic": 0.49256918409998374,
-                  "score": 0.49256918409998374,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                }
-              ],
+              "evidence": [],
               "available": {
                 "time": [],
                 "month": []
               },
-              "place_unresolved": false
+              "place_unresolved": true
             }
           ],
-          "groups": [
-            {
-              "key": {},
-              "evidence": [
-                {
-                  "content_id": 133,
-                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
-                  "place_id": 9,
-                  "place": "澀谷 SKY",
-                  "time": {
-                    "month": "12",
-                    "day_type": "假日",
-                    "time": "下午"
-                  },
-                  "content": "頂樓角落可往下拍十字路口的位置最熱門，排隊約 40 分鐘，每人只能拍一下就要讓位。4 點半左右日落，西邊天空乾淨，看得到富士山黑色剪影浮在橘色天空，大家都在尖叫。",
-                  "semantic": 0.5474029479205247,
-                  "score": 0.5474029479205247,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 132,
-                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
-                  "place_id": 9,
-                  "place": "澀谷 SKY",
-                  "time": {
-                    "month": "12",
-                    "day_type": "假日",
-                    "time": "下午"
-                  },
-                  "content": "十二月第一個週六，三週前在官網預約下午 3 點 40 的票。3 點半到 14 樓入口，掃 QR code 直接進場；現場售票看板寫日落前後時段全部售完，朋友現場只買得到晚上 7 點以後的票。上頂樓前除帽子、圍巾外都要放置物櫃，包包和手機架不能帶，只能手拿手機。頂樓風很大、很冷，耳朵很快凍痛。",
-                  "semantic": 0.5062679238543917,
-                  "score": 0.5062679238543917,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 134,
-                  "article_id": "mock_shibuyasky_december_weekend_sunset_fuji",
-                  "place_id": 9,
-                  "place": "澀谷 SKY",
-                  "time": {
-                    "month": "12",
-                    "day_type": "假日",
-                    "time": "晚上"
-                  },
-                  "content": "天黑後草皮區整個擠滿，想躺下看天空沒有位子。",
-                  "semantic": 0.49256918409998374,
-                  "score": 0.49256918409998374,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                }
-              ]
-            }
-          ]
+          "groups": []
         }
       ],
       "answer": null
@@ -5399,7 +5260,7 @@
           {
             "space": {
               "name": "澀谷 SKY",
-              "name_ja": "SHIBUYA SKY",
+              "name_ja": "渋谷スカイ",
               "city": "東京",
               "kind": "景點"
             },
@@ -5417,7 +5278,7 @@
           {
             "space": {
               "name": "澀谷 SKY",
-              "name_ja": "SHIBUYA SKY",
+              "name_ja": "渋谷スカイ",
               "city": "東京",
               "kind": "景點"
             },
@@ -5443,7 +5304,7 @@
               "sub_query": {
                 "space": {
                   "name": "澀谷 SKY",
-                  "name_ja": "SHIBUYA SKY",
+                  "name_ja": "渋谷スカイ",
                   "city": "東京",
                   "kind": "景點"
                 },
@@ -5506,7 +5367,7 @@
               "sub_query": {
                 "space": {
                   "name": "澀谷 SKY",
-                  "name_ja": "SHIBUYA SKY",
+                  "name_ja": "渋谷スカイ",
                   "city": "東京",
                   "kind": "景點"
                 },
@@ -6130,7 +5991,7 @@
                 "早上"
               ]
             },
-            "aspect": "排隊等待時間"
+            "aspect": "排隊等候時間"
           }
         ],
         "group_by": [],
@@ -6219,7 +6080,7 @@
                     "早上"
                   ]
                 },
-                "aspect": "排隊等待時間"
+                "aspect": "排隊等候時間"
               },
               "evidence": [
                 {
@@ -6233,8 +6094,8 @@
                     "time": "早上"
                   },
                   "content": "約 10 點 40 分從回廊下來時，旅行團開始一團一團上來，甲板變得熱鬧；11 點前要下樓，電梯排了約十分鐘。",
-                  "semantic": 0.3915511766086869,
-                  "score": 0.3915511766086869,
+                  "semantic": 0.4187528479327026,
+                  "score": 0.4187528479327026,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6251,8 +6112,8 @@
                     "time": "早上"
                   },
                   "content": "一月底週二，9 點 40 分到四樓售票處，前面約十人，10 點開賣後五分鐘就買好票上去。早上很冷但空氣乾淨，往西南看富士山清楚，山頂積雪一清二楚；甲板人很少，可慢慢找角度拍照。加購天望回廊（450 公尺玻璃斜坡），早晨陽光斜照，地上有塔骨架影子，很好拍。",
-                  "semantic": 0.23791930898256436,
-                  "score": 0.23791930898256436,
+                  "semantic": 0.27188920497114183,
+                  "score": 0.27188920497114183,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6299,8 +6160,8 @@
                     "time": "早上"
                   },
                   "content": "約 10 點 40 分從回廊下來時，旅行團開始一團一團上來，甲板變得熱鬧；11 點前要下樓，電梯排了約十分鐘。",
-                  "semantic": 0.3915511766086869,
-                  "score": 0.3915511766086869,
+                  "semantic": 0.4187528479327026,
+                  "score": 0.4187528479327026,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6367,7 +6228,7 @@
                 "晚上"
               ]
             },
-            "aspect": "看日落的排隊等候時間與注意事項"
+            "aspect": "上展望台看日落的排隊時間與注意事項"
           }
         ],
         "group_by": [],
@@ -6394,7 +6255,7 @@
                     "晚上"
                   ]
                 },
-                "aspect": "看日落的排隊等候時間與注意事項"
+                "aspect": "上展望台看日落的排隊時間與注意事項"
               },
               "evidence": [
                 {
@@ -6408,8 +6269,8 @@
                     "time": "下午"
                   },
                   "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
-                  "semantic": 0.6044036828329166,
-                  "score": 0.6044036828329166,
+                  "semantic": 0.6857951334386996,
+                  "score": 0.6857951334386996,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6426,8 +6287,8 @@
                     "time": "晚上"
                   },
                   "content": "天黑後市區夜景很好看，但人太多，快五點半就下樓了。整體排隊加擠窗邊，花掉兩個多小時，週末傍晚不推薦。",
-                  "semantic": 0.5328896378337606,
-                  "score": 0.5328896378337606,
+                  "semantic": 0.5945934346885127,
+                  "score": 0.5945934346885127,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6444,8 +6305,8 @@
                     "time": "下午"
                   },
                   "content": "三點半到四樓售票處，當日券隊伍繞了好幾圈，排了快五十分鐘才買到票。當天風太大，450 公尺的天望回廊暫停開放，只能上 350 公尺的天望甲板。",
-                  "semantic": 0.43056989816504143,
-                  "score": 0.43056989816504143,
+                  "semantic": 0.5369289411318869,
+                  "score": 0.5369289411318869,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6474,8 +6335,8 @@
                     "time": "下午"
                   },
                   "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
-                  "semantic": 0.6044036828329166,
-                  "score": 0.6044036828329166,
+                  "semantic": 0.6857951334386996,
+                  "score": 0.6857951334386996,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6492,8 +6353,8 @@
                     "time": "晚上"
                   },
                   "content": "天黑後市區夜景很好看，但人太多，快五點半就下樓了。整體排隊加擠窗邊，花掉兩個多小時，週末傍晚不推薦。",
-                  "semantic": 0.5328896378337606,
-                  "score": 0.5328896378337606,
+                  "semantic": 0.5945934346885127,
+                  "score": 0.5945934346885127,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6510,8 +6371,8 @@
                     "time": "下午"
                   },
                   "content": "三點半到四樓售票處，當日券隊伍繞了好幾圈，排了快五十分鐘才買到票。當天風太大，450 公尺的天望回廊暫停開放，只能上 350 公尺的天望甲板。",
-                  "semantic": 0.43056989816504143,
-                  "score": 0.43056989816504143,
+                  "semantic": 0.5369289411318869,
+                  "score": 0.5369289411318869,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6574,7 +6435,7 @@
               "day_type": null,
               "time": []
             },
-            "aspect": "人潮擁擠程度與排隊等候時間"
+            "aspect": "人潮多寡與排隊情況"
           },
           {
             "space": {
@@ -6590,7 +6451,7 @@
               "day_type": null,
               "time": []
             },
-            "aspect": "從展望台看得到富士山的天氣與能見度"
+            "aspect": "從展望台能否看到富士山"
           }
         ],
         "group_by": [
@@ -6617,7 +6478,7 @@
                   "day_type": null,
                   "time": []
                 },
-                "aspect": "人潮擁擠程度與排隊等候時間"
+                "aspect": "人潮多寡與排隊情況"
               },
               "evidence": [
                 {
@@ -6631,8 +6492,8 @@
                     "time": "晚上"
                   },
                   "content": "天黑後市區夜景很好看，但人太多，快五點半就下樓了。整體排隊加擠窗邊，花掉兩個多小時，週末傍晚不推薦。",
-                  "semantic": 0.4452620270728563,
-                  "score": 0.4452620270728563,
+                  "semantic": 0.4813783068360214,
+                  "score": 0.4813783068360214,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6649,8 +6510,8 @@
                     "time": "早上"
                   },
                   "content": "約 10 點 40 分從回廊下來時，旅行團開始一團一團上來，甲板變得熱鬧；11 點前要下樓，電梯排了約十分鐘。",
-                  "semantic": 0.3931730696213952,
-                  "score": 0.3931730696213952,
+                  "semantic": 0.43151705022427117,
+                  "score": 0.43151705022427117,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6667,26 +6528,8 @@
                     "time": "下午"
                   },
                   "content": "三點半到四樓售票處，當日券隊伍繞了好幾圈，排了快五十分鐘才買到票。當天風太大，450 公尺的天望回廊暫停開放，只能上 350 公尺的天望甲板。",
-                  "semantic": 0.3817161888396306,
-                  "score": 0.3817161888396306,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 40,
-                  "article_id": "mock_skytree_weekend_sunset_wind",
-                  "place_id": 14,
-                  "place": "東京晴空塔",
-                  "time": {
-                    "month": "1",
-                    "day_type": "假日",
-                    "time": "下午"
-                  },
-                  "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
-                  "semantic": 0.28747497277710987,
-                  "score": 0.28747497277710987,
+                  "semantic": 0.42004930900493276,
+                  "score": 0.42004930900493276,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6703,8 +6546,26 @@
                     "time": "早上"
                   },
                   "content": "一月底週二，9 點 40 分到四樓售票處，前面約十人，10 點開賣後五分鐘就買好票上去。早上很冷但空氣乾淨，往西南看富士山清楚，山頂積雪一清二楚；甲板人很少，可慢慢找角度拍照。加購天望回廊（450 公尺玻璃斜坡），早晨陽光斜照，地上有塔骨架影子，很好拍。",
-                  "semantic": 0.2528383258624646,
-                  "score": 0.2528383258624646,
+                  "semantic": 0.3219877563249626,
+                  "score": 0.3219877563249626,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 40,
+                  "article_id": "mock_skytree_weekend_sunset_wind",
+                  "place_id": 14,
+                  "place": "東京晴空塔",
+                  "time": {
+                    "month": "1",
+                    "day_type": "假日",
+                    "time": "下午"
+                  },
+                  "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
+                  "semantic": 0.29110212305717725,
+                  "score": 0.29110212305717725,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6732,7 +6593,7 @@
                   "day_type": null,
                   "time": []
                 },
-                "aspect": "從展望台看得到富士山的天氣與能見度"
+                "aspect": "從展望台能否看到富士山"
               },
               "evidence": [
                 {
@@ -6746,8 +6607,8 @@
                     "time": "下午"
                   },
                   "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
-                  "semantic": 0.5745901917248768,
-                  "score": 0.5745901917248768,
+                  "semantic": 0.5449131766656272,
+                  "score": 0.5449131766656272,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6764,8 +6625,8 @@
                     "time": "早上"
                   },
                   "content": "一月底週二，9 點 40 分到四樓售票處，前面約十人，10 點開賣後五分鐘就買好票上去。早上很冷但空氣乾淨，往西南看富士山清楚，山頂積雪一清二楚；甲板人很少，可慢慢找角度拍照。加購天望回廊（450 公尺玻璃斜坡），早晨陽光斜照，地上有塔骨架影子，很好拍。",
-                  "semantic": 0.5394819668139331,
-                  "score": 0.5394819668139331,
+                  "semantic": 0.5053272517880345,
+                  "score": 0.5053272517880345,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6782,8 +6643,8 @@
                     "time": "下午"
                   },
                   "content": "三點半到四樓售票處，當日券隊伍繞了好幾圈，排了快五十分鐘才買到票。當天風太大，450 公尺的天望回廊暫停開放，只能上 350 公尺的天望甲板。",
-                  "semantic": 0.3797279964937642,
-                  "score": 0.3797279964937642,
+                  "semantic": 0.33834790539204146,
+                  "score": 0.33834790539204146,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6800,8 +6661,8 @@
                     "time": "晚上"
                   },
                   "content": "天黑後市區夜景很好看，但人太多，快五點半就下樓了。整體排隊加擠窗邊，花掉兩個多小時，週末傍晚不推薦。",
-                  "semantic": 0.32611616315148784,
-                  "score": 0.32611616315148784,
+                  "semantic": 0.28472799179842484,
+                  "score": 0.28472799179842484,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6833,8 +6694,8 @@
                     "time": "早上"
                   },
                   "content": "一月底週二，9 點 40 分到四樓售票處，前面約十人，10 點開賣後五分鐘就買好票上去。早上很冷但空氣乾淨，往西南看富士山清楚，山頂積雪一清二楚；甲板人很少，可慢慢找角度拍照。加購天望回廊（450 公尺玻璃斜坡），早晨陽光斜照，地上有塔骨架影子，很好拍。",
-                  "semantic": 0.5394819668139331,
-                  "score": 0.5394819668139331,
+                  "semantic": 0.5053272517880345,
+                  "score": 0.5053272517880345,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6851,8 +6712,8 @@
                     "time": "早上"
                   },
                   "content": "約 10 點 40 分從回廊下來時，旅行團開始一團一團上來，甲板變得熱鬧；11 點前要下樓，電梯排了約十分鐘。",
-                  "semantic": 0.3931730696213952,
-                  "score": 0.3931730696213952,
+                  "semantic": 0.43151705022427117,
+                  "score": 0.43151705022427117,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6877,8 +6738,8 @@
                     "time": "下午"
                   },
                   "content": "四點半左右上到天望甲板，窗邊整排都是等日落的人，站在後面等了十分鐘才擠到窗邊。四點四十分左右日落，天空從橘變紫很美，但西邊有雲看不到富士山剪影。風大時站久了會覺得腳下微微晃動。",
-                  "semantic": 0.5745901917248768,
-                  "score": 0.5745901917248768,
+                  "semantic": 0.5449131766656272,
+                  "score": 0.5449131766656272,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6895,8 +6756,8 @@
                     "time": "下午"
                   },
                   "content": "三點半到四樓售票處，當日券隊伍繞了好幾圈，排了快五十分鐘才買到票。當天風太大，450 公尺的天望回廊暫停開放，只能上 350 公尺的天望甲板。",
-                  "semantic": 0.3817161888396306,
-                  "score": 0.3817161888396306,
+                  "semantic": 0.42004930900493276,
+                  "score": 0.42004930900493276,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6921,8 +6782,8 @@
                     "time": "晚上"
                   },
                   "content": "天黑後市區夜景很好看，但人太多，快五點半就下樓了。整體排隊加擠窗邊，花掉兩個多小時，週末傍晚不推薦。",
-                  "semantic": 0.4452620270728563,
-                  "score": 0.4452620270728563,
+                  "semantic": 0.4813783068360214,
+                  "score": 0.4813783068360214,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -6981,7 +6842,7 @@
                 "早上"
               ]
             },
-            "aspect": "店家營業狀況、是否有開店"
+            "aspect": "店家是否有營業、公休情況"
           }
         ],
         "group_by": [],
@@ -7005,7 +6866,7 @@
                     "早上"
                   ]
                 },
-                "aspect": "店家營業狀況、是否有開店"
+                "aspect": "店家是否有營業、公休情況"
               },
               "evidence": [
                 {
@@ -7019,8 +6880,8 @@
                     "time": "早上"
                   },
                   "content": "十月第三個週日早上 8 點抵達，很多店鐵捲門拉著公休，週日和國定假日是市場休市日，批發性質的店多半休息，只有約一半的店有開。賣刀具和乾貨的店幾乎都沒開，路上比網路照片冷清許多。原本最想吃的兩家店也因週日、國定假日休息而沒開。",
-                  "semantic": 0.4043151862824845,
-                  "score": 0.4043151862824845,
+                  "semantic": 0.4680022928498295,
+                  "score": 0.4680022928498295,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7037,8 +6898,8 @@
                     "time": "早上"
                   },
                   "content": "仍有部分海鮮丼和小吃店照常營業，吃到玉子燒和烤扇貝；海鮮丼排隊約十分鐘，品項算齊全。9 點多人潮慢慢變多，多是不知道週日休市的觀光客。",
-                  "semantic": 0.38107803318975086,
-                  "score": 0.38107803318975086,
+                  "semantic": 0.42996211892115116,
+                  "score": 0.42996211892115116,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7067,8 +6928,8 @@
                     "time": "早上"
                   },
                   "content": "十月第三個週日早上 8 點抵達，很多店鐵捲門拉著公休，週日和國定假日是市場休市日，批發性質的店多半休息，只有約一半的店有開。賣刀具和乾貨的店幾乎都沒開，路上比網路照片冷清許多。原本最想吃的兩家店也因週日、國定假日休息而沒開。",
-                  "semantic": 0.4043151862824845,
-                  "score": 0.4043151862824845,
+                  "semantic": 0.4680022928498295,
+                  "score": 0.4680022928498295,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7085,8 +6946,8 @@
                     "time": "早上"
                   },
                   "content": "仍有部分海鮮丼和小吃店照常營業，吃到玉子燒和烤扇貝；海鮮丼排隊約十分鐘，品項算齊全。9 點多人潮慢慢變多，多是不知道週日休市的觀光客。",
-                  "semantic": 0.38107803318975086,
-                  "score": 0.38107803318975086,
+                  "semantic": 0.42996211892115116,
+                  "score": 0.42996211892115116,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7148,7 +7009,7 @@
               "day_type": "平日",
               "time": []
             },
-            "aspect": "吃海鮮丼的店家營業與收攤時間、最晚幾點要到"
+            "aspect": "吃海鮮丼，店家幾點收攤、最晚幾點到還吃得到"
           }
         ],
         "group_by": [
@@ -7172,7 +7033,7 @@
                   "day_type": "平日",
                   "time": []
                 },
-                "aspect": "吃海鮮丼的店家營業與收攤時間、最晚幾點要到"
+                "aspect": "吃海鮮丼，店家幾點收攤、最晚幾點到還吃得到"
               },
               "evidence": [
                 {
@@ -7186,8 +7047,8 @@
                     "time": "早上"
                   },
                   "content": "早上 7 點半抵達時大部分店都已開，不少店清晨五、六點就開始營業。海鮮丼店門口開始有人排隊，玉子燒攤現場煎，一串一百多日圓。排海鮮丼約等 10 分鐘就入座，鮪魚、海膽、鮭魚卵都還很齊全。",
-                  "semantic": 0.6135560750994958,
-                  "score": 0.6135560750994958,
+                  "semantic": 0.6049349835615354,
+                  "score": 0.6049349835615354,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7204,8 +7065,8 @@
                     "time": "中午"
                   },
                   "content": "12 點抵達，攤位多為開放式、沒有冷氣，只有幾台電風扇，一進去就覺得熱。想吃的海鮮丼店排隊隊伍排到外面馬路上、完全沒有遮蔭，在大太陽下排了 25 分鐘，全身是汗、快中暑。進店後海膽已賣完，只剩鮪魚和鮭魚卵丼，其他幾家看板也有賣完標示。",
-                  "semantic": 0.6104903934886667,
-                  "score": 0.6104903934886667,
+                  "semantic": 0.6016460990719674,
+                  "score": 0.6016460990719674,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7222,44 +7083,8 @@
                     "time": "中午"
                   },
                   "content": "吃完約 1 點多想再逛，很多店已開始收攤，有的在沖洗地板、有的鐵捲門拉下一半。建議中午以前就到，1 點半以後就沒什麼可逛。",
-                  "semantic": 0.4400388639283838,
-                  "score": 0.4400388639283838,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 163,
-                  "article_id": "mock_tsukiji_july_weekday_morning",
-                  "place_id": 47,
-                  "place": "築地場外市場",
-                  "time": {
-                    "month": "7",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "9 點半左右開始覺得熱起來，因此搭地鐵回飯店休息。夏天建議早上去，8 點前後店全開、選擇最多，天氣也還受得了。",
-                  "semantic": 0.41580947618054437,
-                  "score": 0.41580947618054437,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 162,
-                  "article_id": "mock_tsukiji_july_weekday_morning",
-                  "place_id": 47,
-                  "place": "築地場外市場",
-                  "time": {
-                    "month": "7",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "8 點左右市場最熱鬧，巷子裡都是邊走邊吃的觀光客，也有餐廳的人推推車來批貨。七月早上有點悶，但太陽還不大，走在巷子裡還算舒服，可吃生蠔和烤扇貝。",
-                  "semantic": 0.4033484838836777,
-                  "score": 0.4033484838836777,
+                  "semantic": 0.46962202504177114,
+                  "score": 0.46962202504177114,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7276,8 +7101,44 @@
                     "time": "下午"
                   },
                   "content": "2 點左右大部分店家都已收攤，路上只剩零星幾家賣乾貨和刀具的店。",
-                  "semantic": 0.38084616614240274,
-                  "score": 0.38084616614240274,
+                  "semantic": 0.41760588385565495,
+                  "score": 0.41760588385565495,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 162,
+                  "article_id": "mock_tsukiji_july_weekday_morning",
+                  "place_id": 47,
+                  "place": "築地場外市場",
+                  "time": {
+                    "month": "7",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "8 點左右市場最熱鬧，巷子裡都是邊走邊吃的觀光客，也有餐廳的人推推車來批貨。七月早上有點悶，但太陽還不大，走在巷子裡還算舒服，可吃生蠔和烤扇貝。",
+                  "semantic": 0.3970620960486275,
+                  "score": 0.3970620960486275,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 163,
+                  "article_id": "mock_tsukiji_july_weekday_morning",
+                  "place_id": 47,
+                  "place": "築地場外市場",
+                  "time": {
+                    "month": "7",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "9 點半左右開始覺得熱起來，因此搭地鐵回飯店休息。夏天建議早上去，8 點前後店全開、選擇最多，天氣也還受得了。",
+                  "semantic": 0.3891169349240276,
+                  "score": 0.3891169349240276,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7308,26 +7169,8 @@
                     "time": "早上"
                   },
                   "content": "早上 7 點半抵達時大部分店都已開，不少店清晨五、六點就開始營業。海鮮丼店門口開始有人排隊，玉子燒攤現場煎，一串一百多日圓。排海鮮丼約等 10 分鐘就入座，鮪魚、海膽、鮭魚卵都還很齊全。",
-                  "semantic": 0.6135560750994958,
-                  "score": 0.6135560750994958,
-                  "time_backoff": false,
-                  "space_backoff": false,
-                  "backoff_area": null,
-                  "time_unknown": false
-                },
-                {
-                  "content_id": 163,
-                  "article_id": "mock_tsukiji_july_weekday_morning",
-                  "place_id": 47,
-                  "place": "築地場外市場",
-                  "time": {
-                    "month": "7",
-                    "day_type": "平日",
-                    "time": "早上"
-                  },
-                  "content": "9 點半左右開始覺得熱起來，因此搭地鐵回飯店休息。夏天建議早上去，8 點前後店全開、選擇最多，天氣也還受得了。",
-                  "semantic": 0.41580947618054437,
-                  "score": 0.41580947618054437,
+                  "semantic": 0.6049349835615354,
+                  "score": 0.6049349835615354,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7344,8 +7187,26 @@
                     "time": "早上"
                   },
                   "content": "8 點左右市場最熱鬧，巷子裡都是邊走邊吃的觀光客，也有餐廳的人推推車來批貨。七月早上有點悶，但太陽還不大，走在巷子裡還算舒服，可吃生蠔和烤扇貝。",
-                  "semantic": 0.4033484838836777,
-                  "score": 0.4033484838836777,
+                  "semantic": 0.3970620960486275,
+                  "score": 0.3970620960486275,
+                  "time_backoff": false,
+                  "space_backoff": false,
+                  "backoff_area": null,
+                  "time_unknown": false
+                },
+                {
+                  "content_id": 163,
+                  "article_id": "mock_tsukiji_july_weekday_morning",
+                  "place_id": 47,
+                  "place": "築地場外市場",
+                  "time": {
+                    "month": "7",
+                    "day_type": "平日",
+                    "time": "早上"
+                  },
+                  "content": "9 點半左右開始覺得熱起來，因此搭地鐵回飯店休息。夏天建議早上去，8 點前後店全開、選擇最多，天氣也還受得了。",
+                  "semantic": 0.3891169349240276,
+                  "score": 0.3891169349240276,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7369,8 +7230,8 @@
                     "time": "中午"
                   },
                   "content": "12 點抵達，攤位多為開放式、沒有冷氣，只有幾台電風扇，一進去就覺得熱。想吃的海鮮丼店排隊隊伍排到外面馬路上、完全沒有遮蔭，在大太陽下排了 25 分鐘，全身是汗、快中暑。進店後海膽已賣完，只剩鮪魚和鮭魚卵丼，其他幾家看板也有賣完標示。",
-                  "semantic": 0.6104903934886667,
-                  "score": 0.6104903934886667,
+                  "semantic": 0.6016460990719674,
+                  "score": 0.6016460990719674,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7387,8 +7248,8 @@
                     "time": "中午"
                   },
                   "content": "吃完約 1 點多想再逛，很多店已開始收攤，有的在沖洗地板、有的鐵捲門拉下一半。建議中午以前就到，1 點半以後就沒什麼可逛。",
-                  "semantic": 0.4400388639283838,
-                  "score": 0.4400388639283838,
+                  "semantic": 0.46962202504177114,
+                  "score": 0.46962202504177114,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7412,8 +7273,8 @@
                     "time": "下午"
                   },
                   "content": "2 點左右大部分店家都已收攤，路上只剩零星幾家賣乾貨和刀具的店。",
-                  "semantic": 0.38084616614240274,
-                  "score": 0.38084616614240274,
+                  "semantic": 0.41760588385565495,
+                  "score": 0.41760588385565495,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7819,7 +7680,7 @@
                 "晚上"
               ]
             },
-            "aspect": "祇園祭的活動、宵山與現場氣氛"
+            "aspect": "是否遇到祇園祭的活動與氣氛"
           }
         ],
         "group_by": [],
@@ -7845,7 +7706,7 @@
                     "晚上"
                   ]
                 },
-                "aspect": "祇園祭的活動、宵山與現場氣氛"
+                "aspect": "是否遇到祇園祭的活動與氣氛"
               },
               "evidence": [
                 {
@@ -7859,8 +7720,8 @@
                     "time": "晚上"
                   },
                   "content": "7 月 17 日神幸祭，晚上 6 點到西樓門，石階下已擠滿人，警察拉起封鎖線，只能在對面人行道卡位；旁人說想看清楚 4 點前就要來。6 點多三座神轎陸續出社，抬轎者穿白色法被喊口號，在石階前高舉搖晃，人群歡呼，非常震撼。神轎出發後人潮才慢慢散開，7 點多才擠得出去。門口貼有祇園祭整個七月的行程表。",
-                  "semantic": 0.5670045398549779,
-                  "score": 0.45360363188398234,
+                  "semantic": 0.564804626847604,
+                  "score": 0.4518437014780832,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7877,8 +7738,8 @@
                     "time": "晚上"
                   },
                   "content": "7 月 22 日晚上 8 點左右沒有神轎，境內燈籠全部亮著，人很少，只有一些穿浴衣散步的人，可以慢慢參拜，與 17 日截然不同。",
-                  "semantic": 0.3759633587659754,
-                  "score": 0.30077068701278037,
+                  "semantic": 0.3878990774022516,
+                  "score": 0.3103192619218013,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7907,8 +7768,8 @@
                     "time": "晚上"
                   },
                   "content": "7 月 17 日神幸祭，晚上 6 點到西樓門，石階下已擠滿人，警察拉起封鎖線，只能在對面人行道卡位；旁人說想看清楚 4 點前就要來。6 點多三座神轎陸續出社，抬轎者穿白色法被喊口號，在石階前高舉搖晃，人群歡呼，非常震撼。神轎出發後人潮才慢慢散開，7 點多才擠得出去。門口貼有祇園祭整個七月的行程表。",
-                  "semantic": 0.5670045398549779,
-                  "score": 0.45360363188398234,
+                  "semantic": 0.564804626847604,
+                  "score": 0.4518437014780832,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7925,8 +7786,8 @@
                     "time": "晚上"
                   },
                   "content": "7 月 22 日晚上 8 點左右沒有神轎，境內燈籠全部亮著，人很少，只有一些穿浴衣散步的人，可以慢慢參拜，與 17 日截然不同。",
-                  "semantic": 0.3759633587659754,
-                  "score": 0.30077068701278037,
+                  "semantic": 0.3878990774022516,
+                  "score": 0.3103192619218013,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -7990,7 +7851,7 @@
                 "中午"
               ]
             },
-            "aspect": null
+            "aspect": "參觀體驗與人潮"
           },
           {
             "space": {
@@ -8008,7 +7869,7 @@
                 "晚上"
               ]
             },
-            "aspect": null
+            "aspect": "參觀體驗與人潮"
           }
         ],
         "group_by": [],
@@ -8034,7 +7895,7 @@
                     "中午"
                   ]
                 },
-                "aspect": null
+                "aspect": "參觀體驗與人潮"
               },
               "evidence": [
                 {
@@ -8048,8 +7909,8 @@
                     "time": "中午"
                   },
                   "content": "八月中的週三中午十二點，氣溫三十五度。境內地面多為石板和白色砂石，陽光反射強烈，臉和腳都被曬得發燙，戴墨鏡仍覺得刺眼。本殿前廣場幾乎沒有樹，遮蔭處只有舞殿屋簷下和幾棵大樹旁，大家都擠在那裡休息。參拜人不多，多是觀光客，拍照不用等，但太熱無法慢慢逛。手水舍旁的石頭摸起來是燙的。在舞殿旁坐了十分鐘覺得會中暑，十二點半就離開去找有冷氣的地方吃午餐。建議帶帽子和水。",
-                  "semantic": 0.5658058514976163,
-                  "score": 0.5658058514976163,
+                  "semantic": 0.3797573101959396,
+                  "score": 0.3797573101959396,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -8078,8 +7939,8 @@
                     "time": "中午"
                   },
                   "content": "八月中的週三中午十二點，氣溫三十五度。境內地面多為石板和白色砂石，陽光反射強烈，臉和腳都被曬得發燙，戴墨鏡仍覺得刺眼。本殿前廣場幾乎沒有樹，遮蔭處只有舞殿屋簷下和幾棵大樹旁，大家都擠在那裡休息。參拜人不多，多是觀光客，拍照不用等，但太熱無法慢慢逛。手水舍旁的石頭摸起來是燙的。在舞殿旁坐了十分鐘覺得會中暑，十二點半就離開去找有冷氣的地方吃午餐。建議帶帽子和水。",
-                  "semantic": 0.5658058514976163,
-                  "score": 0.5658058514976163,
+                  "semantic": 0.3797573101959396,
+                  "score": 0.3797573101959396,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -8108,7 +7969,7 @@
                     "晚上"
                   ]
                 },
-                "aspect": null
+                "aspect": "參觀體驗與人潮"
               },
               "evidence": [
                 {
@@ -8122,8 +7983,8 @@
                     "time": "晚上"
                   },
                   "content": "晚上 8 點半左右到，神社 24 小時可參拜，境內燈籠全部點亮，舞殿掛滿一排排燈籠。石板地已涼下來，雖仍有點悶但比中午舒服許多。人很少，只有幾組散步的情侶和觀光客，本殿前可慢慢參拜拍照。待到 10 點才離開。",
-                  "semantic": 0.6266151166520875,
-                  "score": 0.50129209332167,
+                  "semantic": 0.34941648611172615,
+                  "score": 0.27953318888938095,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -8152,8 +8013,8 @@
                     "time": "晚上"
                   },
                   "content": "晚上 8 點半左右到，神社 24 小時可參拜，境內燈籠全部點亮，舞殿掛滿一排排燈籠。石板地已涼下來，雖仍有點悶但比中午舒服許多。人很少，只有幾組散步的情侶和觀光客，本殿前可慢慢參拜拍照。待到 10 點才離開。",
-                  "semantic": 0.6266151166520875,
-                  "score": 0.50129209332167,
+                  "semantic": 0.34941648611172615,
+                  "score": 0.27953318888938095,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -8216,7 +8077,7 @@
                 "晚上"
               ]
             },
-            "aspect": "晚上仍可入場參觀的地方、夜間開放"
+            "aspect": "晚上仍開放、可以入場參觀的地方"
           }
         ],
         "group_by": [
@@ -8244,7 +8105,7 @@
                     "晚上"
                   ]
                 },
-                "aspect": "晚上仍可入場參觀的地方、夜間開放"
+                "aspect": "晚上仍開放、可以入場參觀的地方"
               },
               "evidence": [
                 {
@@ -8258,8 +8119,8 @@
                     "time": "晚上"
                   },
                   "content": "晚上 8 點半左右到，神社 24 小時可參拜，境內燈籠全部點亮，舞殿掛滿一排排燈籠。石板地已涼下來，雖仍有點悶但比中午舒服許多。人很少，只有幾組散步的情侶和觀光客，本殿前可慢慢參拜拍照。待到 10 點才離開。",
-                  "semantic": 0.487676648298906,
-                  "score": 0.3901413186391248,
+                  "semantic": 0.49931385358605207,
+                  "score": 0.3994510828688417,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -8276,8 +8137,8 @@
                     "time": "晚上"
                   },
                   "content": "8/15 千日詣期間（8/14–16）有夜間特別拜觀，平常傍晚六點多就關門。晚上 7 點左右到，坡道上人不少，但沒有秋天那麼誇張；舞台上吹著晚風，可看到京都市區夜景。",
-                  "semantic": 0.42818926047999484,
-                  "score": 0.3425514083839959,
+                  "semantic": 0.4386182016233237,
+                  "score": 0.350894561298659,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -8308,8 +8169,8 @@
                     "time": "晚上"
                   },
                   "content": "晚上 8 點半左右到，神社 24 小時可參拜，境內燈籠全部點亮，舞殿掛滿一排排燈籠。石板地已涼下來，雖仍有點悶但比中午舒服許多。人很少，只有幾組散步的情侶和觀光客，本殿前可慢慢參拜拍照。待到 10 點才離開。",
-                  "semantic": 0.487676648298906,
-                  "score": 0.3901413186391248,
+                  "semantic": 0.49931385358605207,
+                  "score": 0.3994510828688417,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,
@@ -8333,8 +8194,8 @@
                     "time": "晚上"
                   },
                   "content": "8/15 千日詣期間（8/14–16）有夜間特別拜觀，平常傍晚六點多就關門。晚上 7 點左右到，坡道上人不少，但沒有秋天那麼誇張；舞台上吹著晚風，可看到京都市區夜景。",
-                  "semantic": 0.42818926047999484,
-                  "score": 0.3425514083839959,
+                  "semantic": 0.4386182016233237,
+                  "score": 0.350894561298659,
                   "time_backoff": false,
                   "space_backoff": false,
                   "backoff_area": null,

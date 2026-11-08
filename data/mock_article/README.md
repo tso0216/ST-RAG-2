@@ -186,13 +186,12 @@ PYTHONPATH=src:. .venv/bin/python scripts/eval/check_mock.py --llm --md 片段�
 從專案根目錄（需要 `OPENAI_API_KEY`；規劃器和生成器走 Opus）：
 
 ```bash
-PYTHONPATH=src:. .venv/bin/python -m strag_v3.eval run data/mock_article/eval --system full
+PYTHONPATH=src:. .venv/bin/python -m strag_v3.eval.full run data/mock_article/eval
 ```
 
-- `--system`：`full` 完整系統、`dense` 只用語意分數取 top-k（`--k`，預設 5）、`hard` 硬過濾不退讓。
-- `--oracle`：用題目的 `when` 取代規劃器解析出來的時間（`full`、`hard` 可用）。
+- 只跑主系統（full）；baseline（dense、hard）和 oracle 不在這個命令列。
 - `--split dev|test`：只跑一組題目；`--no-answer`：不呼叫生成器，只評估檢索。
-- 印出整體、依 split、依題型的 recall、precision、F1、時間違規率、有回答率，並把每題的計畫、取回集合、證據、答案存到 `data/eval_runs/<時間>_<設定>.json`。
-- 幾次的結果並排比較：`PYTHONPATH=src:. .venv/bin/python -m strag_v3.eval compare data/eval_runs/*.json`。
+- 印出整體、依 split、依題型的 recall、precision、F1、時間違規率、有回答率，並把每題的計畫、取回集合、證據、答案存到 `src/strag_v3/eval/full/runs/<時間>_full.json`。
+- 幾次的結果並排比較：`PYTHONPATH=src:. .venv/bin/python -m strag_v3.eval.full compare src/strag_v3/eval/full/runs/*.json`。
 
 指標的定義（空集合、沒標註的題目怎麼算）寫在 `src/strag_v3/eval/metrics.py` 開頭。
