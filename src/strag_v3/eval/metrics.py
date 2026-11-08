@@ -17,6 +17,8 @@
 - 地點解析失敗是有任何子查詢地點解析不到的題數；每題的紀錄另外列出解析不到的地點。
 - 規劃器正確率（`planner`）：有 `gold_plan` 的題目拿規劃器的計畫跟它比對，規則見 `full/planner.py`。
   沒有傳 `places`（地點解析）時不算。
+- 答案指標（`answer`）：`expect` 覆蓋率和時間誤植率，由評審的判斷算出，規則見 `full/answer.py`。
+  沒有傳 `judgements`（評審結果）時不算。
 沒有 `type` 或 `split` 的題目，分組時歸在「未標」。
 """
 from dataclasses import asdict, dataclass, field
@@ -24,6 +26,7 @@ from dataclasses import asdict, dataclass, field
 from ..place import Places
 from ..rag.evidence import Evidence, Section
 from ..rag.plan import Plan
+from .full.answer import Judgement, aggregate as aggregate_answers
 from .full.planner import PlanScore, aggregate as aggregate_plans, score_plan
 from .questions import Question
 
@@ -105,10 +108,13 @@ def _mean(xs: list[float]) -> float | None:
     return sum(xs) / len(xs) if xs else None
 
 
-def evaluate(questions: list[Question], outcomes: dict[str, Outcome], places: Places | None = None) -> dict:
+def evaluate(questions: list[Question], outcomes: dict[str, Outcome], places: Places | None = None,
+             judgements: dict[str, Judgement] | None = None) -> dict:
     """每題的紀錄（計畫、取回集合、證據、答案、指標）加上整體、依題型、依 split 的彙總。
 
-    places：解析 `gold_plan` 和規劃器計畫的地點，用來算規劃器正確率；None 時不算。"""
+    places：解析 `gold_plan` 和規劃器計畫的地點，用來算規劃器正確率；None 時不算。
+    judgements：評審對各題答案的判斷（題目 key → 判斷），用來算答案指標；None 或缺題時那些題不算。"""
+    judgements = judgements or {}
     rows = [(q, outcomes[q.key], score(q, outcomes[q.key])) for q in questions]
     plan_scores = {q.key: score_plan(q.gold_plan, o.plan, places)
                    for q, o, _ in rows if places is not None and q.gold_plan is not None}
@@ -116,7 +122,8 @@ def evaluate(questions: list[Question], outcomes: dict[str, Outcome], places: Pl
     def summary(subset) -> dict:
         return {**aggregate([s for _, _, s in subset], errors=sum(o.error is not None for _, o, _ in subset),
                             unresolved=sum(bool(o.unresolved_places) for _, o, _ in subset)),
-                "planner": aggregate_plans([plan_scores[q.key] for q, _, _ in subset if q.key in plan_scores])}
+                "planner": aggregate_plans([plan_scores[q.key] for q, _, _ in subset if q.key in plan_scores]),
+                "answer": aggregate_answers([judgements[q.key] for q, _, _ in subset if q.key in judgements])}
 
     def by(attr: str) -> dict:
         groups: dict[str, list] = {}
@@ -126,11 +133,11 @@ def evaluate(questions: list[Question], outcomes: dict[str, Outcome], places: Pl
 
     return {
         "summary": {"overall": summary(rows), "by_split": by("split"), "by_type": by("type")},
-        "questions": [_record(q, o, s, plan_scores.get(q.key)) for q, o, s in rows],
+        "questions": [_record(q, o, s, plan_scores.get(q.key), judgements.get(q.key)) for q, o, s in rows],
     }
 
 
-def _record(q: Question, o: Outcome, s: Score, plan_score: PlanScore | None) -> dict:
+def _record(q: Question, o: Outcome, s: Score, plan_score: PlanScore | None, judgement: Judgement | None) -> dict:
     return {
         "key": q.key,
         "question": q.question,
@@ -152,4 +159,6 @@ def _record(q: Question, o: Outcome, s: Score, plan_score: PlanScore | None) -> 
         "planner": plan_score.to_dict() if plan_score else None,
         "sections": [asdict(sec) for sec in o.sections],
         "answer": o.answer,
+        "expect": list(q.expect),
+        "judge": judgement.to_dict() if judgement else None,
     }

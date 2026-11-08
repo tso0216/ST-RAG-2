@@ -22,13 +22,15 @@ Answerer = Callable[[str, list[Section]], Awaitable[str]]
 class Config:
     # 要不要呼叫生成器產生答案
     answer: bool = True
+    # 要不要請評審評估答案（`expect` 覆蓋率、時間誤植率）；需要 answer
+    judge: bool = False
     # 檢索參數
     params: Params = field(default_factory=Params)
 
     name = "full"
 
     def to_dict(self) -> dict:
-        return {"name": self.name, "answer": self.answer, "params": asdict(self.params)}
+        return {"name": self.name, "answer": self.answer, "judge": self.judge, "params": asdict(self.params)}
 
 
 class Runner:

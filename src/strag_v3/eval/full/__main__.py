@@ -1,11 +1,11 @@
 """主系統（full）評估命令列。
 
-    python -m strag_v3.eval.full run data/mock_article/eval [--split dev] [--no-answer]
+    python -m strag_v3.eval.full run data/mock_article/eval [--split dev] [--no-answer | --judge]
     python -m strag_v3.eval.full compare src/strag_v3/eval/full/runs/*.json
 
 只跑完整系統（規劃器 → 檢索含兩種退讓 → 生成器），不跑 baseline 和 oracle。
-`run` 印出彙總表（檢索指標，和有 `gold_plan` 的題目的規劃器正確率），
-並把設定、彙總和每題的紀錄（計畫、gold_plan、取回集合、證據、答案、指標）存成一個 JSON 檔；
+`run` 印出彙總表（檢索指標，有 `gold_plan` 的題目的規劃器正確率，開 `--judge` 時加上答案指標），
+並把設定、彙總和每題的紀錄（計畫、gold_plan、取回集合、證據、答案、評審的逐條判斷、指標）存成一個 JSON 檔；
 `compare` 讀幾個結果檔，把同一組的指標並排列出。
 """
 import argparse
@@ -23,6 +23,7 @@ from ...rag import llm
 from ...rag.embedding import CachedEmbedder, EmbeddingError, OpenAIEmbedder
 from ..metrics import evaluate
 from ..questions import SPLITS, QuestionError, load_questions
+from .judge import MODEL as JUDGE_MODEL, Judge, JudgeError
 from .runner import Config, Runner
 
 RUNS_DIR = Path(__file__).parent / "runs"
@@ -34,6 +35,9 @@ COLUMNS = (("n", "題數"), ("recall", "R"), ("precision", "P"), ("f1", "F1"),
 PLANNER_COLUMNS = (("n", "題數"), ("accuracy", "整體"), ("sub_queries", "子查詢數"), ("space", "地點"),
                    ("month", "月份"), ("day_type", "平日／假日"), ("time", "時段"), ("aspect", "aspect"),
                    ("group_by", "group_by"), ("compose", "compose"))
+# 答案指標（彙總裡的 `answer`）
+ANSWER_COLUMNS = (("n", "題數"), ("expect_coverage", "expect 覆蓋率"), ("misattribution_rate", "時間誤植率"),
+                  ("claims_n", "講到時間的說法"), ("misattributed", "誤植"))
 
 
 def _cell(v) -> str:
@@ -76,13 +80,37 @@ def _planner(groups: list[tuple[str, dict]]) -> list[tuple[str, dict]]:
     return [(name, m["planner"]) for name, m in groups if (m.get("planner") or {}).get("n")]
 
 
+def _answer(groups: list[tuple[str, dict]]) -> list[tuple[str, dict]]:
+    """各組的答案指標；沒開答案評估，或是舊的結果檔沒有這項時是空的。"""
+    return [(name, m["answer"]) for name, m in groups if (m.get("answer") or {}).get("n")]
+
+
+async def _judge_all(judge: Judge, questions, outcomes, concurrency: int) -> dict:
+    sem = asyncio.Semaphore(concurrency)
+
+    async def one(q):
+        async with sem:
+            try:
+                j = await judge.judge(q, outcomes[q.key])
+            except JudgeError as e:  # 評審的格式錯誤只跳過這題；LLM 本身的錯誤照樣讓整批停下
+                print(f"[judge] 跳過：{e}", file=sys.stderr)
+                return q.key, None
+        if j is not None:
+            print(f"[judge] {q.key} expect 覆蓋 {j.expect_coverage if j.expect_coverage is not None else '—'}"
+                  f"｜誤植 {'—' if j.misattributed is None else j.misattributed}", file=sys.stderr)
+        return q.key, j
+
+    pairs = await asyncio.gather(*(one(q) for q in questions))
+    return {k: j for k, j in pairs if j is not None}
+
+
 async def _run(a) -> dict:
     questions = load_questions(a.questions)
     if a.split:
         questions = [q for q in questions if q.split == a.split]
         if not questions:
             raise QuestionError(f"沒有 split={a.split} 的題目")
-    config = Config(answer=not a.no_answer)
+    config = Config(answer=not a.no_answer, judge=a.judge)
     conn = sqlite3.connect(a.db)
     try:
         runner = Runner(conn, CachedEmbedder(OpenAIEmbedder(), conn), config, nominatim=NominatimClient())
@@ -94,7 +122,9 @@ async def _run(a) -> dict:
             print(f"[{config.name}] {q.key} {status}", file=sys.stderr)
 
         outcomes = await runner.run_all(questions, a.concurrency, progress)
-        metrics = evaluate(questions, outcomes, Places(conn, NominatimClient()))
+        judge = Judge(conn) if config.judge else None
+        judgements = await _judge_all(judge, questions, outcomes, a.concurrency) if judge else None
+        metrics = evaluate(questions, outcomes, Places(conn, NominatimClient()), judgements)
     finally:
         conn.close()
     return {
@@ -103,6 +133,7 @@ async def _run(a) -> dict:
         "questions_path": str(a.questions),
         "split": a.split,
         "db": str(a.db),
+        **({"judge": {"model": judge.model, "note": judge.note()}} if judge else {}),
         **metrics,
     }
 
@@ -121,6 +152,8 @@ def cmd_run(a) -> int:
     print(f"## {name}\n\n{_table(groups)}\n")
     if planner := _planner(groups):
         print(f"### 規劃器正確率\n\n{_table(planner, PLANNER_COLUMNS)}\n")
+    if answer := _answer(groups):
+        print(f"### 答案指標\n\n{_table(answer, ANSWER_COLUMNS)}\n\n註：{result['judge']['note']}\n")
     print(f"結果存在 {out}")
     return 0
 
@@ -130,12 +163,16 @@ def cmd_compare(a) -> int:
     for p in a.runs:
         r = json.loads(p.read_text())
         runs.append((f"{r['config']['name']}（{p.stem}）", dict(_groups(r["summary"]))))
+        if judge := r.get("judge"):
+            print(f"註：{p.stem} 的答案評估：{judge['note']}")
     group_names = list(dict.fromkeys(g for _, groups in runs for g in groups))
     for g in group_names:
         rows = [(name, groups[g]) for name, groups in runs if g in groups]
         print(f"## {g}\n\n{_table(rows)}\n")
         if planner := _planner(rows):
             print(f"### {g}：規劃器正確率\n\n{_table(planner, PLANNER_COLUMNS)}\n")
+        if answer := _answer(rows):
+            print(f"### {g}：答案指標\n\n{_table(answer, ANSWER_COLUMNS)}\n")
     return 0
 
 
@@ -146,7 +183,10 @@ def main(argv=None) -> int:
     r = sub.add_parser("run", help="用主系統跑題目，印出彙總並存檔")
     r.add_argument("questions", type=Path, help="題目檔，或放題目檔的資料夾（讀裡面所有 *.json）")
     r.add_argument("--split", choices=SPLITS, help="只跑 dev 或 test 的題目（預設全部）")
-    r.add_argument("--no-answer", action="store_true", help="不呼叫生成器，只評估檢索")
+    mode = r.add_mutually_exclusive_group()
+    mode.add_argument("--no-answer", action="store_true", help="不呼叫生成器，只評估檢索")
+    mode.add_argument("--judge", action="store_true",
+                      help=f"請評審（{JUDGE_MODEL}）評估答案的 expect 覆蓋率和時間誤植率；評審結果有快取")
     r.add_argument("--concurrency", type=int, default=4, help="同時跑幾題（預設 4）")
     r.add_argument("--db", type=Path, default=DB_PATH, help=f"片段所在的 DB（預設 {DB_PATH}）")
     r.add_argument("--out", type=Path, help=f"結果檔路徑（預設 {RUNS_DIR}/<時間>_full.json）")
