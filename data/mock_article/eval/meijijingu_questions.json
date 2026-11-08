@@ -1,7 +1,13 @@
 {
   "place_name": "明治神宮",
-  "articles": [],
-  "negative_articles": [],
+  "articles": [
+    "mock_meijijingu_june_weekday_morning_rain",
+    "mock_meijijingu_december_weekend_afternoon_closing"
+  ],
+  "negative_articles": [
+    "mock_meijijingu_may_weekday_morning_sunny",
+    "mock_meijijingu_november_weekend_afternoon_shichigosan"
+  ],
   "questions": [
     {
       "id": "q1",
@@ -13,6 +19,7 @@
         "day_type": "平日",
         "time": ["早上"]
       },
+      "relevant_contents": [151, 152],
       "expect": [
         "下雨天參道人很少，森林很安靜，雨中走參道很有氣氛",
         "六月中旬前後御苑的花菖蒲正好盛開",
@@ -43,6 +50,7 @@
       "when": {
         "month": ["12"]
       },
+      "relevant_contents": [67],
       "expect": [
         "開門、關門時間跟著日出日落調整，十二月大約早上六點四十開、下午四點就關",
         "從鳥居走到本殿要十幾分鐘，三點半以後才到會很趕",
@@ -72,6 +80,7 @@
         "day_type": "假日",
         "time": ["下午", "晚上"]
       },
+      "relevant_contents": [67, 132, 133],
       "expect": [
         "澀谷 SKY 頂樓可以看日落，四點半左右日落，天氣好西邊看得到富士山剪影",
         "澀谷 SKY 日落時段的票要提早線上預約，當天現場買通常已經售完",

@@ -1,7 +1,14 @@
 {
   "place_name": "築地場外市場",
-  "articles": [],
-  "negative_articles": [],
+  "articles": [
+    "mock_tsukiji_july_weekday_morning",
+    "mock_tsukiji_july_weekday_noon_heat",
+    "mock_tsukiji_october_sunday_morning"
+  ],
+  "negative_articles": [
+    "mock_tsukiji_saturday_afternoon_closing",
+    "mock_tsukiji_august_saturday_noon_heat"
+  ],
   "questions": [
     {
       "id": "q1",
@@ -12,6 +19,7 @@
         "day_type": "假日",
         "time": ["早上"]
       },
+      "relevant_contents": [185, 186],
       "expect": [
         "週日和國定假日是市場的休市日，不少店休息、鐵捲門拉下來",
         "還是有一部分海鮮丼和小吃店照常營業，不至於白跑一趟",
@@ -40,6 +48,7 @@
       "when": {
         "day_type": "平日"
       },
+      "relevant_contents": [161, 164, 165, 166],
       "expect": [
         "很多店清晨五、六點就開，下午兩點左右陸續收攤",
         "中午十二點前後還吃得到海鮮丼，但熱門的店要排隊，部分食材會賣完",
@@ -69,6 +78,7 @@
         "day_type": "平日",
         "time": ["早上", "中午"]
       },
+      "relevant_contents": [161, 162, 164, 165],
       "expect": [
         "早上：店都開了，天氣還沒那麼熱，邊走邊吃剛好",
         "中午：很熱，攤位大多在戶外沒有冷氣，要在太陽下排隊；一點過後店家開始收攤",

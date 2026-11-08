@@ -1,7 +1,15 @@
 {
   "place_name": "清水寺",
-  "articles": [],
-  "negative_articles": [],
+  "articles": [
+    "mock_kiyomizudera_november_weekend_opening_momiji",
+    "mock_kiyomizudera_november_weekday_night_lightup",
+    "mock_kiyomizudera_february_weekday_dawn_snow",
+    "mock_kiyomizudera_june_weekend_afternoon_rain"
+  ],
+  "negative_articles": [
+    "mock_kiyomizudera_november_weekend_noon_momiji",
+    "mock_kiyomizudera_march_weekday_night_lightup"
+  ],
   "questions": [
     {
       "id": "q1",
@@ -12,6 +20,7 @@
         "month": ["11"],
         "time": ["早上", "晚上"]
       },
+      "relevant_contents": [59, 64, 65],
       "expect": [
         "早上：六點就開門，七點前舞台人不多，可以在自然光下看整片紅葉",
         "晚上：秋季夜間特別拜觀五點半開始，紅葉打光，還有一道藍色光束，但入口要排隊、舞台很擠",
@@ -49,8 +58,9 @@
       "when": {
         "month": ["冬"]
       },
+      "relevant_contents": [174, 175, 176],
       "expect": [
-        "京都市區一年只積雪幾次，多半在一、二月",
+        "旅客碰到的雪景是二月下雪的隔天",
         "要在下雪的隔天一開門就去，舞台和本堂屋頂一片白",
         "雪通常到中午前就融了，晚一點去就看不到"
       ],
@@ -78,6 +88,7 @@
         "day_type": "平日",
         "time": ["晚上"]
       },
+      "relevant_contents": [59, 60],
       "expect": [
         "清水寺有秋季夜間特別拜觀，五點半到九點，可以看點燈的紅葉",
         "八坂神社二十四小時開放，晚上燈籠全亮，可以參拜"

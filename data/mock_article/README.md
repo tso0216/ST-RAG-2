@@ -12,7 +12,7 @@ data/mock_article/
 
 `eval/` 必須是子資料夾：extract 讀資料夾時只讀第一層的 `*.json`，題目放第一層會被當成文章。
 
-現有 10 個景點、30 題（dev 10 題、test 20 題，兩組都有四種題型）。晴空塔、澀谷 SKY、伏見稻荷各有正例 2 篇、負例 2 篇；其餘 7 個景點只出了題，遊記還沒寫（`articles` 是空的）。題目集的結構由 `tests/eval/test_mock_dataset.py` 檢查。
+現有 10 個景點、30 題（dev 10 題、test 20 題，兩組都有四種題型）。遊記共 47 篇，每個景點有正例 2–4 篇、負例 2 篇。題目集的結構由 `tests/eval/test_mock_dataset.py` 檢查。
 
 ## 流程
 
@@ -52,13 +52,14 @@ data/mock_article/
 
 ### 4. 提取
 
+從專案根目錄：
+
 ```bash
-cd src
-../.venv/bin/python -m strag_v3.extract ../data/mock_article/
+PYTHONPATH=src:. .venv/bin/python -m strag_v3.extract data/mock_article/
 ```
 
 - DB 已經有片段的文章會略過，只抽新的。
-- 要重抽就加 `--force`：會刪掉該篇的舊片段再寫入，**content id 會變**，做完要重做第 5 步。
+- 要重抽就加 `--force`：會刪掉該篇的舊片段再寫入，**content id 會變**，做完要重做第 5、6 步。
 - 預設每次都呼叫 LLM；加 `--cache` 才會用快取。
 - 每筆的地點用 Nominatim 解析成 OSM 物件（結果存進 `main.db` 的 `nominatim_cache`，之後只讀快取）。有地點解析不到的文章整篇不寫入，結束時列出解析不到的名稱。
 - 改了 DB schema 或抽取 prompt、要整個重抽時，先跑 `.venv/bin/python scripts/db/create_main_db.py --rebuild`（清掉 content 和 place，保留 embedding 和 Nominatim 快取）。
@@ -83,6 +84,24 @@ sqlite3 data/main.db "SELECT id, article_id, poi_name, day_type, time, month, co
 sqlite3 data/main.db "SELECT p.id, p.kind, p.name_zh, p.name_ja, p.osm_type || '/' || p.osm_id, o.name_ja AS outer_area
   FROM place p LEFT JOIN place o ON o.id = p.outer_id ORDER BY p.id"
 ```
+
+### 6. 檢查
+
+```bash
+PYTHONPATH=src:. .venv/bin/python scripts/eval/check_mock.py --llm --md 片段清單.md
+```
+
+逐題用 `gold_plan` 的子查詢（地點範圍 + 時間硬過濾）找出範圍內的片段，`--md` 把清單寫出來給審稿用。
+
+- 錯誤（要改）：負例片段落進題目、題目範圍內沒有正例片段、片段靠 `不明` 通過子查詢限定的欄位、`relevant_contents` 的片段不存在或被過濾掉。
+- 提醒：已標 `relevant_contents` 的題目，範圍內還有沒標的正例片段。
+- `--llm`：回報片段裡找不到的 `expect`，以及跟 `expect` 矛盾的片段。會有誤判，只當參考。
+
+寫遊記時就避開常見的錯誤：
+
+- `expect` 需要的資訊寫成作者親眼看到、親身做的事。轉述（「聽說」）和結尾的心得常被抽取丟掉。
+- 每段都寫出星期幾和鐘點，否則會抽成 `不明`，落進不該進的題目。
+- 鐘點要落在題目問的時段裡（時段邊界見 `src/strag_v3/time_slots.md`）。例如問早上，就不要寫「十一點半」。
 
 ## 遊記檔格式
 

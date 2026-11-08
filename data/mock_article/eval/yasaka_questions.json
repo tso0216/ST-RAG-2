@@ -1,7 +1,15 @@
 {
   "place_name": "八坂神社",
-  "articles": [],
-  "negative_articles": [],
+  "articles": [
+    "mock_yasaka_july_gion_night",
+    "mock_yasaka_august_weekday_noon_heat",
+    "mock_yasaka_august_night_sennichi",
+    "mock_yasaka_december31_okera"
+  ],
+  "negative_articles": [
+    "mock_yasaka_july_weekday_afternoon_prep",
+    "mock_yasaka_october_weekday_night_lanterns"
+  ],
   "questions": [
     {
       "id": "q1",
@@ -12,6 +20,7 @@
         "month": ["7"],
         "time": ["晚上"]
       },
+      "relevant_contents": [167, 168],
       "expect": [
         "祇園祭一整個七月都有祭典活動",
         "七月十七日傍晚神轎從八坂神社出發（神幸祭）",
@@ -42,6 +51,7 @@
         "month": ["8"],
         "time": ["中午", "晚上"]
       },
+      "relevant_contents": [113, 114],
       "expect": [
         "中午：太陽很大，境內石板地反光很熱，能遮蔭的地方不多",
         "晚上：燈籠點亮、比較涼，人也少，可以慢慢參拜",
@@ -80,6 +90,7 @@
         "month": ["8"],
         "time": ["晚上"]
       },
+      "relevant_contents": [112, 113],
       "expect": [
         "八坂神社二十四小時開放，晚上燈籠亮著，可以參拜",
         "清水寺只有八月中旬千日詣那幾天有夜間特別拜觀，其他晚上傍晚就關門"

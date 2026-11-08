@@ -1,7 +1,14 @@
 {
   "place_name": "錦市場",
-  "articles": [],
-  "negative_articles": [],
+  "articles": [
+    "mock_nishiki_december_weekday_morning_opening",
+    "mock_nishiki_december_yearend_shopping",
+    "mock_nishiki_june_weekend_afternoon_rain"
+  ],
+  "negative_articles": [
+    "mock_nishiki_january_weekday_morning_newyear",
+    "mock_nishiki_june_weekday_afternoon_rain"
+  ],
   "questions": [
     {
       "id": "q1",
@@ -13,6 +20,7 @@
         "day_type": "平日",
         "time": ["早上"]
       },
+      "relevant_contents": [76],
       "expect": [
         "八點多大部分店還沒開，只有少數魚店、醃菜店在準備",
         "多數店九點到十點之後才陸續開門",
@@ -42,6 +50,7 @@
       "when": {
         "month": ["12"]
       },
+      "relevant_contents": [78, 177],
       "expect": [
         "錦市場年底二十八到三十日左右賣年菜食材（數之子、棒鱈、黑豆），擠滿來採買的在地人",
         "八坂神社十二月三十一日晚上有白朮詣（をけら詣り），可以用火繩把神火帶回家"
@@ -70,6 +79,7 @@
         "day_type": "假日",
         "time": ["下午"]
       },
+      "relevant_contents": [54, 84],
       "expect": [
         "錦市場：有屋頂下雨也能逛，但避雨的人都擠進來，走道比平常更擠",
         "清水寺：坡道和石階濕滑，舞台上撐傘的人多，遠景霧濛濛，但人比晴天少",

@@ -9,9 +9,16 @@
 
 **Blocked by:** 08, 14
 
-**Status:** ready-for-agent
+**Status:** ready-for-human
 
-- [ ] 30 題的 `relevant_contents` 都由 agent 標註，附上標註理由
-- [ ] 抽取結果中寫錯的地點名稱、混進的奇怪文字都已經處理
-- [ ] 重抽後 content id 有變的話，所有受影響題目的對應都已經更新
+- [x] 30 題的 `relevant_contents` 都由 agent 標註，附上標註理由
+- [x] 抽取結果中寫錯的地點名稱、混進的奇怪文字都已經處理
+- [x] 重抽後 content id 有變的話，所有受影響題目的對應都已經更新
 - [ ] 標註結果交給研究者確認，研究者的修改都已經套用
+
+## Notes
+
+- 審稿文件：`.scratch/st-rag-main-system/09-annotation-review.md`（逐題標註理由、沒標的片段、待決定事項）。
+- `check_mock.py` 錯誤 0；提醒 16 條都是範圍內沒標的正例片段，理由寫在審稿文件。
+- 這輪沒有重抽：沒找到寫錯的地點名稱。清水寺片段 176 原本是轉述，依研究者決定改成親眼所見：遊記和 `main.db` 片段文字直接改，沒有重抽，id 不變。
+- 晴空塔、澀谷 SKY、伏見稻荷 9 題的舊 id 已換成 14 重抽後的 id。

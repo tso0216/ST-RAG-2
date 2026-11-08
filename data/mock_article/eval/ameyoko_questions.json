@@ -1,7 +1,13 @@
 {
   "place_name": "阿美橫町",
-  "articles": [],
-  "negative_articles": [],
+  "articles": [
+    "mock_ameyoko_december_yearend_afternoon_evening",
+    "mock_ameyoko_february_weekday_morning_night"
+  ],
+  "negative_articles": [
+    "mock_ameyoko_january_weekday_night_izakaya",
+    "mock_ameyoko_november_weekend_morning_afternoon"
+  ],
   "questions": [
     {
       "id": "q1",
@@ -11,6 +17,7 @@
       "when": {
         "month": ["12"]
       },
+      "relevant_contents": [195, 196, 197, 198],
       "expect": [
         "年底二十八到三十一日整條街變成年貨市場，賣鮪魚、螃蟹、鮭魚卵、數之子",
         "白天到下午人最多，價錢還沒降",
@@ -40,6 +47,7 @@
         "day_type": "平日",
         "time": ["早上"]
       },
+      "relevant_contents": [45, 161, 162],
       "expect": [
         "築地場外市場：很多店清晨五、六點就開，八點正熱鬧，海鮮丼、玉子燒都吃得到",
         "阿美橫町：大部分店十點左右才開，八點去很多鐵捲門還拉著",
@@ -78,6 +86,7 @@
         "day_type": "平日",
         "time": ["晚上"]
       },
+      "relevant_contents": [46, 89, 90],
       "expect": [
         "淺草寺境內晚上還能走，有點燈可以拍夜景，但本堂五點就關、仲見世也打烊了",
         "阿美橫町賣乾貨、海鮮的店晚上七、八點陸續收攤，但高架橋下的居酒屋開到很晚，晚上可以去喝一杯"

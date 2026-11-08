@@ -1,7 +1,14 @@
 {
   "place_name": "淺草寺",
-  "articles": [],
-  "negative_articles": [],
+  "articles": [
+    "mock_sensoji_february_weekday_night_lightup",
+    "mock_sensoji_january_weekday_dawn_mainhall",
+    "mock_sensoji_december_hagoita_ichi"
+  ],
+  "negative_articles": [
+    "mock_sensoji_october_weekday_night_closed",
+    "mock_sensoji_july_hozuki_ichi"
+  ],
   "questions": [
     {
       "id": "q1",
@@ -13,6 +20,7 @@
         "day_type": "平日",
         "time": ["晚上"]
       },
+      "relevant_contents": [88, 89, 90, 91],
       "expect": [
         "本堂冬天下午五點就關門，晚上進不去，只能在外面合掌參拜",
         "境內晚上還能自由走動，本堂、五重塔、雷門都有點燈，可以拍夜景",
@@ -43,6 +51,7 @@
       "when": {
         "month": ["12"]
       },
+      "relevant_contents": [199, 200, 202],
       "expect": [
         "十二月十七到十九日有羽子板市，境內擺滿賣裝飾羽子板的攤子",
         "攤子從早上開到晚上九點左右，晚上在燈光下看羽子板特別漂亮",
@@ -71,6 +80,7 @@
         "month": ["冬"],
         "time": ["早上", "晚上"]
       },
+      "relevant_contents": [88, 89, 90, 91, 147, 148, 149],
       "expect": [
         "一大早：本堂六點半就開，可以進本堂參拜；仲見世的店還沒開，鐵捲門都拉著",
         "晚上：本堂五點就關、進不去，但境內有點燈可以拍夜景；仲見世也已經打烊",
