@@ -1,0 +1,103 @@
+{
+  "place_name": "築地場外市場",
+  "articles": [],
+  "negative_articles": [],
+  "questions": [
+    {
+      "id": "q1",
+      "type": "停留",
+      "split": "dev",
+      "question": "週日早上去築地場外市場，店都有開嗎？",
+      "when": {
+        "day_type": "假日",
+        "time": ["早上"]
+      },
+      "expect": [
+        "週日和國定假日是市場的休市日，不少店休息、鐵捲門拉下來",
+        "還是有一部分海鮮丼和小吃店照常營業，不至於白跑一趟",
+        "想吃的店要先查它的營業日"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "築地場外市場", "name_ja": "築地場外市場", "city": "東京", "kind": "景點"},
+            "time": {
+              "day_type": "假日",
+              "time": ["早上"]
+            },
+            "aspect": "週日店家營業狀況"
+          }
+        ],
+        "group_by": [],
+        "compose": "merge"
+      }
+    },
+    {
+      "id": "q2",
+      "type": "找時間",
+      "split": "test",
+      "question": "平日去築地場外市場吃海鮮丼，最晚幾點要到？",
+      "when": {
+        "day_type": "平日"
+      },
+      "expect": [
+        "很多店清晨五、六點就開，下午兩點左右陸續收攤",
+        "中午十二點前後還吃得到海鮮丼，但熱門的店要排隊，部分食材會賣完",
+        "一點半以後很多店開始收，最好中午以前到"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "築地場外市場", "name_ja": "築地場外市場", "city": "東京", "kind": "景點"},
+            "time": {
+              "day_type": "平日"
+            },
+            "aspect": "店家營業時間與收攤時間"
+          }
+        ],
+        "group_by": ["time_of_day"],
+        "compose": "merge"
+      }
+    },
+    {
+      "id": "q3",
+      "type": "比較",
+      "split": "test",
+      "question": "七月平日去築地場外市場，早上去跟中午去差在哪？",
+      "when": {
+        "month": ["7"],
+        "day_type": "平日",
+        "time": ["早上", "中午"]
+      },
+      "expect": [
+        "早上：店都開了，天氣還沒那麼熱，邊走邊吃剛好",
+        "中午：很熱，攤位大多在戶外沒有冷氣，要在太陽下排隊；一點過後店家開始收攤",
+        "要說明這是不同旅客不同天的經驗"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "築地場外市場", "name_ja": "築地場外市場", "city": "東京", "kind": "景點"},
+            "time": {
+              "month": ["7"],
+              "day_type": "平日",
+              "time": ["早上"]
+            },
+            "aspect": "天氣與店家營業"
+          },
+          {
+            "space": {"name": "築地場外市場", "name_ja": "築地場外市場", "city": "東京", "kind": "景點"},
+            "time": {
+              "month": ["7"],
+              "day_type": "平日",
+              "time": ["中午"]
+            },
+            "aspect": "天氣與店家營業"
+          }
+        ],
+        "group_by": [],
+        "compose": "contrast"
+      }
+    }
+  ]
+}

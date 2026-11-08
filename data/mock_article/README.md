@@ -12,7 +12,7 @@ data/mock_article/
 
 `eval/` 必須是子資料夾：extract 讀資料夾時只讀第一層的 `*.json`，題目放第一層會被當成文章。
 
-現有範例：晴空塔，正例 2 篇、負例 2 篇、題目 3 題（`eval/skytree_questions.json`）。
+現有 10 個景點、30 題（dev 10 題、test 20 題，兩組都有四種題型）。晴空塔、澀谷 SKY、伏見稻荷各有正例 2 篇、負例 2 篇；其餘 7 個景點只出了題，遊記還沒寫（`articles` 是空的）。題目集的結構由 `tests/eval/test_mock_dataset.py` 檢查。
 
 ## 流程
 
@@ -115,10 +115,21 @@ sqlite3 data/main.db "SELECT p.id, p.kind, p.name_zh, p.name_ja, p.osm_type || '
   "questions": [
     {
       "id": "q1",
+      "type": "停留",
+      "split": "dev",
       "question": "一月平日早上去晴空塔，看得到富士山嗎？要排多久？",
       "when": {"month": ["1"], "day_type": "平日", "time": ["早上"]},
       "relevant_contents": [9, 10, 11],
-      "expect": ["開門前約二十分鐘到……", "富士山很清楚……"]
+      "expect": ["開門前約二十分鐘到……", "富士山很清楚……"],
+      "gold_plan": {
+        "sub_queries": [{
+          "space": {"name": "東京晴空塔", "name_ja": "東京スカイツリー", "city": "東京", "kind": "景點"},
+          "time": {"month": ["1"], "day_type": "平日", "time": ["早上"]},
+          "aspect": "富士山能見度與排隊時間"
+        }],
+        "group_by": [],
+        "compose": "merge"
+      }
     }
   ]
 }
@@ -133,8 +144,15 @@ sqlite3 data/main.db "SELECT p.id, p.kind, p.name_zh, p.name_ja, p.osm_type || '
 | `questions[].when` | 時空條件，沒限制的欄位不寫 |
 | `questions[].relevant_contents` | 回答需要檢索到的 `main.db` content id |
 | `questions[].expect` | 答案應包含的重點 |
-| `questions[].type` | 題型：停留、找時間、找地點、比較；只用於分組分析，系統不讀，可以不寫 |
-| `questions[].split` | `dev` 或 `test`；可以不寫，沒寫的題目分組時歸在「未標」 |
+| `questions[].type` | 題型：停留、找時間、找地點、比較；只用於分組分析，系統不讀 |
+| `questions[].split` | `dev` 或 `test` |
+| `questions[].gold_plan` | 人工寫的檢索計畫，格式跟規劃器的輸出相同（`sub_queries`、`group_by`、`compose`），用來算規劃器正確率 |
+
+這份題目集每題都要寫 `question`、`when`、`expect`、`type`、`split`、`gold_plan`，`tests/eval/test_mock_dataset.py` 會檢查。評估本身不要求 `type`、`split`：沒寫的題目分組時歸在「未標」。
+
+`gold_plan` 的 `space` 寫成 `{name, name_ja, city, kind}`，用到的景點和區域都要先用 Nominatim 確認過。京都的區（東山区、中京区）`city` 要寫 `京都市`：用 `京都` 查 Nominatim，第一頁只有道路，解析不到行政區。京都市本身的 `city` 寫 `京都府`（跟抽取時寫進快取的外圍行政區一致）。
+
+問區域的題目（找地點）和跨景點比較的題目，也算在範圍裡每個景點的題目內：寫負例時，這些題目的 `when` 也要避開。
 
 `when` 的格式跟檢索計畫子查詢的 `time` 一樣：
 

@@ -1,0 +1,102 @@
+{
+  "place_name": "阿美橫町",
+  "articles": [],
+  "negative_articles": [],
+  "questions": [
+    {
+      "id": "q1",
+      "type": "找時間",
+      "split": "test",
+      "question": "十二月底去阿美橫町買年貨，幾點買海鮮最划算？",
+      "when": {
+        "month": ["12"]
+      },
+      "expect": [
+        "年底二十八到三十一日整條街變成年貨市場，賣鮪魚、螃蟹、鮭魚卵、數之子",
+        "白天到下午人最多，價錢還沒降",
+        "傍晚以後、接近收攤時店家會喊價出清，價錢比白天便宜很多",
+        "傍晚雖然便宜，但好的貨可能已經賣完"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "阿美橫町", "name_ja": "アメヤ横丁", "city": "東京", "kind": "景點"},
+            "time": {
+              "month": ["12"]
+            },
+            "aspect": "海鮮價格隨時段的變化"
+          }
+        ],
+        "group_by": ["time_of_day"],
+        "compose": "merge"
+      }
+    },
+    {
+      "id": "q2",
+      "type": "比較",
+      "split": "dev",
+      "question": "平日早上八點想買海鮮，築地場外市場跟阿美橫町哪邊已經開了？",
+      "when": {
+        "day_type": "平日",
+        "time": ["早上"]
+      },
+      "expect": [
+        "築地場外市場：很多店清晨五、六點就開，八點正熱鬧，海鮮丼、玉子燒都吃得到",
+        "阿美橫町：大部分店十點左右才開，八點去很多鐵捲門還拉著",
+        "要說明這是不同旅客不同天的經驗"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "築地場外市場", "name_ja": "築地場外市場", "city": "東京", "kind": "景點"},
+            "time": {
+              "day_type": "平日",
+              "time": ["早上"]
+            },
+            "aspect": "店家開門時間"
+          },
+          {
+            "space": {"name": "阿美橫町", "name_ja": "アメヤ横丁", "city": "東京", "kind": "景點"},
+            "time": {
+              "day_type": "平日",
+              "time": ["早上"]
+            },
+            "aspect": "店家開門時間"
+          }
+        ],
+        "group_by": [],
+        "compose": "contrast"
+      }
+    },
+    {
+      "id": "q3",
+      "type": "找地點",
+      "split": "test",
+      "question": "二月平日晚上在台東區，哪裡晚上還能逛、還有東西吃？",
+      "when": {
+        "month": ["2"],
+        "day_type": "平日",
+        "time": ["晚上"]
+      },
+      "expect": [
+        "淺草寺境內晚上還能走，有點燈可以拍夜景，但本堂五點就關、仲見世也打烊了",
+        "阿美橫町賣乾貨、海鮮的店晚上七、八點陸續收攤，但高架橋下的居酒屋開到很晚，晚上可以去喝一杯"
+      ],
+      "gold_plan": {
+        "sub_queries": [
+          {
+            "space": {"name": "台東區", "name_ja": "台東区", "city": "東京", "kind": "區域"},
+            "time": {
+              "month": ["2"],
+              "day_type": "平日",
+              "time": ["晚上"]
+            },
+            "aspect": "晚上還開著的地方"
+          }
+        ],
+        "group_by": ["place"],
+        "compose": "merge"
+      }
+    }
+  ]
+}
