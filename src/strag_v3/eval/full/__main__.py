@@ -22,7 +22,7 @@ from ...rag import llm
 from ...rag.embedding import CachedEmbedder, EmbeddingError, OpenAIEmbedder
 from ..metrics import evaluate
 from ..questions import SPLITS, QuestionError, load_questions
-from ..runner import Config, Runner
+from .runner import Config, Runner
 
 RUNS_DIR = Path(__file__).parent / "runs"
 
@@ -72,7 +72,7 @@ async def _run(a) -> dict:
         questions = [q for q in questions if q.split == a.split]
         if not questions:
             raise QuestionError(f"沒有 split={a.split} 的題目")
-    config = Config(system="full", answer=not a.no_answer)
+    config = Config(answer=not a.no_answer)
     conn = sqlite3.connect(a.db)
     try:
         runner = Runner(conn, CachedEmbedder(OpenAIEmbedder(), conn), config, nominatim=NominatimClient())
