@@ -1,5 +1,7 @@
 """LLM 服務：送 system/user prompt，取回符合 JSON schema 的結果。
 
+schema 為 None 時不限制輸出格式，回傳純文字。
+
 LLM 呼叫只在這裡，之後要換成 `claude -p` 或正式 API 只改這個檔。
 """
 import os
@@ -11,7 +13,7 @@ class LLMError(Exception):
     """LLM 回傳錯誤（包含額度用完），整批要停下。"""
 
 
-async def call(system: str, user: str, schema: dict, model: str) -> dict:
+async def call(system: str, user: str, schema: dict | None, model: str) -> dict | str:
     os.environ.pop("ANTHROPIC_API_KEY", None)  # 走訂閱額度，不走 API 計費
     options = ClaudeAgentOptions(
         model=model,
@@ -19,7 +21,9 @@ async def call(system: str, user: str, schema: dict, model: str) -> dict:
         tools=[],
         strict_mcp_config=True,
         setting_sources=[],
-        output_format={"type": "json_schema", "schema": schema},
+        output_format=(
+            {"type": "json_schema", "schema": schema} if schema is not None else None
+        ),
         verbatim_prompts=True,
         extra_args={"no-session-persistence": None},
     )
@@ -32,8 +36,8 @@ async def call(system: str, user: str, schema: dict, model: str) -> dict:
         raise LLMError(f"{type(e).__name__}: {e}") from e
     if result is None:
         raise LLMError("沒有收到結果")
-    if result.is_error or result.structured_output is None:
+    if result.is_error or (schema is not None and result.structured_output is None):
         detail = result.errors or result.result or result.subtype
         status = f" HTTP {result.api_error_status}" if result.api_error_status else ""
         raise LLMError(f"{result.subtype}{status}: {detail}")
-    return result.structured_output
+    return result.result or "" if schema is None else result.structured_output
