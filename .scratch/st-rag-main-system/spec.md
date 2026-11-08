@@ -76,7 +76,7 @@ Status: ready-for-agent
 
 37. As a 標註者, I want mock 擴充到約 10 個景點、30 題，四種題型（停留、找時間、找地點、比較）都要有, so that 可行性驗證有足夠的題目
 38. As a 標註者, I want 遊記、題目和 `gold_plan` 由 agent 照 mock README 的流程起草，我負責審稿, so that 我省下寫作時間，但保有最後決定權
-39. As a 標註者, I want `relevant_contents` 等抽取完成後由我確認, so that 論文可以寫「人工標註」
+39. As a 標註者, I want `relevant_contents` 等抽取完成後由 agent 標註、附上理由，再由我確認, so that 我省下逐題對照的時間，論文可以寫「agent 標註、人工確認」
 40. As a 標註者, I want 每個景點都有時空條件避開所有題目的負例遊記, so that 時間違規率有東西可量
 41. As a 標註者, I want mock 遊記只用 Nominatim 查得到的景點，區域也確認解析成行政區, so that 抽取和評估不會卡在解析不到或對錯的地點
 
@@ -273,4 +273,4 @@ Space:
   - 有回答率高於不退讓的硬過濾。
   - 時間誤植率夠低，證明揭露有效。
 - **規劃、生成、評審都用 Claude Opus 5.5**：這是研究者的決定，論文裡要說明評審和生成用的是同一個模型。抽取維持現在的模型設定。
-- **mock 擴充的分工**：agent 起草遊記、題目、`gold_plan`、`type`、`split`，研究者審稿。遊記裡的每個景點都要能用 Nominatim 查到，區域要確認解析出來的是行政區，不是車站或公車站；OSM 沒有資料的區域（例如嵐山）換成別的區域。`relevant_contents` 等抽取完成後，由研究者確認。
+- **mock 擴充的分工**：agent 起草遊記、題目、`gold_plan`、`type`、`split`，研究者審稿。遊記裡的每個景點都要能用 Nominatim 查到，區域要確認解析出來的是行政區，不是車站或公車站；OSM 沒有資料的區域（例如嵐山）換成別的區域。`relevant_contents` 等抽取完成後由 agent 標註，再由研究者確認。
