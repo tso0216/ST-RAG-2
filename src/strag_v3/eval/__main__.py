@@ -11,6 +11,7 @@ import asyncio
 import json
 import sqlite3
 import sys
+import unicodedata
 from datetime import datetime
 from pathlib import Path
 
@@ -35,12 +36,27 @@ def _cell(v) -> str:
     return f"{v:.3f}" if isinstance(v, float) else str(v)
 
 
+def _width(s: str) -> int:
+    """終端機顯示寬度：全形字（中日文、全形標點）算 2 格。"""
+    return sum(2 if unicodedata.east_asian_width(c) in "WF" else 1 for c in s)
+
+
+def _pad(s: str, w: int, right: bool) -> str:
+    gap = " " * (w - _width(s))
+    return gap + s if right else s + gap
+
+
 def _table(rows: list[tuple[str, dict]]) -> str:
-    """rows：(列名, 指標)。用 markdown 表格，方便貼進筆記。"""
+    """rows：(列名, 指標)。對齊欄寬的 markdown 表格（中文以顯示寬度計），數字靠右。"""
     head = ["", *(label for _, label in COLUMNS)]
-    lines = ["| " + " | ".join(head) + " |", "|" + "---|" * len(head)]
-    lines += ["| " + " | ".join([name, *(_cell(m.get(k)) for k, _ in COLUMNS)]) + " |" for name, m in rows]
-    return "\n".join(lines)
+    body = [[name, *(_cell(m.get(k)) for k, _ in COLUMNS)] for name, m in rows]
+    widths = [max(_width(r[i]) for r in [head, *body]) for i in range(len(head))]
+
+    def line(cells):
+        return "| " + " | ".join(_pad(c, widths[i], i > 0) for i, c in enumerate(cells)) + " |"
+
+    sep = "|" + "|".join("-" * (w + 1) + ":" if i > 0 else "-" * (w + 2) for i, w in enumerate(widths)) + "|"
+    return "\n".join([line(head), sep, *map(line, body)])
 
 
 def _groups(summary: dict) -> list[tuple[str, dict]]:
