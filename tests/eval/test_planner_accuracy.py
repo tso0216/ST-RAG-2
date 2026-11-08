@@ -113,6 +113,26 @@ def test_missing_sub_query_makes_its_fields_wrong(run):
     assert rec["fields"]["space"] == [1, 2]
 
 
+def test_splitting_one_scope_into_several_aspects_counts_as_one_sub_query(run):
+    t = {"month": ["1"], "day_type": "平日", "time": ["早上"]}
+    rec, _ = run(plan(sq(time=t, aspect="富士山與排隊")),
+                 plan(sq(time=t, aspect="富士山"), sq(space(name="晴空塔", city=""), time=t, aspect="排隊")))
+    assert rec["fields"]["sub_queries"] == [1, 1]
+    assert rec["fields"]["space"] == [1, 1]
+    assert rec["correct"] is True
+
+
+def test_merged_aspect_is_filled_if_any_part_is_filled(run):
+    rec, _ = run(plan(sq(aspect="排隊")), plan(sq(aspect=None), sq(aspect="排隊")))
+    assert rec["correct"] is True
+
+
+def test_sub_queries_with_different_time_are_not_merged(run):
+    rec, _ = run(plan(sq(time={"time": ["早上"]})), plan(sq(time={"time": ["早上"]}), sq(time={"time": ["晚上"]})))
+    assert rec["fields"]["sub_queries"] == [0, 1]
+    assert rec["correct"] is False
+
+
 def test_unreadable_plan_makes_every_field_wrong(run):
     rec, overall = run(plan(sq()), None)
     assert rec["correct"] is False

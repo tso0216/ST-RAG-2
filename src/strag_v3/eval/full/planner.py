@@ -10,6 +10,9 @@
     時段換成時段集合，含 `全天` 等於不限時段（跟留空相同），照檢索的比對規則。
   - `day_type`：字面相同。
   - `aspect`：自由文字，只看有沒有留空。
+- 同一個地點、同一段時間、只有 aspect 不同的子查詢，比對前先併成一個（兩邊都併）：把一句話裡的
+  幾個小問題拆成幾個子查詢，跟寫成一個子查詢算一樣。併起來的 aspect 只要有一個有填就算有填。
+  「同一個地點」照 `space` 的規則（解析到同一個 OSM 物件）；「同一段時間」比的是月份、平假日、時段的意思。
 - 子查詢的配對：兩邊的子查詢依「對的欄位最多」配成一對一（不看順序）；多出來的子查詢沒有對象，
   它的每個子查詢欄位都算錯。
 - 規劃器產生不出看得懂的計畫時，每個欄位都算錯。
@@ -21,7 +24,7 @@
 - 各欄位正確率：對的次數除以比對次數（pooled）；子查詢欄位的比對次數是配對後的子查詢對數。
 沒有 `gold_plan` 的題目不算這項指標。
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from itertools import permutations
 
 from ...place import Places
@@ -51,12 +54,14 @@ def score_plan(gold: Plan, pred: Plan | None, places: Places) -> PlanScore:
     if pred is None:
         n = len(gold.sub_queries)
         return PlanScore({**{f: (0, 1) for f in PLAN_FIELDS}, **{f: (0, n) for f in SUB_QUERY_FIELDS}})
+    resolve = _Resolver(places)
+    gold_subs, pred_subs = _merge_same_scope(gold.sub_queries, resolve), _merge_same_scope(pred.sub_queries, resolve)
     plan_level = {
-        "sub_queries": len(gold.sub_queries) == len(pred.sub_queries),
+        "sub_queries": len(gold_subs) == len(pred_subs),
         "group_by": set(gold.group_by) == set(pred.group_by),
         "compose": gold.compose == pred.compose,
     }
-    pairs = _pair(gold.sub_queries, pred.sub_queries, _Resolver(places))
+    pairs = _pair(gold_subs, pred_subs, resolve)
     return PlanScore({
         **{f: (int(ok), 1) for f, ok in plan_level.items()},
         **{f: (sum(p[f] for p in pairs), len(pairs)) for f in SUB_QUERY_FIELDS},
@@ -88,6 +93,20 @@ class _Resolver:
             p = self.places.resolve(s.name_ja, s.city, s.kind)
             self.cache[s] = p.id if p and p.kind == s.kind else None
         return self.cache[s]
+
+
+def _merge_same_scope(subs: tuple[SubQuery, ...], resolve: _Resolver) -> tuple[SubQuery, ...]:
+    """地點和時間的意思都相同的子查詢併成一個，保留第一個；aspect 取第一個有填的。"""
+    merged: dict[tuple, SubQuery] = {}
+    for sq in subs:
+        t = sq.time or TimeQuery()
+        place = None if sq.space is None else (sq.space.kind, resolve(sq.space) or sq.space)
+        key = (place, t.months, t.day_type, t.slots)
+        if key not in merged:
+            merged[key] = sq
+        elif merged[key].aspect is None and sq.aspect is not None:
+            merged[key] = replace(merged[key], aspect=sq.aspect)
+    return tuple(merged.values())
 
 
 def _pair(gold: tuple[SubQuery, ...], pred: tuple[SubQuery, ...], resolve: _Resolver) -> list[dict[str, bool]]:
