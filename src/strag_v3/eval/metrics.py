@@ -14,6 +14,7 @@
 - recall、precision、F1 是各題的平均（macro），不含沒標註的題目。
 - 時間違規率是所有題目的違規片段數除以取回片段數（pooled），沒有取回任何片段時不算。
 - 有回答率是有回答的題數除以題數。
+- 地點解析失敗是有任何子查詢地點解析不到的題數；每題的紀錄另外列出解析不到的地點。
 沒有 `type` 或 `split` 的題目，分組時歸在「未標」。
 """
 from dataclasses import asdict, dataclass, field
@@ -37,6 +38,16 @@ class Outcome:
     @property
     def evidence(self) -> list[Evidence]:
         return [e for s in self.sections for e in s.evidence]
+
+    @property
+    def unresolved_places(self) -> list[dict]:
+        """地點解析不到的子查詢問的地點（同一個地點只列一次）。"""
+        out: list[dict] = []
+        for s in self.sections:
+            for r in s.results:
+                if r.place_unresolved and r.sub_query.space and (d := asdict(r.sub_query.space)) not in out:
+                    out.append(d)
+        return out
 
 
 @dataclass(frozen=True)
@@ -67,7 +78,7 @@ def score(q: Question, out: Outcome) -> Score:
     return Score(tuple(retrieved), tuple(hits), recall, precision, f1, tuple(violations), bool(retrieved))
 
 
-def aggregate(scores: list[Score], errors: int = 0) -> dict:
+def aggregate(scores: list[Score], errors: int = 0, unresolved: int = 0) -> dict:
     labelled = [s for s in scores if s.recall is not None]
     retrieved = sum(len(s.retrieved) for s in scores)
     violations = sum(len(s.violations) for s in scores)
@@ -82,6 +93,7 @@ def aggregate(scores: list[Score], errors: int = 0) -> dict:
         "violations": violations,
         "labelled": len(labelled),
         "errors": errors,
+        "unresolved": unresolved,
     }
 
 
@@ -94,7 +106,8 @@ def evaluate(questions: list[Question], outcomes: dict[str, Outcome]) -> dict:
     rows = [(q, outcomes[q.key], score(q, outcomes[q.key])) for q in questions]
 
     def summary(subset) -> dict:
-        return aggregate([s for _, _, s in subset], errors=sum(o.error is not None for _, o, _ in subset))
+        return aggregate([s for _, _, s in subset], errors=sum(o.error is not None for _, o, _ in subset),
+                         unresolved=sum(bool(o.unresolved_places) for _, o, _ in subset))
 
     def by(attr: str) -> dict:
         groups: dict[str, list] = {}
@@ -124,6 +137,7 @@ def _record(q: Question, o: Outcome, s: Score) -> dict:
         "violations": list(s.violations),
         "answered": s.answered,
         "error": o.error,
+        "unresolved_places": o.unresolved_places,
         "plan": o.plan.to_dict() if o.plan else None,
         "sections": [asdict(sec) for sec in o.sections],
         "answer": o.answer,

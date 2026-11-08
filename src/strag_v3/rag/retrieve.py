@@ -1,7 +1,7 @@
 """檢索：輸入檢索計畫，輸出分好組的證據。
 
 每個子查詢：
-- space：用日文名稱、城市、種類解析成 OSM 物件（見 `place.py`），解析不到就當作沒有這個地點，回傳空結果；留空不限地點。
+- space：用日文名稱、城市、種類解析成 OSM 物件（見 `place.py`），解析不到就回傳空結果並標成地點解析不到，不退讓；留空不限地點。
   景點只取它本身的片段；區域取它本身的片段，加上範圍裡所有地點的片段。
 - time：月份、平日／假日、時段三個維度硬過濾（見 `timematch.py`）；留空的維度不限。
 - 語意分數：aspect（沒有就用原問題）跟片段內容的 embedding cosine。
@@ -52,7 +52,7 @@ class Retriever:
         else:
             place = self.places.resolve(sq.space.name_ja, sq.space.city, sq.space.kind)
             if place is None:
-                return SubQueryResult(sq, [])
+                return SubQueryResult(sq, [], place_unresolved=True)
             own = contents(self.conn, self.places.scope(place))
             outer = self.places.outer(place)
         attempts: list[tuple[list[Content], TimeQuery | None, bool, str | None]] = [(own, sq.time, False, None)]

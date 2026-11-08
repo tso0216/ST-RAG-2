@@ -87,6 +87,16 @@ def test_empty_sub_query_lists_slots_and_months_with_data(add, retrieve, sub):
 
     assert empty["有資料的時段"] == {"早上": 2, "晚上": 1}
     assert empty["有資料的月份"] == {"5": 2, "夏": 1}
+    assert empty["地點解析不到"] is False
+
+
+def test_empty_sub_query_says_when_the_place_did_not_resolve(add, retrieve, sub):
+    add("晴空塔")
+
+    prompt = build_answer_prompt("展望台排隊要多久", retrieve(sub(space="晴空塔展望台")))
+    [empty] = json.loads(re.search(r"沒有證據的子查詢.*?```json\n(.*?)\n```", prompt, re.S)[1])
+
+    assert empty["地點解析不到"] is True
 
 
 def test_each_section_states_its_sub_query_time(add, retrieve, sub):

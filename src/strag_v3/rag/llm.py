@@ -115,6 +115,7 @@ def _empty_block(results: list[SubQueryResult]) -> str:
         "檢索條件": _sub_query_block(r.sub_query),
         "有資料的時段": dict(r.available.time),
         "有資料的月份": dict(r.available.month),
+        "地點解析不到": r.place_unresolved,
     } for r in results if not r.evidence]
     if not empty:
         return ""

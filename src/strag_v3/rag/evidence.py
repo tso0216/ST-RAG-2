@@ -40,6 +40,8 @@ class SubQueryResult:
     evidence: list[Evidence]
     # 沒有證據時，問的地點有資料的時段和月份；有證據時為空
     available: Available = Available()
+    # 子查詢的地點解析不到 OSM 物件，沒有檢索也沒有退讓；跟「地點解析得到但沒有資料」分開
+    place_unresolved: bool = False
 
 
 @dataclass(frozen=True)

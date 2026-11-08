@@ -5,7 +5,9 @@ import pytest
 
 from strag_v3.eval.metrics import UNTAGGED, Outcome, evaluate
 from strag_v3.eval.questions import QuestionError, load_questions
-from strag_v3.rag.evidence import Evidence, Group, Section
+from strag_v3.place import AREA, SPOT
+from strag_v3.rag.evidence import Evidence, Group, Section, SubQueryResult
+from strag_v3.rag.plan import Space, SubQuery
 from strag_v3.rag.timematch import TimeSpec
 
 
@@ -193,6 +195,22 @@ def test_error_counts_as_nothing_retrieved(write):
     assert out["questions"][0]["error"] == "計畫看不懂"
     assert out["summary"]["overall"]["errors"] == 1
     assert out["summary"]["overall"]["answered_rate"] == 0
+
+
+def test_unresolved_places_are_listed_per_question_and_counted_in_the_summary(write):
+    questions = load_questions(write([q("q1", None, [1]), q("q2", None, [1])]))
+    ok = SubQuery(space=Space("晴空塔", "東京スカイツリー", "東京", SPOT))
+    bad = SubQuery(space=Space("東山區", "東山区", "京都", AREA))
+    out = evaluate(questions, {
+        "spot/q1": Outcome([Section([SubQueryResult(ok, [ev(1)]), SubQueryResult(bad, [], place_unresolved=True)],
+                                    [Group({}, [ev(1)])])]),
+        "spot/q2": outcome(ev(1)),
+    })
+
+    first, second = out["questions"]
+    assert first["unresolved_places"] == [{"name": "東山區", "name_ja": "東山区", "city": "京都", "kind": AREA}]
+    assert second["unresolved_places"] == []
+    assert out["summary"]["overall"]["unresolved"] == 1
 
 
 def test_folder_loads_every_question_file_with_keys_unique_across_files(write, tmp_path):

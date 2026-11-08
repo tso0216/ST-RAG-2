@@ -146,6 +146,15 @@ def test_place_that_does_not_resolve_returns_empty_without_backoff_or_available_
 
     assert r.evidence == []
     assert r.available.time == () and r.available.month == ()
+    assert r.place_unresolved
+
+
+def test_resolved_place_without_evidence_is_not_marked_unresolved(add, result):
+    add("晴空塔", month="5")
+
+    r = result(month="1", params=Params(time_backoff=False, space_backoff=False))
+
+    assert r.evidence == [] and not r.place_unresolved
 
 
 def test_no_space_backoff_when_the_place_itself_has_evidence(add, result):

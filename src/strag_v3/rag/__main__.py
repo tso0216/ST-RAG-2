@@ -52,7 +52,10 @@ def show(out: dict) -> None:
         print(f"\n## 第 {i} 段：取回 {sum(len(g['evidence']) for g in s['groups'])} 筆")
         for r in s["results"]:
             print("子查詢：" + json.dumps(r["sub_query"], ensure_ascii=False))
-            if not r["evidence"]:
+            if r["place_unresolved"]:
+                sp = r["sub_query"]["space"]
+                print(f"  地點解析不到：{sp['name_ja']}（{sp['city'] or '不限城市'}，{sp['kind']}），沒有檢索")
+            elif not r["evidence"]:
                 print(f"  沒有證據。有資料的時段：{_counts(r['available']['time'])}；月份：{_counts(r['available']['month'])}")
         for g in s["groups"]:
             if g["key"]:

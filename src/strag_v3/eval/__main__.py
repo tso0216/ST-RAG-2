@@ -25,7 +25,8 @@ from .runner import SYSTEMS, Config, Runner
 RUNS_DIR = DB_PATH.parent / "eval_runs"
 
 COLUMNS = (("n", "題數"), ("recall", "R"), ("precision", "P"), ("f1", "F1"),
-           ("time_violation_rate", "時間違規率"), ("answered_rate", "有回答率"), ("errors", "錯誤"))
+           ("time_violation_rate", "時間違規率"), ("answered_rate", "有回答率"), ("errors", "錯誤"),
+           ("unresolved", "地點解析失敗"))
 
 
 def _cell(v) -> str:
@@ -61,6 +62,8 @@ async def _run(a) -> dict:
 
         def progress(q, out):
             status = f"錯誤：{out.error}" if out.error else f"取回 {len(out.evidence)} 筆"
+            if bad := out.unresolved_places:
+                status += "｜地點解析不到：" + "、".join(f"{p['name_ja']}（{p['city'] or '不限城市'}）" for p in bad)
             print(f"[{config.name}] {q.key} {status}", file=sys.stderr)
 
         outcomes = await runner.run_all(questions, a.concurrency, progress)
