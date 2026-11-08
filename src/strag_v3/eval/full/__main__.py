@@ -4,7 +4,8 @@
     python -m strag_v3.eval.full compare src/strag_v3/eval/full/runs/*.json
 
 只跑完整系統（規劃器 → 檢索含兩種退讓 → 生成器），不跑 baseline 和 oracle。
-`run` 印出彙總表，並把設定、彙總和每題的紀錄（計畫、取回集合、證據、答案、指標）存成一個 JSON 檔；
+`run` 印出彙總表（檢索指標，和有 `gold_plan` 的題目的規劃器正確率），
+並把設定、彙總和每題的紀錄（計畫、gold_plan、取回集合、證據、答案、指標）存成一個 JSON 檔；
 `compare` 讀幾個結果檔，把同一組的指標並排列出。
 """
 import argparse
@@ -17,7 +18,7 @@ from datetime import datetime
 from pathlib import Path
 
 from ...extract.paths import DB_PATH
-from ...place import NominatimClient, PlaceError
+from ...place import NominatimClient, PlaceError, Places
 from ...rag import llm
 from ...rag.embedding import CachedEmbedder, EmbeddingError, OpenAIEmbedder
 from ..metrics import evaluate
@@ -29,6 +30,10 @@ RUNS_DIR = Path(__file__).parent / "runs"
 COLUMNS = (("n", "題數"), ("recall", "R"), ("precision", "P"), ("f1", "F1"),
            ("time_violation_rate", "時間違規率"), ("answered_rate", "有回答率"), ("errors", "錯誤"),
            ("unresolved", "地點解析失敗"))
+# 規劃器正確率（彙總裡的 `planner`）
+PLANNER_COLUMNS = (("n", "題數"), ("accuracy", "整體"), ("sub_queries", "子查詢數"), ("space", "地點"),
+                   ("month", "月份"), ("day_type", "平日／假日"), ("time", "時段"), ("aspect", "aspect"),
+                   ("group_by", "group_by"), ("compose", "compose"))
 
 
 def _cell(v) -> str:
@@ -47,10 +52,10 @@ def _pad(s: str, w: int, right: bool) -> str:
     return gap + s if right else s + gap
 
 
-def _table(rows: list[tuple[str, dict]]) -> str:
+def _table(rows: list[tuple[str, dict]], columns=COLUMNS) -> str:
     """rows：(列名, 指標)。對齊欄寬的 markdown 表格（中文以顯示寬度計），數字靠右。"""
-    head = ["", *(label for _, label in COLUMNS)]
-    body = [[name, *(_cell(m.get(k)) for k, _ in COLUMNS)] for name, m in rows]
+    head = ["", *(label for _, label in columns)]
+    body = [[name, *(_cell(m.get(k)) for k, _ in columns)] for name, m in rows]
     widths = [max(_width(r[i]) for r in [head, *body]) for i in range(len(head))]
 
     def line(cells):
@@ -64,6 +69,11 @@ def _groups(summary: dict) -> list[tuple[str, dict]]:
     return ([("整體", summary["overall"])]
             + [(f"split={k}", v) for k, v in summary["by_split"].items()]
             + [(f"type={k}", v) for k, v in summary["by_type"].items()])
+
+
+def _planner(groups: list[tuple[str, dict]]) -> list[tuple[str, dict]]:
+    """各組的規劃器正確率；沒有題目附 `gold_plan`，或是舊的結果檔沒有這項時是空的。"""
+    return [(name, m["planner"]) for name, m in groups if (m.get("planner") or {}).get("n")]
 
 
 async def _run(a) -> dict:
@@ -84,6 +94,7 @@ async def _run(a) -> dict:
             print(f"[{config.name}] {q.key} {status}", file=sys.stderr)
 
         outcomes = await runner.run_all(questions, a.concurrency, progress)
+        metrics = evaluate(questions, outcomes, Places(conn, NominatimClient()))
     finally:
         conn.close()
     return {
@@ -92,7 +103,7 @@ async def _run(a) -> dict:
         "questions_path": str(a.questions),
         "split": a.split,
         "db": str(a.db),
-        **evaluate(questions, outcomes),
+        **metrics,
     }
 
 
@@ -106,7 +117,11 @@ def cmd_run(a) -> int:
     out = a.out or RUNS_DIR / f"{datetime.now():%Y%m%d-%H%M%S}_{name}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
-    print(f"## {name}\n\n{_table(_groups(result['summary']))}\n\n結果存在 {out}")
+    groups = _groups(result["summary"])
+    print(f"## {name}\n\n{_table(groups)}\n")
+    if planner := _planner(groups):
+        print(f"### 規劃器正確率\n\n{_table(planner, PLANNER_COLUMNS)}\n")
+    print(f"結果存在 {out}")
     return 0
 
 
@@ -117,7 +132,10 @@ def cmd_compare(a) -> int:
         runs.append((f"{r['config']['name']}（{p.stem}）", dict(_groups(r["summary"]))))
     group_names = list(dict.fromkeys(g for _, groups in runs for g in groups))
     for g in group_names:
-        print(f"## {g}\n\n{_table([(name, groups[g]) for name, groups in runs if g in groups])}\n")
+        rows = [(name, groups[g]) for name, groups in runs if g in groups]
+        print(f"## {g}\n\n{_table(rows)}\n")
+        if planner := _planner(rows):
+            print(f"### {g}：規劃器正確率\n\n{_table(planner, PLANNER_COLUMNS)}\n")
     return 0
 
 

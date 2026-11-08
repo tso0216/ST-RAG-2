@@ -15,12 +15,16 @@
 - 時間違規率是所有題目的違規片段數除以取回片段數（pooled），沒有取回任何片段時不算。
 - 有回答率是有回答的題數除以題數。
 - 地點解析失敗是有任何子查詢地點解析不到的題數；每題的紀錄另外列出解析不到的地點。
+- 規劃器正確率（`planner`）：有 `gold_plan` 的題目拿規劃器的計畫跟它比對，規則見 `planner/accuracy.py`。
+  沒有傳 `places`（地點解析）時不算。
 沒有 `type` 或 `split` 的題目，分組時歸在「未標」。
 """
 from dataclasses import asdict, dataclass, field
 
+from ..place import Places
 from ..rag.evidence import Evidence, Section
 from ..rag.plan import Plan
+from .planner.accuracy import PlanScore, aggregate as aggregate_plans, score_plan
 from .questions import Question
 
 UNTAGGED = "未標"
@@ -101,13 +105,18 @@ def _mean(xs: list[float]) -> float | None:
     return sum(xs) / len(xs) if xs else None
 
 
-def evaluate(questions: list[Question], outcomes: dict[str, Outcome]) -> dict:
-    """每題的紀錄（計畫、取回集合、證據、答案、指標）加上整體、依題型、依 split 的彙總。"""
+def evaluate(questions: list[Question], outcomes: dict[str, Outcome], places: Places | None = None) -> dict:
+    """每題的紀錄（計畫、取回集合、證據、答案、指標）加上整體、依題型、依 split 的彙總。
+
+    places：解析 `gold_plan` 和規劃器計畫的地點，用來算規劃器正確率；None 時不算。"""
     rows = [(q, outcomes[q.key], score(q, outcomes[q.key])) for q in questions]
+    plan_scores = {q.key: score_plan(q.gold_plan, o.plan, places)
+                   for q, o, _ in rows if places is not None and q.gold_plan is not None}
 
     def summary(subset) -> dict:
-        return aggregate([s for _, _, s in subset], errors=sum(o.error is not None for _, o, _ in subset),
-                         unresolved=sum(bool(o.unresolved_places) for _, o, _ in subset))
+        return {**aggregate([s for _, _, s in subset], errors=sum(o.error is not None for _, o, _ in subset),
+                            unresolved=sum(bool(o.unresolved_places) for _, o, _ in subset)),
+                "planner": aggregate_plans([plan_scores[q.key] for q, _, _ in subset if q.key in plan_scores])}
 
     def by(attr: str) -> dict:
         groups: dict[str, list] = {}
@@ -117,11 +126,11 @@ def evaluate(questions: list[Question], outcomes: dict[str, Outcome]) -> dict:
 
     return {
         "summary": {"overall": summary(rows), "by_split": by("split"), "by_type": by("type")},
-        "questions": [_record(q, o, s) for q, o, s in rows],
+        "questions": [_record(q, o, s, plan_scores.get(q.key)) for q, o, s in rows],
     }
 
 
-def _record(q: Question, o: Outcome, s: Score) -> dict:
+def _record(q: Question, o: Outcome, s: Score, plan_score: PlanScore | None) -> dict:
     return {
         "key": q.key,
         "question": q.question,
@@ -139,6 +148,8 @@ def _record(q: Question, o: Outcome, s: Score) -> dict:
         "error": o.error,
         "unresolved_places": o.unresolved_places,
         "plan": o.plan.to_dict() if o.plan else None,
+        "gold_plan": q.gold_plan.to_dict() if q.gold_plan else None,
+        "planner": plan_score.to_dict() if plan_score else None,
         "sections": [asdict(sec) for sec in o.sections],
         "answer": o.answer,
     }

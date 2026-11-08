@@ -2,12 +2,13 @@
 
 `type`（停留、找時間、找地點、比較）和 `split`（dev、test）只用於分組，系統不讀；舊的題目檔沒有這兩個欄位也能跑。
 沒有 `relevant_contents` 的題目（還沒標註）照跑，只是不算 recall、precision、F1。
+`gold_plan` 是人工寫的檢索計畫，格式跟規劃器的輸出相同，用來算規劃器正確率；沒有的題目不算這項指標。
 """
 import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from ..rag.plan import parse_time
+from ..rag.plan import Plan, PlanError, parse_time
 from ..rag.timematch import LabelError, TimeQuery
 
 SPLITS = ("dev", "test")
@@ -31,6 +32,8 @@ class Question:
     expect: tuple[str, ...] = ()
     # 題目檔裡的原始 `when`，存進結果檔方便對照
     when_raw: dict | None = None
+    # 人工寫的檢索計畫；題目檔沒有這個欄位時是 None
+    gold_plan: Plan | None = None
 
 
 def load_questions(path: Path) -> list[Question]:
@@ -61,6 +64,10 @@ def _load_file(f: Path) -> list[Question]:
         if split is not None and split not in SPLITS:
             raise QuestionError(f"{key} 的 split 只能是 {'、'.join(SPLITS)}，不是「{split}」")
         rel = d.get("relevant_contents")
+        try:
+            gold_plan = None if d.get("gold_plan") is None else Plan.from_dict(d["gold_plan"])
+        except (PlanError, LabelError) as e:
+            raise QuestionError(f"{key} 的 gold_plan：{e}") from None
         out.append(Question(
             key=key,
             question=d["question"],
@@ -70,5 +77,6 @@ def _load_file(f: Path) -> list[Question]:
             split=split,
             expect=tuple(d.get("expect") or ()),
             when_raw=d.get("when"),
+            gold_plan=gold_plan,
         ))
     return out
