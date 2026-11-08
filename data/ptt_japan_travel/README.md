@@ -9,7 +9,7 @@ PTT Japan_Travel 板的 `[問題]` 文，用來調查旅客實際會問哪些時
 | 檔案 | 內容 |
 |---|---|
 | `questions_raw.json` | 410 篇：`url`、`title`、`time`、`body`（內文，最多 3000 字，不含推文）。有 5 篇只有標題、沒有內文。 |
-| `questions_classified.json` | 有內文的 405 篇。除了上面的欄位，另有 `pushes`（推文）和 `questions`（LLM 拆出的提問與分類，欄位定義見 `classify.py`）。 |
+| `questions_classified.json` | 有內文的 405 篇。除了上面的欄位，另有 `pushes`（推文，即回答）和 `questions`（LLM 拆出的提問，只留 `quote` 問題原文和 `category` 分類）。 |
 
 注意：
 
