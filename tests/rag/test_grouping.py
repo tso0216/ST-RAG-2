@@ -40,7 +40,8 @@ def test_group_by_month_follows_the_content_label(add, retrieve):
     ]]
 
 
-def test_group_by_place_puts_the_place_with_the_best_evidence_first(add, retrieve, sub):
+def test_group_by_place_puts_the_place_with_the_best_evidence_first(add, retrieve, sub, typesafe):
+    typesafe.nouls = {"夕陽": 0.9, "夕陽和排隊": 0.7}
     tower = add("晴空塔", "假日", "下午", "12", content="夕陽和排隊")
     temple = add("淺草寺", "假日", "下午", "12", content="夕陽")
     tower_2 = add("晴空塔", "假日", "下午", "12", content="夕陽和排隊", article="a2")
@@ -53,7 +54,8 @@ def test_group_by_place_puts_the_place_with_the_best_evidence_first(add, retriev
     ]]
 
 
-def test_group_by_place_groups_by_osm_object_and_keeps_area_content_on_its_own(add, retrieve, sub):
+def test_group_by_place_groups_by_osm_object_and_keeps_area_content_on_its_own(add, retrieve, sub, typesafe):
+    typesafe.nouls = {"夕陽": 0.9, "夕陽和排隊": 0.7}
     tower = add("晴空塔", content="夕陽和排隊")
     tower_ja = add("スカイツリー", content="夕陽和排隊", article="a2")  # 同一個 OSM 物件，組名用第一次抽到的繁中名稱
     area = add("押上", content="夕陽和排隊", kind=AREA)                  # 區域本身的片段，不拆到底下的景點

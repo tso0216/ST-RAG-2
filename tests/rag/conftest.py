@@ -1,11 +1,15 @@
-"""檢索 seam 測試共用的假 embedder、假 Nominatim 和 fixture：記憶體內 SQLite，不打外部 API。"""
+"""檢索 seam 測試共用的假 embedder、假 Nominatim、假 JEV 和 fixture：記憶體內 SQLite，不打外部 API。"""
+import asyncio
+
 import pytest
+from service.jev import JEVClient
 
 from strag_v3.place import SPOT, Places
 from strag_v3.rag.params import Params
 from strag_v3.rag.plan import Plan
 from strag_v3.rag.retrieve import Retriever
 from tests.fake_nominatim import FakeNominatim
+from tests.fake_typesafe import FakeTypeSafe
 
 
 class KeywordEmbedder:
@@ -30,6 +34,17 @@ def nominatim():
 @pytest.fixture
 def embedder():
     return KeywordEmbedder()
+
+
+@pytest.fixture
+def typesafe():
+    """假的 TypeSafe client；測試可以改它的 `nouls`、`fail`，或看 `calls`。"""
+    return FakeTypeSafe()
+
+
+@pytest.fixture
+def jev(typesafe):
+    return JEVClient(typesafe)
 
 
 @pytest.fixture
@@ -61,16 +76,18 @@ def sub():
 
 
 @pytest.fixture
-def retrieve(conn, embedder, nominatim, sub):
+def retrieve(conn, embedder, nominatim, jev, sub):
     """檢索 seam：一份檢索計畫進，分好組的證據（段的列表）出。
 
-    沒給子查詢時用 `sub()` 的預設值；沒給 embedder 時用 `embedder` fixture 的 KeywordEmbedder。
+    沒給子查詢時用 `sub()` 的預設值；沒給 embedder 時用 `embedder` fixture 的 KeywordEmbedder；
+    JEV 用 `typesafe` fixture 的假 client。
     """
     default_embedder = embedder
 
     def retrieve(*sub_queries, group_by=(), compose="merge", question="排隊要多久", params=Params(), embedder=None):
         plan = Plan.from_dict({"sub_queries": list(sub_queries) or [sub()],
                                "group_by": list(group_by), "compose": compose})
-        return Retriever(conn, embedder or default_embedder, params, nominatim).retrieve(plan, question)
+        retriever = Retriever(conn, embedder or default_embedder, params, nominatim, jev=jev)
+        return asyncio.run(retriever.retrieve(plan, question))
     return retrieve
 

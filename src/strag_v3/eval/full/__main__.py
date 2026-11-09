@@ -1,12 +1,12 @@
 """主系統（full）評估命令列。
 
-    python -m strag_v3.eval.full run data/mock_article/eval [--split dev] [--no-answer | --judge]
+    python -m strag_v3.eval.full run data/mock_article/eval [--split dev] [--no-answer | --judge] [--gate jev|semantic]
     python -m strag_v3.eval.full compare src/strag_v3/eval/full/runs/*.json
 
 只跑完整系統（規劃器 → 檢索含兩種退讓 → 生成器），不跑 baseline 和 oracle。
 `run` 印出彙總表（檢索指標，有 `gold_plan` 的題目的規劃器正確率，開 `--judge` 時加上答案指標），
 並把設定、彙總和每題的紀錄（計畫、gold_plan、取回集合、證據、答案、評審的逐條判斷、指標）存成一個 JSON 檔；
-`compare` 讀幾個結果檔，把同一組的指標並排列出。
+`compare` 讀幾個結果檔，把同一組的指標並排列出；舊的結果檔 `config` 沒有 `gate`，當作 semantic。
 """
 import argparse
 import asyncio
@@ -17,12 +17,15 @@ import unicodedata
 from datetime import datetime
 from pathlib import Path
 
+from service.env import load_env
+from service.jev import JEVClient, JEVError
 from service.nominatim import NominatimClient
 
 from ...extract.paths import DB_PATH
 from ...place import PlaceError, Places
 from ...rag import llm
 from ...rag.embedding import CachedEmbedder, EmbeddingError, OpenAIEmbedder
+from ...rag.params import GATE_HELP, GATES, Params
 from ..metrics import evaluate
 from ..questions import SPLITS, QuestionError, load_questions
 from .judge import MODEL as JUDGE_MODEL, Judge, JudgeError
@@ -71,6 +74,11 @@ def _table(rows: list[tuple[str, dict]], columns=COLUMNS) -> str:
     return "\n".join([line(head), sep, *map(line, body)])
 
 
+def _run_name(config: dict) -> str:
+    """結果的名稱：系統名稱加相關判斷，例如 full-jev。舊的結果檔沒有 `gate`，那時只有語意門檻。"""
+    return f"{config['name']}-{config.get('gate', 'semantic')}"
+
+
 def _groups(summary: dict) -> list[tuple[str, dict]]:
     return ([("整體", summary["overall"])]
             + [(f"split={k}", v) for k, v in summary["by_split"].items()]
@@ -112,16 +120,17 @@ async def _run(a) -> dict:
         questions = [q for q in questions if q.split == a.split]
         if not questions:
             raise QuestionError(f"沒有 split={a.split} 的題目")
-    config = Config(answer=not a.no_answer, judge=a.judge)
+    config = Config(answer=not a.no_answer, judge=a.judge, params=Params(gate=a.gate))
     conn = sqlite3.connect(a.db)
+    jev = JEVClient() if a.gate == "jev" else None
     try:
-        runner = Runner(conn, CachedEmbedder(OpenAIEmbedder(), conn), config, nominatim=NominatimClient())
+        runner = Runner(conn, CachedEmbedder(OpenAIEmbedder(), conn), config, nominatim=NominatimClient(), jev=jev)
 
         def progress(q, out):
             status = f"錯誤：{out.error}" if out.error else f"取回 {len(out.evidence)} 筆"
             if bad := out.unresolved_places:
                 status += "｜地點解析不到：" + "、".join(f"{p['name_ja']}（{p['city'] or '不限城市'}）" for p in bad)
-            print(f"[{config.name}] {q.key} {status}", file=sys.stderr)
+            print(f"[{_run_name(config.to_dict())}] {q.key} {status}", file=sys.stderr)
 
         outcomes = await runner.run_all(questions, a.concurrency, progress)
         judge = Judge(conn) if config.judge else None
@@ -129,6 +138,8 @@ async def _run(a) -> dict:
         metrics = evaluate(questions, outcomes, Places(conn, NominatimClient()), judgements)
     finally:
         conn.close()
+        if jev:
+            await jev.aclose()
     return {
         "config": config.to_dict(),
         "created_at": datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -141,12 +152,13 @@ async def _run(a) -> dict:
 
 
 def cmd_run(a) -> int:
+    load_env()
     try:
         result = asyncio.run(_run(a))
-    except (QuestionError, ValueError, llm.LLMError, EmbeddingError, PlaceError) as e:
+    except (QuestionError, ValueError, llm.LLMError, EmbeddingError, JEVError, PlaceError) as e:
         print(f"錯誤：{e}", file=sys.stderr)
         return 1
-    name = result["config"]["name"] + (f"_{a.split}" if a.split else "")
+    name = _run_name(result["config"]) + (f"_{a.split}" if a.split else "")
     out = a.out or RUNS_DIR / f"{datetime.now():%Y%m%d-%H%M%S}_{name}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
@@ -164,7 +176,7 @@ def cmd_compare(a) -> int:
     runs = []
     for p in a.runs:
         r = json.loads(p.read_text())
-        runs.append((f"{r['config']['name']}（{p.stem}）", dict(_groups(r["summary"]))))
+        runs.append((f"{_run_name(r['config'])}（{p.stem}）", dict(_groups(r["summary"]))))
         if judge := r.get("judge"):
             print(f"註：{p.stem} 的答案評估：{judge['note']}")
     group_names = list(dict.fromkeys(g for _, groups in runs for g in groups))
@@ -189,9 +201,10 @@ def main(argv=None) -> int:
     mode.add_argument("--no-answer", action="store_true", help="不呼叫生成器，只評估檢索")
     mode.add_argument("--judge", action="store_true",
                       help=f"請評審（{JUDGE_MODEL}）評估答案的 expect 覆蓋率和時間誤植率；評審結果有快取")
+    r.add_argument("--gate", choices=GATES, default="jev", help=GATE_HELP)
     r.add_argument("--concurrency", type=int, default=4, help="同時跑幾題（預設 4）")
     r.add_argument("--db", type=Path, default=DB_PATH, help=f"片段所在的 DB（預設 {DB_PATH}）")
-    r.add_argument("--out", type=Path, help=f"結果檔路徑（預設 {RUNS_DIR}/<時間>_full.json）")
+    r.add_argument("--out", type=Path, help=f"結果檔路徑（預設 {RUNS_DIR}/<時間>_full-<gate>.json）")
     r.set_defaults(func=cmd_run)
 
     c = sub.add_parser("compare", help="並排比較幾個結果檔的彙總")

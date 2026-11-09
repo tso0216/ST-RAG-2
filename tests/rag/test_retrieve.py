@@ -1,4 +1,6 @@
-"""檢索 seam：時間硬過濾、語意門檻、「不明」折扣。輸入檢索計畫，看取回哪些片段、怎麼排序。不打外部 API。"""
+"""檢索 seam：時間硬過濾、語意門檻（gate=semantic）、「不明」折扣。輸入檢索計畫，看取回哪些片段、怎麼排序。不打外部 API。
+
+時間過濾的測試走預設的 gate=jev（假 JEV）；gate=jev 本身的規則見 test_jev_gate.py。"""
 import pytest
 
 from strag_v3.rag.embedding import CachedEmbedder
@@ -95,15 +97,16 @@ def test_unknown_dimension_matches_but_is_marked_and_ranks_after_explicit_match(
     assert got[unknown].time_unknown and not got[explicit].time_unknown
 
 
-def test_unknown_discount_is_tunable(add, retrieve, sub):
+@pytest.mark.parametrize("gate", ["jev", "semantic"])
+def test_unknown_discount_is_tunable(add, retrieve, sub, gate):
     unknown = add(time="不明")
     explicit = add(time="早上")
 
-    got = evidence(retrieve(sub(month="1"), params=Params(unknown_discount=0.5)))
+    got = evidence(retrieve(sub(month="1"), params=Params(gate=gate, unknown_discount=0.5)))
 
     assert got[unknown].score == pytest.approx(got[explicit].score * 0.5)
-    assert got[unknown].semantic == pytest.approx(got[explicit].semantic)
-    assert ids(retrieve(sub(month="1"), params=Params(unknown_discount=1.0))) == [unknown, explicit]  # 同分依 id 排
+    assert got[unknown].relevance == pytest.approx(got[explicit].relevance)
+    assert ids(retrieve(sub(month="1"), params=Params(gate=gate, unknown_discount=1.0))) == [unknown, explicit]  # 同分依 id 排
 
 
 def test_evidence_matching_directly_carries_no_backoff_flags(add, retrieve, sub):
@@ -125,18 +128,37 @@ def test_space_matches_exact_place_name_only(add, retrieve, sub):
     assert ids(retrieve(sub(month="1"))) == [tower]
 
 
+SEMANTIC = Params(gate="semantic")
+
+
 def test_semantic_relative_threshold_drops_off_topic_content(add, retrieve, sub):
     fuji = add(content="早上看得到富士山")
     ramen = add(content="附近的拉麵店")
 
-    assert ids(retrieve(sub(aspect="富士山", month="1"))) == [fuji]
+    assert ids(retrieve(sub(aspect="富士山", month="1"), params=SEMANTIC)) == [fuji]
 
 
-def test_aspect_falls_back_to_question(add, retrieve, sub):
+def test_semantic_aspect_falls_back_to_question(add, retrieve, sub):
     fuji = add(content="早上看得到富士山")
     ramen = add(content="附近的拉麵店")
 
-    assert ids(retrieve(sub(aspect=None), question="看得到富士山嗎")) == [fuji]
+    assert ids(retrieve(sub(aspect=None), question="看得到富士山嗎", params=SEMANTIC)) == [fuji]
+
+
+def test_semantic_threshold_is_relative_to_the_best_score_and_records_cosine(add, retrieve, sub, typesafe):
+    # KeywordEmbedder：「排隊」對到 [0,1,0,0,0.1]；只含「排隊」的 cosine 1，含兩個關鍵字的 ≈0.70，都沒有的 ≈0.01
+    queue = add(content="排隊")
+    both = add(content="排隊和拉麵")
+    ramen = add(content="拉麵")
+
+    sections = retrieve(sub(month="1"), params=SEMANTIC)
+    got = evidence(sections)
+
+    assert ids(sections) == [queue, both]  # 0.01 低於 1 − 0.3
+    assert got[queue].relevance == pytest.approx(1.0)
+    assert got[both].relevance == pytest.approx(0.7, abs=0.01)
+    assert ids(retrieve(sub(month="1"), params=Params(gate="semantic", delta=1.0))) == [queue, both, ramen]
+    assert typesafe.calls == []  # semantic 不問 JEV
 
 
 @pytest.mark.parametrize("time", [{"time": "16-17"}, {"time": "不明"}, {"month": "13"}, {"day_type": "週末"}])

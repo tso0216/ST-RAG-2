@@ -4,10 +4,12 @@
 - space：用日文名稱、城市、種類解析成 OSM 物件（見 `place.py`），解析不到就回傳空結果並標成地點解析不到，不退讓；留空不限地點。
   景點只取它本身的片段；區域取它本身的片段，加上範圍裡所有地點的片段。
 - time：月份、平日／假日、時段三個維度硬過濾（見 `timematch.py`）；留空的維度不限。
-- 語意分數：aspect（沒有就用原問題）跟片段內容的 embedding cosine。
-- 分數 = 語意分數；片段有任何一個時間維度是 `不明` 時，再乘上 unknown_discount。
-- 門檻：語意分數 ≥ 該子查詢最高分 − δ，過門檻的全部取。
-- 一筆都沒有時依序退讓，各只退一次：
+- 相關判斷（Params.gate）：
+  - jev（預設）：每個候選片段各問 JEV 一次是否和問題相關（見 `relevance.py`），noul ≥ jev_pass 的全部通過，沒有數量上限。
+  - semantic（消融）：aspect（沒有就用原問題）跟片段內容的 embedding cosine，≥ 該子查詢最高分 − δ 的全部通過。
+  相關分數（relevance）是 noul 或 cosine。
+- 分數 = 相關分數；片段有任何一個時間維度是 `不明` 時，再乘上 unknown_discount。分數只影響排序，不影響過不過。
+- 一筆都沒通過時依序退讓，各只退一次（退讓的新候選一樣經過相關判斷）：
   1. 時間退讓：時段和月份各往外擴一格，同一個地點再查，證據標成時間退讓。
   2. 空間退讓：退到外圍行政區，照區域的規則取片段，時間用原本的條件，證據標成空間退讓。
      地點解析得到、但沒有任何片段時也照常退讓；沒有外圍行政區就不退。
@@ -19,31 +21,41 @@
 import sqlite3
 from collections import Counter
 
+from service.jev import JEVClient
+
 from .embedding import Embedder, cosine
 from .evidence import Available, Evidence, Section, SubQueryResult
 from .group import build_sections
 from ..place import Nominatim, Places
 from .params import DEFAULT, Params
 from .plan import Plan, SubQuery
+from .relevance import JEVGate
 from .store import Content, contents
 from .timematch import CONTENT_SLOTS, TimeQuery, month_order
 
 
 class Retriever:
     def __init__(self, conn: sqlite3.Connection, embedder: Embedder, params: Params = DEFAULT,
-                 nominatim: Nominatim | None = None):
-        """nominatim 是 None 時，地點只從快取解析。"""
+                 nominatim: Nominatim | None = None, jev: JEVClient | None = None):
+        """nominatim 是 None 時，地點只從快取解析。gate=jev 時要給 jev；gate=semantic 時不用。"""
         self.conn = conn
         self.embedder = embedder
         self.params = params
         self.places = Places(conn, nominatim)
+        self.jev_gate = None
+        if params.gate == "jev":
+            if jev is None:
+                raise ValueError("gate=jev 要給 JEV client")
+            self.jev_gate = JEVGate(conn, jev, params.jev_model, params.jev_concurrency)
 
-    def retrieve(self, plan: Plan, question: str) -> list[Section]:
-        """依計畫逐一跑子查詢，再依 compose 和 group_by 把證據整理成交給生成器的段和分組。"""
-        results = [self._retrieve_one(sq, question) for sq in plan.sub_queries]
+    async def retrieve(self, plan: Plan, question: str) -> list[Section]:
+        """依計畫逐一跑子查詢，再依 compose 和 group_by 把證據整理成交給生成器的段和分組。
+
+        JEV 呼叫失敗時丟 JEVError（不自動改用語意門檻）。"""
+        results = [await self._retrieve_one(sq, question) for sq in plan.sub_queries]
         return build_sections(plan, results)
 
-    def _retrieve_one(self, sq: SubQuery, question: str) -> SubQueryResult:
+    async def _retrieve_one(self, sq: SubQuery, question: str) -> SubQueryResult:
         """原本的條件 → 時間退讓 → 空間退讓，哪一步有證據就停。space 留空時不限地點，也不做空間退讓。"""
         p = self.params
         outer = None
@@ -61,27 +73,31 @@ class Retriever:
         if p.space_backoff and outer:
             attempts.append((contents(self.conn, self.places.scope(outer)), sq.time, False, outer.name))
         for pool, time, time_backoff, backoff_area in attempts:
-            if evidence := self._run(sq, question, pool, time, time_backoff, backoff_area):
+            if evidence := await self._run(sq, question, pool, time, time_backoff, backoff_area):
                 return SubQueryResult(sq, evidence)
         return SubQueryResult(sq, [], available=_available(own))
 
-    def _run(self, sq: SubQuery, question: str, pool: list[Content], time: TimeQuery | None,
-             time_backoff: bool, backoff_area: str | None) -> list[Evidence]:
+    async def _run(self, sq: SubQuery, question: str, pool: list[Content], time: TimeQuery | None,
+                   time_backoff: bool, backoff_area: str | None) -> list[Evidence]:
         candidates = [c for c in pool if time is None or time.matches(c.time)]
         if not candidates:
             return []
 
         p = self.params
-        qvec, *cvecs = self.embedder.embed([sq.aspect or question] + [c.text for c in candidates])
-        sems = [cosine(qvec, v) for v in cvecs]
-        floor = max(sems) - p.delta
+        if self.jev_gate is not None:
+            rels = await self.jev_gate.nouls(question, sq.aspect, candidates)
+            floor = p.jev_pass
+        else:
+            qvec, *cvecs = self.embedder.embed([sq.aspect or question] + [c.text for c in candidates])
+            rels = [cosine(qvec, v) for v in cvecs]
+            floor = max(rels) - p.delta
 
         out = [
-            Evidence(c.id, c.article_id, c.place_id, c.place, c.time, c.text, semantic=sem,
-                     score=sem * (p.unknown_discount if c.time.unknown else 1.0),
+            Evidence(c.id, c.article_id, c.place_id, c.place, c.time, c.text, relevance=rel,
+                     score=rel * (p.unknown_discount if c.time.unknown else 1.0),
                      time_backoff=time_backoff, space_backoff=backoff_area is not None,
                      backoff_area=backoff_area, time_unknown=c.time.unknown)
-            for c, sem in zip(candidates, sems) if sem >= floor
+            for c, rel in zip(candidates, rels) if rel >= floor
         ]
         out.sort(key=lambda e: (-e.score, e.content_id))
         return out

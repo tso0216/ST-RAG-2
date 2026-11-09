@@ -1,4 +1,6 @@
 """檢索 seam：地點解析（OSM 物件、區域範圍、快取）。輸入檢索計畫，看取回哪些片段。不打外部 API。退讓見 test_backoff.py。"""
+import asyncio
+
 import pytest
 
 from strag_v3.place import AREA, SPOT, PlaceError, Places
@@ -64,24 +66,24 @@ def test_spot_query_leaves_out_the_content_of_the_area_it_sits_in(add, ids_at):
     assert ids_at("晴空塔") == [tower]
 
 
-def test_rerun_reads_resolution_from_the_cache_without_calling_nominatim(conn, add, sub, nominatim, embedder):
+def test_rerun_reads_resolution_from_the_cache_without_calling_nominatim(conn, add, sub, nominatim, embedder, jev):
     tower = add("晴空塔")
     area = add("押上", kind=AREA)
     plan = Plan.from_dict({"sub_queries": [sub(space="晴空塔"), sub(space="押上", kind=AREA)]})
-    first = Retriever(conn, embedder, NO_BACKOFF, nominatim).retrieve(plan, "排隊")
+    first = asyncio.run(Retriever(conn, embedder, NO_BACKOFF, nominatim, jev=jev).retrieve(plan, "排隊"))
     calls = len(nominatim.calls)
 
-    again = Retriever(conn, embedder, NO_BACKOFF, nominatim=None).retrieve(plan, "排隊")
+    again = asyncio.run(Retriever(conn, embedder, NO_BACKOFF, nominatim=None, jev=jev).retrieve(plan, "排隊"))
 
     assert len(nominatim.calls) == calls
     assert [e.content_id for e in again[0].evidence] == [e.content_id for e in first[0].evidence] == [tower, area]
 
 
-def test_new_place_without_nominatim_is_an_error_not_an_empty_result(conn, sub, embedder):
+def test_new_place_without_nominatim_is_an_error_not_an_empty_result(conn, sub, embedder, jev):
     plan = Plan.from_dict({"sub_queries": [sub(space="晴空塔")]})
 
     with pytest.raises(PlaceError):
-        Retriever(conn, embedder, NO_BACKOFF, nominatim=None).retrieve(plan, "排隊")
+        asyncio.run(Retriever(conn, embedder, NO_BACKOFF, nominatim=None, jev=jev).retrieve(plan, "排隊"))
 
 
 def test_failed_resolution_is_cached_too(add, ids_at, nominatim):

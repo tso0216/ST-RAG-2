@@ -4,6 +4,8 @@ import sqlite3
 from dataclasses import asdict, dataclass, field
 from typing import Awaitable, Callable
 
+from service.jev import JEVClient, JEVError
+
 from ...place import Nominatim
 from ...rag import llm
 from ...rag.embedding import Embedder
@@ -30,16 +32,19 @@ class Config:
     name = "full"
 
     def to_dict(self) -> dict:
-        return {"name": self.name, "answer": self.answer, "judge": self.judge, "params": asdict(self.params)}
+        p = self.params
+        return {"name": self.name, "answer": self.answer, "judge": self.judge, "gate": p.gate,
+                **({"jev_model": p.jev_model} if p.gate == "jev" else {}), "params": asdict(p)}
 
 
 class Runner:
-    """用主系統跑題目。規劃器和生成器預設呼叫 Opus，測試時可以換掉。"""
+    """用主系統跑題目。規劃器和生成器預設呼叫 Opus，測試時可以換掉。gate=jev 時要給 jev。"""
 
     def __init__(self, conn: sqlite3.Connection, embedder: Embedder, config: Config,
-                 nominatim: Nominatim | None = None, planner: Planner = llm.plan, answerer: Answerer = llm.answer):
+                 nominatim: Nominatim | None = None, planner: Planner = llm.plan, answerer: Answerer = llm.answer,
+                 jev: JEVClient | None = None):
         self.config = config
-        self.retriever = Retriever(conn, embedder, config.params, nominatim)
+        self.retriever = Retriever(conn, embedder, config.params, nominatim, jev)
         self.planner = planner
         self.answerer = answerer
 
@@ -48,7 +53,10 @@ class Runner:
             plan = await self.planner(q.question)
         except PlanError as e:
             return Outcome(error=f"計畫看不懂：{e}")
-        sections = self.retriever.retrieve(plan, q.question)
+        try:
+            sections = await self.retriever.retrieve(plan, q.question)
+        except JEVError as e:  # SDK 重試後還是失敗：只記這題的錯誤，不改用語意門檻
+            return Outcome(plan=plan, error=str(e))
         answer = await self.answerer(q.question, sections) if self.config.answer else None
         return Outcome(sections, plan, answer)
 

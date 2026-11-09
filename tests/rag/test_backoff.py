@@ -1,15 +1,20 @@
-"""檢索 seam：時間退讓、空間退讓、兩種都退完還是沒有的空結果。不打外部 API。"""
+"""檢索 seam：時間退讓、空間退讓、兩種都退完還是沒有的空結果。不打外部 API。
+
+每個測試兩種相關判斷（gate=jev 用假 JEV、gate=semantic 用假 embedding）都跑；片段內容都相關，只看時間和地點。
+"""
+from dataclasses import replace
+
 import pytest
 
 from strag_v3.place import AREA, SPOT
 from strag_v3.rag.params import Params
 
 
-@pytest.fixture
-def result(retrieve, sub):
+@pytest.fixture(params=["jev", "semantic"])
+def result(request, retrieve, sub):
     """只有一個子查詢的計畫：回傳那個子查詢的結果。"""
     def result(space="晴空塔", params=Params(), kind=SPOT, **time):
-        [section] = retrieve(sub(space=space, kind=kind, **time), params=params)
+        [section] = retrieve(sub(space=space, kind=kind, **time), params=replace(params, gate=request.param))
         [r] = section.results
         return r
     return result

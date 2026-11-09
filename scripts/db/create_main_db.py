@@ -5,7 +5,8 @@ from pathlib import Path
 # place：一列一個 OSM 物件
 # content.poi_name：抽取時寫的原始名稱，只是紀錄；地點以 poi_id 為準
 # embedding、nominatim_cache 兩張快取表和 place_alias 由用到的模組自己建（rag/embedding.py、place.py）；
-# --rebuild 不動它們，所以別名重建後照樣有效
+# jev_cache 也是（rag/relevance.py 用到時才建），這裡一併建，定義跟 relevance.CACHE_SCHEMA 相同；
+# --rebuild 不動這些表，所以別名和快取重建後照樣有效
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS place (
     id         INTEGER PRIMARY KEY,
@@ -37,6 +38,19 @@ CREATE TABLE IF NOT EXISTS content (
 -- 抽取前用 article_id 判斷文章是否已在 DB
 CREATE INDEX IF NOT EXISTS idx_content_article ON content (article_id);
 
+-- JEV 判斷快取（定義跟 rag/relevance.py 的 CACHE_SCHEMA 相同）：aspect 沒有時存空字串，answered_model 是實際回答的版本
+CREATE TABLE IF NOT EXISTS jev_cache (
+    model          TEXT    NOT NULL,
+    criteria_hash  TEXT    NOT NULL,
+    question       TEXT    NOT NULL,
+    aspect         TEXT    NOT NULL,
+    content_id     INTEGER NOT NULL,
+    noul           REAL    NOT NULL,
+    answered_model TEXT    NOT NULL,
+    created_at     TEXT    NOT NULL,
+    PRIMARY KEY (model, criteria_hash, question, aspect, content_id)
+);
+
 -- place 加上片段數：直接指到這個地點的片段，區域不含範圍裡其他地點的片段。查的時候才算，不會跟 content 不同步
 CREATE VIEW IF NOT EXISTS place_stats AS
 SELECT p.*, count(c.id) AS content_count
@@ -55,7 +69,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--db", default="data/main.db")
     ap.add_argument("--rebuild", action="store_true",
-                    help="刪掉 content 和 place 表再重建（保留 embedding 和 Nominatim 快取），之後要重新抽取")
+                    help="刪掉 content 和 place 表再重建（保留 embedding、Nominatim 和 JEV 快取），之後要重新抽取")
     a = ap.parse_args()
     Path(a.db).parent.mkdir(parents=True, exist_ok=True)
     with connect(a.db) as conn:

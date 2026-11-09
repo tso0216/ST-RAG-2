@@ -14,8 +14,9 @@ class Evidence:
     place: str
     time: TimeSpec
     content: str
-    semantic: float
-    # 語意分數；時間不明時再乘上 unknown_discount
+    # 相關分數：gate=jev 時是 JEV 的 noul，gate=semantic 和 dense baseline 是 embedding cosine
+    relevance: float
+    # 排序用的分數：相關分數，時間不明時再乘上 unknown_discount
     score: float
     # 子查詢原本的時間條件沒有證據，時段和月份各往外擴一格才找到
     time_backoff: bool = False

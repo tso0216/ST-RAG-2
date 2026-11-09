@@ -6,13 +6,15 @@ import sys
 from dataclasses import asdict
 from pathlib import Path
 
+from service.env import load_env
+from service.jev import JEVClient, JEVError
 from service.nominatim import NominatimClient
 
 from ..extract.paths import DB_PATH
 from ..place import PlaceError
 from . import llm
 from .embedding import CachedEmbedder, EmbeddingError, OpenAIEmbedder
-from .params import Params
+from .params import GATE_HELP, GATES, Params
 from .plan import PlanError
 from .retrieve import Retriever
 from .timematch import LabelError
@@ -20,13 +22,16 @@ from .timematch import LabelError
 
 async def run(question: str, db: Path, params: Params = Params()) -> dict:
     conn = sqlite3.connect(db)
+    jev = JEVClient() if params.gate == "jev" else None
     try:
         plan = await llm.plan(question)
-        retriever = Retriever(conn, CachedEmbedder(OpenAIEmbedder(), conn), params, nominatim=NominatimClient())
-        sections = retriever.retrieve(plan, question)
+        retriever = Retriever(conn, CachedEmbedder(OpenAIEmbedder(), conn), params, nominatim=NominatimClient(), jev=jev)
+        sections = await retriever.retrieve(plan, question)
         answer = await llm.answer(question, sections)
     finally:
         conn.close()
+        if jev:
+            await jev.aclose()
     return {
         "question": question,
         "plan": plan.to_dict(),
@@ -67,7 +72,7 @@ def show(out: dict) -> None:
                 if e["backoff_area"]:
                     flags += f"（{e['backoff_area']}）"
                 print(f"[{e['content_id']}] {e['article_id']}｜{e['place']}｜{_when(e['time'])}"
-                      f"｜語意 {e['semantic']:.3f} 分數 {e['score']:.3f}{flags}")
+                      f"｜相關 {e['relevance']:.3f} 分數 {e['score']:.3f}{flags}")
                 print(f"    {e['content']}")
     print("\n## 答案")
     print(out["answer"])
@@ -80,11 +85,13 @@ def main(argv=None) -> int:
     ap.add_argument("--json", action="store_true", help="輸出 JSON")
     ap.add_argument("--no-time-backoff", action="store_true", help="關掉時間退讓（消融）")
     ap.add_argument("--no-space-backoff", action="store_true", help="關掉空間退讓（消融）")
+    ap.add_argument("--gate", choices=GATES, default="jev", help=GATE_HELP)
     a = ap.parse_args(argv)
-    params = Params(time_backoff=not a.no_time_backoff, space_backoff=not a.no_space_backoff)
+    load_env()
+    params = Params(gate=a.gate, time_backoff=not a.no_time_backoff, space_backoff=not a.no_space_backoff)
     try:
         out = asyncio.run(run(a.question, a.db, params))
-    except (llm.LLMError, EmbeddingError, PlanError, PlaceError, LabelError) as e:
+    except (llm.LLMError, EmbeddingError, JEVError, PlanError, PlaceError, LabelError) as e:
         print(f"錯誤：{e}", file=sys.stderr)
         return 1
     if a.json:

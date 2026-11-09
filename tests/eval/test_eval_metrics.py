@@ -13,7 +13,7 @@ from strag_v3.rag.timematch import TimeSpec
 
 def ev(cid, month="12", day_type="平日", time="早上", **flags) -> Evidence:
     t = TimeSpec(month, day_type, time)
-    return Evidence(cid, "a1", 1, "晴空塔", t, "內容", semantic=0.5, score=0.5, time_unknown=t.unknown, **flags)
+    return Evidence(cid, "a1", 1, "晴空塔", t, "內容", relevance=0.5, score=0.5, time_unknown=t.unknown, **flags)
 
 
 def section(*evidence) -> Section:
