@@ -1,11 +1,11 @@
 """主系統（full）評估命令列。
 
-    python -m strag_v3.eval.full run data/mock_article/eval [--split dev] [--no-answer | --judge] [--gate jev|semantic]
+    python -m strag_v3.eval.full run data/questions/ptt [--split dev] [--no-answer | --judge] [--gate jev|semantic]
     python -m strag_v3.eval.full compare src/strag_v3/eval/full/runs/*.json
 
 只跑完整系統（規劃器 → 檢索含兩種退讓 → 生成器），不跑 baseline 和 oracle。
-`run` 印出彙總表（檢索指標，有 `gold_plan` 的題目的規劃器正確率，開 `--judge` 時加上答案指標），
-並把設定、彙總和每題的紀錄（計畫、gold_plan、取回集合、證據、答案、評審的逐條判斷、指標）存成一個 JSON 檔；
+`run` 印出彙總表（檢索指標，開 `--judge` 時加上答案指標），
+並把設定、彙總和每題的紀錄（計畫、取回集合、證據、答案、評審的逐條判斷、指標）存成一個 JSON 檔；
 `compare` 讀幾個結果檔，把同一組的指標並排列出；舊的結果檔 `config` 沒有 `gate`，當作 semantic。
 """
 import argparse
@@ -22,7 +22,7 @@ from service.jev import JEVClient, JEVError
 from service.nominatim import NominatimClient
 
 from ...extract.paths import DB_PATH
-from ...place import PlaceError, Places
+from ...place import PlaceError
 from ...rag import llm
 from ...rag.embedding import CachedEmbedder, EmbeddingError, OpenAIEmbedder
 from ...rag.params import GATE_HELP, GATES, Params
@@ -36,10 +36,6 @@ RUNS_DIR = Path(__file__).parent / "runs"
 COLUMNS = (("n", "題數"), ("recall", "R"), ("precision", "P"), ("f1", "F1"),
            ("time_violation_rate", "時間違規率"), ("answered_rate", "有回答率"), ("errors", "錯誤"),
            ("unresolved", "地點解析失敗"))
-# 規劃器正確率（彙總裡的 `planner`）
-PLANNER_COLUMNS = (("n", "題數"), ("accuracy", "整體"), ("sub_queries", "子查詢數"), ("space", "地點"),
-                   ("month", "月份"), ("day_type", "平日／假日"), ("time", "時段"), ("aspect", "aspect"),
-                   ("group_by", "group_by"), ("compose", "compose"))
 # 答案指標（彙總裡的 `answer`）
 ANSWER_COLUMNS = (("n", "題數"), ("expect_coverage", "expect 覆蓋率"), ("misattribution_rate", "時間誤植率"),
                   ("claims_n", "講到時間的說法"), ("misattributed", "誤植"))
@@ -83,11 +79,6 @@ def _groups(summary: dict) -> list[tuple[str, dict]]:
     return ([("整體", summary["overall"])]
             + [(f"split={k}", v) for k, v in summary["by_split"].items()]
             + [(f"type={k}", v) for k, v in summary["by_type"].items()])
-
-
-def _planner(groups: list[tuple[str, dict]]) -> list[tuple[str, dict]]:
-    """各組的規劃器正確率；沒有題目附 `gold_plan`，或是舊的結果檔沒有這項時是空的。"""
-    return [(name, m["planner"]) for name, m in groups if (m.get("planner") or {}).get("n")]
 
 
 def _answer(groups: list[tuple[str, dict]]) -> list[tuple[str, dict]]:
@@ -135,7 +126,7 @@ async def _run(a) -> dict:
         outcomes = await runner.run_all(questions, a.concurrency, progress)
         judge = Judge(conn) if config.judge else None
         judgements = await _judge_all(judge, questions, outcomes, a.concurrency) if judge else None
-        metrics = evaluate(questions, outcomes, Places(conn, NominatimClient()), judgements)
+        metrics = evaluate(questions, outcomes, judgements=judgements)
     finally:
         conn.close()
         if jev:
@@ -164,8 +155,6 @@ def cmd_run(a) -> int:
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
     groups = _groups(result["summary"])
     print(f"## {name}\n\n{_table(groups)}\n")
-    if planner := _planner(groups):
-        print(f"### 規劃器正確率\n\n{_table(planner, PLANNER_COLUMNS)}\n")
     if answer := _answer(groups):
         print(f"### 答案指標\n\n{_table(answer, ANSWER_COLUMNS)}\n\n註：{result['judge']['note']}\n")
     print(f"結果存在 {out}")
@@ -183,8 +172,6 @@ def cmd_compare(a) -> int:
     for g in group_names:
         rows = [(name, groups[g]) for name, groups in runs if g in groups]
         print(f"## {g}\n\n{_table(rows)}\n")
-        if planner := _planner(rows):
-            print(f"### {g}：規劃器正確率\n\n{_table(planner, PLANNER_COLUMNS)}\n")
         if answer := _answer(rows):
             print(f"### {g}：答案指標\n\n{_table(answer, ANSWER_COLUMNS)}\n")
     return 0

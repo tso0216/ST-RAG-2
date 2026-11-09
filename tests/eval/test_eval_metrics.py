@@ -224,3 +224,36 @@ def test_folder_loads_every_question_file_with_keys_unique_across_files(write, t
 def test_bad_question_file_is_rejected(write, bad):
     with pytest.raises(QuestionError):
         load_questions(write([q("q1", None, [1]) | bad]))
+
+
+def test_time_unknown_exclusions_are_unscored(write):
+    """`excluded` 裡理由是「時間不明」的片段，撈到不算誤撈；其他理由的照算誤撈。"""
+    questions = load_questions(write([q("q1", DEC_WEEKDAY_MORNING, [1, 2], excluded={"3": "時間不明", "4": "無關"})]))
+
+    [rec] = evaluate(questions, {"spot/q1": outcome(ev(1), ev(3, month="不明"), ev(4))})["questions"]
+
+    assert rec["retrieved"] == [1, 3, 4]
+    assert rec["unscored"] == [3]
+    assert rec["hits"] == [1]
+    assert rec["precision"] == pytest.approx(1 / 2)
+    assert rec["recall"] == pytest.approx(1 / 2)
+
+
+def test_retrieving_only_unscored_fragments_counts_as_retrieving_nothing(write):
+    questions = load_questions(write([
+        q("q1", DEC_WEEKDAY_MORNING, [1], excluded={"3": "時間不明"}),
+        q("q2", DEC_WEEKDAY_MORNING, [], excluded={"3": "時間不明"}),
+    ]))
+
+    out = evaluate(questions, {"spot/q1": outcome(ev(3, month="不明")), "spot/q2": outcome(ev(3, month="不明"))})
+
+    first, second = out["questions"]
+    assert (first["recall"], first["precision"], first["f1"]) == (0, 0, 0)
+    assert (second["recall"], second["precision"], second["f1"]) == (1, 1, 1)
+    assert first["answered"] is True   # 有回答照取回集合算，不計分的也算
+    assert out["summary"]["overall"]["unscored"] == 2
+
+
+def test_fragment_cannot_be_both_relevant_and_unscored(write):
+    with pytest.raises(QuestionError, match="不計分"):
+        load_questions(write([q("q1", DEC_WEEKDAY_MORNING, [1], excluded={"1": "時間不明"})]))

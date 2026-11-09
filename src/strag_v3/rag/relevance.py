@@ -15,7 +15,7 @@ from service.jev import JEVClient
 from .store import Content
 
 INSTRUCTIONS = "片段是否和問題相關？不用判斷時間是否符合。"
-CRITERIA = {"true": "片段提到和問題相關的經驗，只回答一部分也算。", "false": "片段和問題無關。"}
+CRITERIA = {"true": "片段提到和問題相關的經驗。", "false": "片段和問題無關。"}
 CRITERIA_HASH = hashlib.sha256(json.dumps({"instructions": INSTRUCTIONS, "criteria": CRITERIA},
                                           ensure_ascii=False, sort_keys=True).encode()).hexdigest()[:16]
 

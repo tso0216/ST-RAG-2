@@ -3,31 +3,30 @@
 每題：
 - 取回集合：各段證據的片段 id 合起來（同一個片段只算一次）。
 - recall、precision、F1：取回集合對 `relevant_contents`。
-  - 取回是空的：recall、precision、F1 都是 0；但題目本來就沒有相關片段時，三個都是 1（正確地什麼都沒取）。
+  - 不計分的片段（題目檔 `excluded` 裡理由是「時間不明」的）先從取回集合拿掉：撈到不算誤撈；
+    它們本來就不在 `relevant_contents` 裡，所以也不影響 recall。系統照設計會撈時間標成不明的片段，
+    但標準答案不知道它是不是問的那個時間，算對算錯都不公平。
+  - 取回（拿掉不計分的之後）是空的：recall、precision、F1 都是 0；但題目本來就沒有相關片段時，三個都是 1（正確地什麼都沒取）。
   - 題目沒有相關片段、卻取回了東西：precision、F1 是 0，recall 是 1（沒有東西可漏）。
   - 題目沒有 `relevant_contents`（還沒標註）：三個都不算。
 - 時間違規：取回的片段時間跟題目的 `when` 不相符（照檢索的比對規則，`不明` 的維度算相符），
   又沒有標成時間退讓或空間退讓。同一個片段在不同段出現時，只要有一份沒標退讓就算違規。
-- 有回答：取回集合不是空的。
+- 有回答：取回集合不是空的（不計分的片段也算）。
 
 彙總：
 - recall、precision、F1 是各題的平均（macro），不含沒標註的題目。
 - 時間違規率是所有題目的違規片段數除以取回片段數（pooled），沒有取回任何片段時不算。
 - 有回答率是有回答的題數除以題數。
 - 地點解析失敗是有任何子查詢地點解析不到的題數；每題的紀錄另外列出解析不到的地點。
-- 規劃器正確率（`planner`）：有 `gold_plan` 的題目拿規劃器的計畫跟它比對，規則見 `full/planner.py`。
-  沒有傳 `places`（地點解析）時不算。
 - 答案指標（`answer`）：`expect` 覆蓋率和時間誤植率，由評審的判斷算出，規則見 `full/answer.py`。
   沒有傳 `judgements`（評審結果）時不算。
 沒有 `type` 或 `split` 的題目，分組時歸在「未標」。
 """
 from dataclasses import asdict, dataclass, field
 
-from ..place import Places
 from ..rag.evidence import Evidence, Section
 from ..rag.plan import Plan
 from .full.answer import Judgement, aggregate as aggregate_answers
-from .full.planner import PlanScore, aggregate as aggregate_plans, score_plan
 from .questions import Question
 
 UNTAGGED = "未標"
@@ -66,23 +65,27 @@ class Score:
     f1: float | None
     violations: tuple[int, ...]
     answered: bool
+    # 取回的片段裡不計分的
+    unscored: tuple[int, ...] = ()
 
 
 def score(q: Question, out: Outcome) -> Score:
     retrieved = sorted({e.content_id for e in out.evidence})
+    scored = [c for c in retrieved if c not in q.unscored]
     violations = sorted({e.content_id for e in out.evidence
                          if q.when is not None and not q.when.matches(e.time)
                          and not (e.time_backoff or e.space_backoff)})
     hits: list[int] = []
     recall = precision = f1 = None
-    if q.relevant is not None and not retrieved:
+    if q.relevant is not None and not scored:
         recall = precision = f1 = 0.0 if q.relevant else 1.0
     elif q.relevant is not None:
-        hits = sorted(q.relevant.intersection(retrieved))
-        precision = len(hits) / len(retrieved)
+        hits = sorted(q.relevant.intersection(scored))
+        precision = len(hits) / len(scored)
         recall = len(hits) / len(q.relevant) if q.relevant else 1.0
         f1 = 2 * recall * precision / (recall + precision) if recall + precision else 0.0
-    return Score(tuple(retrieved), tuple(hits), recall, precision, f1, tuple(violations), bool(retrieved))
+    return Score(tuple(retrieved), tuple(hits), recall, precision, f1, tuple(violations), bool(retrieved),
+                 tuple(c for c in retrieved if c in q.unscored))
 
 
 def aggregate(scores: list[Score], errors: int = 0, unresolved: int = 0) -> dict:
@@ -97,6 +100,7 @@ def aggregate(scores: list[Score], errors: int = 0, unresolved: int = 0) -> dict
         "time_violation_rate": violations / retrieved if retrieved else None,
         "answered_rate": _mean([float(s.answered) for s in scores]),
         "retrieved": retrieved,
+        "unscored": sum(len(s.unscored) for s in scores),
         "violations": violations,
         "labelled": len(labelled),
         "errors": errors,
@@ -108,21 +112,17 @@ def _mean(xs: list[float]) -> float | None:
     return sum(xs) / len(xs) if xs else None
 
 
-def evaluate(questions: list[Question], outcomes: dict[str, Outcome], places: Places | None = None,
+def evaluate(questions: list[Question], outcomes: dict[str, Outcome],
              judgements: dict[str, Judgement] | None = None) -> dict:
     """每題的紀錄（計畫、取回集合、證據、答案、指標）加上整體、依題型、依 split 的彙總。
 
-    places：解析 `gold_plan` 和規劃器計畫的地點，用來算規劃器正確率；None 時不算。
     judgements：評審對各題答案的判斷（題目 key → 判斷），用來算答案指標；None 或缺題時那些題不算。"""
     judgements = judgements or {}
     rows = [(q, outcomes[q.key], score(q, outcomes[q.key])) for q in questions]
-    plan_scores = {q.key: score_plan(q.gold_plan, o.plan, places)
-                   for q, o, _ in rows if places is not None and q.gold_plan is not None}
 
     def summary(subset) -> dict:
         return {**aggregate([s for _, _, s in subset], errors=sum(o.error is not None for _, o, _ in subset),
                             unresolved=sum(bool(o.unresolved_places) for _, o, _ in subset)),
-                "planner": aggregate_plans([plan_scores[q.key] for q, _, _ in subset if q.key in plan_scores]),
                 "answer": aggregate_answers([judgements[q.key] for q, _, _ in subset if q.key in judgements])}
 
     def by(attr: str) -> dict:
@@ -133,11 +133,11 @@ def evaluate(questions: list[Question], outcomes: dict[str, Outcome], places: Pl
 
     return {
         "summary": {"overall": summary(rows), "by_split": by("split"), "by_type": by("type")},
-        "questions": [_record(q, o, s, plan_scores.get(q.key), judgements.get(q.key)) for q, o, s in rows],
+        "questions": [_record(q, o, s, judgements.get(q.key)) for q, o, s in rows],
     }
 
 
-def _record(q: Question, o: Outcome, s: Score, plan_score: PlanScore | None, judgement: Judgement | None) -> dict:
+def _record(q: Question, o: Outcome, s: Score, judgement: Judgement | None) -> dict:
     return {
         "key": q.key,
         "question": q.question,
@@ -147,6 +147,7 @@ def _record(q: Question, o: Outcome, s: Score, plan_score: PlanScore | None, jud
         "relevant": None if q.relevant is None else sorted(q.relevant),
         "retrieved": list(s.retrieved),
         "hits": list(s.hits),
+        "unscored": list(s.unscored),
         "recall": s.recall,
         "precision": s.precision,
         "f1": s.f1,
@@ -155,8 +156,6 @@ def _record(q: Question, o: Outcome, s: Score, plan_score: PlanScore | None, jud
         "error": o.error,
         "unresolved_places": o.unresolved_places,
         "plan": o.plan.to_dict() if o.plan else None,
-        "gold_plan": q.gold_plan.to_dict() if q.gold_plan else None,
-        "planner": plan_score.to_dict() if plan_score else None,
         "sections": [asdict(sec) for sec in o.sections],
         "answer": o.answer,
         "expect": list(q.expect),
