@@ -12,6 +12,8 @@ from .paths import CACHE_DIR, PROMPT_DIR, TIME_SLOTS_MARK, TIME_SLOTS_PATH
 __all__ = ["LLMError", "extract", "prompt_version", "build_messages"]
 
 MODEL = "claude-sonnet-5-5"
+# 先想再填欄位：不想直接輸出 JSON 時，會把整段原文（含屬性）改寫進 content
+EFFORT = "medium"
 
 SCHEMA = {
     "type": "object",
@@ -25,12 +27,14 @@ SCHEMA = {
                     "name_ja": {"type": "string"},
                     "city": {"type": "string"},
                     "kind": {"type": "string", "enum": ["景點", "區域"]},
+                    # 放在時間與 content 前面：先逐件判斷，再填後面的欄位
+                    "facts": {"type": "string"},
                     "day_type": {"type": "string", "enum": ["平日", "假日", "不明"]},
                     "time": {"type": "string", "enum": ["早上", "中午", "下午", "晚上", "全天", "不明"]},
                     "month": {"type": "string"},
                     "content": {"type": "string"},
                 },
-                "required": ["poi_name", "name_ja", "city", "kind", "day_type", "time", "month", "content"],
+                "required": ["poi_name", "name_ja", "city", "kind", "facts", "day_type", "time", "month", "content"],
                 "additionalProperties": False,
             },
         }
@@ -47,7 +51,7 @@ def _prompt_files() -> list[Path]:
 
 
 def prompt_version() -> str:
-    h = hashlib.sha256(MODEL.encode())
+    h = hashlib.sha256(f"{MODEL}\0{EFFORT}".encode())
     for p in _prompt_files():
         h.update(p.name.encode() + b"\0" + p.read_bytes() + b"\0")
     return h.hexdigest()[:12]
@@ -71,7 +75,7 @@ async def extract(article: dict, use_cache: bool = False) -> tuple[list[dict], b
     if use_cache and cache.exists():
         return json.loads(cache.read_text())["items"], True
     system, user = build_messages(article)
-    out = await call(system, user, SCHEMA, MODEL)
+    out = await call(system, user, SCHEMA, MODEL, effort=EFFORT)
     cache.parent.mkdir(parents=True, exist_ok=True)
     cache.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n")
     return out["items"], False

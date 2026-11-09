@@ -1,7 +1,7 @@
 """檢索 seam：地點解析（OSM 物件、區域範圍、快取）。輸入檢索計畫，看取回哪些片段。不打外部 API。退讓見 test_backoff.py。"""
 import pytest
 
-from strag_v3.place import AREA, SPOT, PlaceError
+from strag_v3.place import AREA, SPOT, PlaceError, Places
 from strag_v3.rag.params import Params
 from strag_v3.rag.plan import Plan, PlanError
 from strag_v3.rag.retrieve import Retriever
@@ -98,3 +98,15 @@ def test_failed_resolution_is_cached_too(add, ids_at, nominatim):
 def test_plan_rejects_space_outside_the_format(space):
     with pytest.raises(PlanError):
         Plan.from_dict({"sub_queries": [{"space": space, "time": None, "aspect": None}]})
+
+
+def test_question_written_as_an_alias_retrieves_the_target(conn, add, ids_at, nominatim):
+    park = add("上野恩賜公園")
+    Places(conn, nominatim).add_alias("上野公園", "上野恩賜公園", "東京", SPOT)
+
+    assert ids_at("上野公園") == [park]
+
+
+def test_alias_to_a_place_that_does_not_resolve_is_an_error(conn, nominatim):
+    with pytest.raises(PlaceError):
+        Places(conn, nominatim).add_alias("晴空塔展望台", "スカイツリー展望台", "東京", SPOT)

@@ -13,7 +13,10 @@ class LLMError(Exception):
     """LLM 回傳錯誤（包含額度用完），整批要停下。"""
 
 
-async def call(system: str, user: str, schema: dict | None, model: str) -> dict | str:
+async def call(
+    system: str, user: str, schema: dict | None, model: str, effort: str | None = None
+) -> dict | str:
+    """effort 給值時開 adaptive thinking，effort（low/medium/high/max）決定想多深；None 維持 CLI 預設。"""
     os.environ.pop("ANTHROPIC_API_KEY", None)  # 走訂閱額度，不走 API 計費
     options = ClaudeAgentOptions(
         model=model,
@@ -26,6 +29,7 @@ async def call(system: str, user: str, schema: dict | None, model: str) -> dict 
         ),
         verbatim_prompts=True,
         extra_args={"no-session-persistence": None},
+        **({"thinking": {"type": "adaptive"}, "effort": effort} if effort else {}),
     )
     result = None
     try:

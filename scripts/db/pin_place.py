@@ -18,9 +18,10 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src"))
+sys.path[:0] = [str(ROOT / "src"), str(ROOT)]
 
-from strag_v3.place import AREA, KINDS, NominatimClient, Places  # noqa: E402
+from service.nominatim import USER_AGENT, NominatimClient  # noqa: E402
+from strag_v3.place import AREA, KINDS, Places  # noqa: E402
 
 LOOKUP_URL = "https://nominatim.openstreetmap.org/lookup"
 
@@ -32,7 +33,7 @@ def lookup(osm: str, kind: str) -> str:
         params["polygon_geojson"] = 1
     time.sleep(1.0)
     req = urllib.request.Request(f"{LOOKUP_URL}?{urllib.parse.urlencode(params)}",
-                                 headers={"User-Agent": NominatimClient.USER_AGENT})
+                                 headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=60) as r:
         return r.read().decode()
 

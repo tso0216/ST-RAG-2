@@ -2,7 +2,7 @@
 import json
 from dataclasses import dataclass
 
-from strag_v3.place import SPOT
+from strag_v3.place import ANY, SPOT
 
 
 @dataclass(frozen=True)
@@ -47,7 +47,7 @@ OSHIAGE_1 = (("neighbourhood", "押上一丁目"), ("quarter", "押上"), ("city
 OSHIAGE_2 = (("neighbourhood", "押上二丁目"), ("quarter", "押上"), ("city", "墨田区"))
 
 # 墨田区 ⊃ 押上 ⊃ 押上一丁目（晴空塔、晴空塔城）、押上二丁目（北十間川）；墨田区 ⊃ 向島（向島百花園）
-# 台東区 ⊃ 淺草（淺草寺）；渋谷区 ⊃ 渋谷（澀谷 SKY）
+# 台東区 ⊃ 淺草（淺草寺）、上野公園（上野恩賜公園、另一個叫上野公園的點）；渋谷区 ⊃ 渋谷（澀谷 SKY）
 # 東山区：查「東山区」時前 LIMIT 筆都是地址含東山区的道路，行政區本身排在後面，只有 settlement 查得到
 WORLD = (
     Osm(100, ("墨田区",), "city", 5, 5, 16, box=(0, 0, 10, 10)),
@@ -62,6 +62,10 @@ WORLD = (
     Osm(200, ("台東区",), "city", 15, 5, 16, box=(10, 0, 20, 10)),
     Osm(201, ("浅草", "淺草"), "suburb", 12, 2, 20, (("city", "台東区"),), box=(10, 0, 14, 4)),
     Osm(5, ("浅草寺", "淺草寺"), "amenity", 12, 1, 30, (("suburb", "浅草"), ("city", "台東区"))),
+    # 上野公園：同名的町（區域），加上兩個景點——公園本身和另一個只叫「上野公園」的點，查短名會對到後者
+    Osm(202, ("上野公園",), "quarter", 17, 7, 20, (("city", "台東区"),), box=(16, 6, 19, 9)),
+    Osm(7, ("上野恩賜公園",), "tourism", 17, 7.5, 30, (("quarter", "上野公園"), ("city", "台東区"))),
+    Osm(8, ("上野公園",), "tourism", 17.5, 7.5, 30, (("quarter", "上野公園"), ("city", "台東区"))),
     Osm(300, ("渋谷区",), "city", 25, 5, 16, box=(20, 0, 30, 10)),
     Osm(301, ("渋谷",), "quarter", 22, 2, 20, (("city", "渋谷区"),), box=(20, 0, 24, 4)),
     Osm(6, ("渋谷スカイ", "SHIBUYA SKY", "澀谷 SKY"), "tourism", 22, 1, 30, (("quarter", "渋谷"), ("city", "渋谷区"))),
@@ -74,7 +78,7 @@ LIMIT = 5
 
 class FakeNominatim:
     """假的 Nominatim：在 WORLD 裡依寫法找，回傳跟真的一樣格式的原始回應，最多 LIMIT 筆。
-    景點只找 poi，區域只找 address；settlement_only 時只留地名類。"""
+    景點只找 poi，區域只找 address，ANY 都找；settlement_only 時只留地名類。"""
 
     def __init__(self, world=WORLD):
         self.world = world
@@ -82,7 +86,7 @@ class FakeNominatim:
 
     def search(self, name_ja, city, kind, settlement_only=False):
         self.calls.append((name_ja, city, kind, settlement_only))
-        layer = "poi" if kind == SPOT else "address"
+        layer = None if kind == ANY else "poi" if kind == SPOT else "address"
         hits = [o for o in self.world
-                if name_ja in o.names and o.layer == layer and (o.settlement or not settlement_only)]
+                if name_ja in o.names and layer in (None, o.layer) and (o.settlement or not settlement_only)]
         return json.dumps([o.result() for o in hits[:LIMIT]], ensure_ascii=False)

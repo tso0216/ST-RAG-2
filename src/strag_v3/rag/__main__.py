@@ -6,8 +6,10 @@ import sys
 from dataclasses import asdict
 from pathlib import Path
 
+from service.nominatim import NominatimClient
+
 from ..extract.paths import DB_PATH
-from ..place import NominatimClient, PlaceError
+from ..place import PlaceError
 from . import llm
 from .embedding import CachedEmbedder, EmbeddingError, OpenAIEmbedder
 from .params import Params

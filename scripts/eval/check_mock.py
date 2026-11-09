@@ -24,7 +24,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / "src"), str(ROOT)]
 
-from strag_v3.place import NominatimClient, Places  # noqa: E402
+from service.nominatim import NominatimClient  # noqa: E402
+from strag_v3.place import Places  # noqa: E402
 from strag_v3.rag.plan import Plan  # noqa: E402
 from strag_v3.rag.timematch import UNKNOWN, TimeQuery, TimeSpec  # noqa: E402
 

@@ -9,23 +9,26 @@
   不一開始就加，是因為 settlement 不含丁目這類小行政區。
 - 解析到的 OSM 物件寫進 `place` 表，一列一個物件；不同寫法解析到同一個物件就是同一個地點。
   景點存座標；區域另存範圍（geojson）。
+- 別名（`place_alias` 表）：人工把一個寫法指到一個查詢鍵（名稱＋城市＋種類）。要解析的日文或繁中名稱是別名時，
+  改用它指的鍵解析，不分城市；解析出來的種類跟要的不同（例如要區域、別名指的是景點）就不套用。
+  用來合併 Nominatim 對到不同物件、其實是同一個地方的寫法，由 `scripts/db/alias_place.py` 加。
 - 每個地點記錄外圍行政區：從 `addressdetails` 由小到大找第一個有範圍、而且範圍包住這個地點的行政區
   （景點是包含它的最小行政區，區域是上一層），外圍行政區本身也照區域的規則解析。
 
-Nominatim 走 `Nominatim` 介面，測試時換成假的固定實作。
+Nominatim 走 `Nominatim` 介面：正式用 `service.nominatim.NominatimClient`，測試時換成假的固定實作。
 """
 import json
 import sqlite3
-import time
-import urllib.error
-import urllib.parse
-import urllib.request
 from dataclasses import dataclass
 from typing import Protocol
+
+from service.nominatim import NominatimError
 
 SPOT = "景點"
 AREA = "區域"
 KINDS = (SPOT, AREA)
+# 只拿來查詢：不限景點或區域（Nominatim 不分 layer，取第一筆）；寫進 `place` 時依結果的 addresstype 判成景點或區域
+ANY = "不限"
 
 # addressdetails 裡算行政區的鍵（Nominatim 的地址鍵；`administrative` 是沒歸類的行政界，例如丁目）
 ADMIN_TYPES = frozenset({
@@ -50,6 +53,16 @@ CREATE TABLE IF NOT EXISTS nominatim_cache (
 )
 """
 
+# 別名指到 nominatim_cache 的鍵而不是 place id：重建 place 表後別名照樣有效
+ALIAS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS place_alias (
+    alias   TEXT PRIMARY KEY,         -- 抽到或問到的寫法，日文或繁中
+    name_ja TEXT NOT NULL,            -- 改用這個鍵解析
+    city    TEXT NOT NULL,
+    kind    TEXT NOT NULL
+)
+"""
+
 
 class PlaceError(Exception):
     """Nominatim 呼叫失敗，或快取沒有又不能呼叫。"""
@@ -59,50 +72,6 @@ class Nominatim(Protocol):
     def search(self, name_ja: str, city: str, kind: str, settlement_only: bool = False) -> str:
         """回傳 Nominatim `/search` 的原始回應（JSON 陣列的文字）。settlement_only：只要地名類，不要道路和店家。"""
         ...
-
-
-class NominatimClient:
-    """公開的 nominatim.openstreetmap.org：限每秒 1 次請求，帶自訂 User-Agent。"""
-
-    URL = "https://nominatim.openstreetmap.org/search"
-    USER_AGENT = "strag-research/0.1 (spatio-temporal RAG research prototype)"
-    _last = 0.0  # 所有 client 共用，確保整個行程每秒最多 1 次
-
-    def __init__(self, retries: int = 4):
-        self.retries = retries
-
-    def search(self, name_ja: str, city: str, kind: str, settlement_only: bool = False) -> str:
-        params = {
-            "q": f"{name_ja} {city}".strip(),
-            "format": "jsonv2",
-            "countrycodes": "jp",
-            "accept-language": "ja",
-            "addressdetails": 1,
-            "limit": 5,
-            "layer": "poi" if kind == SPOT else "address",
-        }
-        if settlement_only:
-            params["featureType"] = "settlement"
-        if kind == AREA:
-            params["polygon_geojson"] = 1
-        url = f"{self.URL}?{urllib.parse.urlencode(params)}"
-        for attempt in range(1, self.retries + 1):
-            wait = NominatimClient._last + 1.0 - time.monotonic()
-            if wait > 0:
-                time.sleep(wait)
-            NominatimClient._last = time.monotonic()
-            req = urllib.request.Request(url, headers={"User-Agent": self.USER_AGENT})
-            try:
-                with urllib.request.urlopen(req, timeout=60) as r:
-                    return r.read().decode()
-            except urllib.error.HTTPError as e:
-                if e.code != 429 and e.code < 500 or attempt == self.retries:
-                    raise PlaceError(f"Nominatim HTTP {e.code}：{name_ja}") from None
-            except urllib.error.URLError as e:
-                if attempt == self.retries:
-                    raise PlaceError(f"Nominatim 連線失敗：{e.reason}") from None
-            time.sleep(2 ** attempt)
-        raise PlaceError("Nominatim 重試失敗")
 
 
 @dataclass(frozen=True)
@@ -159,13 +128,40 @@ class Places:
         self.conn = conn
         self.nominatim = nominatim
         conn.execute(CACHE_SCHEMA)
+        conn.execute(ALIAS_SCHEMA)
 
     # ---------- 解析 ----------
 
     def resolve(self, name_ja: str, city: str | None, kind: str, name_zh: str | None = None) -> Place | None:
-        """解析成一個地點；解析不到傳回 None。name_zh 只在這個 OSM 物件第一次寫進 `place` 時記下。"""
-        if kind not in KINDS:
+        """解析成一個地點；解析不到傳回 None。name_zh 只在這個 OSM 物件第一次寫進 `place` 時記下。
+
+        kind 可以是 ANY：不限景點或區域，取第一筆，種類依結果判定。
+        name_ja 或 name_zh 是別名時，先改用別名指的鍵解析，種類相符就用它。
+        """
+        if kind not in KINDS and kind != ANY:
             raise ValueError(f"地點種類只能是 {'、'.join(KINDS)}，不是「{kind}」")
+        for name in (name_ja, name_zh):
+            target = name and self.conn.execute(
+                "SELECT name_ja, city, kind FROM place_alias WHERE alias = ?", (name.strip(),)).fetchone()
+            if target:
+                place = self._resolve(*target, name_zh)
+                if place and kind in (ANY, place.kind):
+                    return place
+        return self._resolve(name_ja, city, kind, name_zh)
+
+    def add_alias(self, alias: str, name_ja: str, city: str | None, kind: str) -> Place:
+        """之後解析到 alias 這個寫法（日文或繁中，不分城市）都改用 name_ja＋city＋kind 解析。回傳別名指到的地點。"""
+        name_ja, city = name_ja.strip(), (city or "").strip()
+        target = self._resolve(name_ja, city, kind)
+        if target is None:
+            raise PlaceError(f"別名要指到的「{name_ja}」（{city or '不限城市'}，{kind}）解析不到")
+        with self.conn:
+            self.conn.execute("INSERT OR REPLACE INTO place_alias (alias, name_ja, city, kind) VALUES (?, ?, ?, ?)",
+                              (alias.strip(), name_ja, city, kind))
+        return target
+
+    def _resolve(self, name_ja: str, city: str | None, kind: str, name_zh: str | None = None) -> Place | None:
+        """不看別名，照名稱＋城市＋種類解析。"""
         name_ja, city = name_ja.strip(), (city or "").strip()
         hit = _first(json.loads(self._response(name_ja, city, kind)), kind)
         if hit is None:
@@ -177,6 +173,8 @@ class Places:
                     self.conn.execute("UPDATE place SET name_zh = ? WHERE id = ?", (name_zh, existing.id))
                 return self.get(existing.id)
             return existing
+        if kind == ANY:
+            kind = AREA if hit.get("addresstype") in ADMIN_TYPES else SPOT
         place = self._insert(hit, kind, city, name_zh)
         outer = self._find_outer(place, hit.get("address") or {})
         if outer:
@@ -192,10 +190,10 @@ class Places:
             return row[0]
         if self.nominatim is None:
             raise PlaceError(f"快取裡沒有「{name_ja}」（{city or '不限城市'}，{kind}），也沒有設定 Nominatim")
-        response = self.nominatim.search(name_ja, city, kind)
+        response = self._search(name_ja, city, kind)
         hit = _first(json.loads(response), kind)
         if hit is None and kind == AREA:
-            retry = self.nominatim.search(name_ja, city, kind, settlement_only=True)
+            retry = self._search(name_ja, city, kind, settlement_only=True)
             if retry_hit := _first(json.loads(retry), kind):
                 response, hit = retry, retry_hit
         with self.conn:
@@ -204,6 +202,12 @@ class Places:
                 " VALUES (?, ?, ?, ?, ?, ?, datetime('now'))",
                 (name_ja, city, kind, response, hit and hit["osm_type"], hit and int(hit["osm_id"])))
         return response
+
+    def _search(self, name_ja: str, city: str, kind: str, settlement_only: bool = False) -> str:
+        try:
+            return self.nominatim.search(name_ja, city, kind, settlement_only)
+        except NominatimError as e:
+            raise PlaceError(str(e)) from e
 
     def _insert(self, hit: dict, kind: str, city: str, name_zh: str | None) -> Place:
         geo = hit.get("geojson")

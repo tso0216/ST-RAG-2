@@ -1,5 +1,7 @@
 {
   "{\"keyword\": [\"京都\"], \"out\": \"data/ptt_article\", \"q\": \"京都\"}": 1,
   "{\"keyword\": [\"晴空塔\"], \"out\": \"data/ptt_article\", \"q\": \"晴空塔\"}": 6,
-  "{\"keyword\": [\"淺草寺\"], \"out\": \"data/ptt_article\", \"q\": \"淺草寺\"}": 6
+  "{\"keyword\": [\"淺草寺\"], \"out\": \"data/ptt_article\", \"q\": \"淺草寺\"}": 6,
+  "{\"keyword\": [\"東京\"], \"out\": \"data/ptt_article\", \"q\": \"東京\"}": 63,
+  "{\"keyword\": [\"淺草\"], \"out\": \"data/ptt_article\", \"q\": \"淺草\"}": 10
 }

@@ -17,8 +17,10 @@ import unicodedata
 from datetime import datetime
 from pathlib import Path
 
+from service.nominatim import NominatimClient
+
 from ...extract.paths import DB_PATH
-from ...place import NominatimClient, PlaceError, Places
+from ...place import PlaceError, Places
 from ...rag import llm
 from ...rag.embedding import CachedEmbedder, EmbeddingError, OpenAIEmbedder
 from ..metrics import evaluate

@@ -174,19 +174,22 @@ def load_article(t: Target, article_dir: Path = ARTICLE_DIR) -> dict:
 
 # ---------- 現成的文章 JSON ----------
 
-def load_file(path: Path) -> dict:
-    """讀現成的文章 JSON（例如 data/mock_article/*.json），補齊抽取需要的欄位。
+def load_file(path: Path, ptt: bool = False) -> dict:
+    """讀現成的文章 JSON（例如 data/mock_article/*.json、data/ptt_article/*.json），補齊抽取需要的欄位。
 
-    只有 id、kind、text、title、post_text、parents 會進 prompt；
-    place_name、visit_time 這類標註欄位不會給 LLM 看。
+    沒有 id 時用檔名（不含 .json）當 id，例如 PTT 爬下來的 ptt_M.1794064127.A.010。
+    ptt=True（CLI 的 --ptt）時，comments（PTT 推文）用 load_ptt_article 接在 text 後面；否則推文不用。
+    只有 id、kind、text、title、post_text、parents（和 --ptt 併進 text 的推文）會進 prompt；
+    place_name、visit_time、發文時間這類欄位不會給 LLM 看。
     """
     try:
         doc = json.loads(path.read_text())
     except (OSError, json.JSONDecodeError) as e:
         raise ValueError(f"讀不了 JSON：{e}") from None
-    if not isinstance(doc, dict) or not doc.get("id") or not (doc.get("text") or "").strip():
-        raise ValueError("JSON 缺少 id 或 text")
+    if not isinstance(doc, dict) or not (doc.get("text") or "").strip():
+        raise ValueError("JSON 缺少 text")
     doc = dict(doc)
+    doc["id"] = doc.get("id") or path.stem
     doc.setdefault("kind", "post")
     if doc["kind"] not in ("post", "comment"):
         raise ValueError(f"kind 只能是 post 或 comment：{doc['kind']}")
@@ -194,6 +197,28 @@ def load_file(path: Path) -> dict:
     title = (doc.get("title") or "").strip()
     if doc["kind"] == "post" and title and not doc["text"].startswith(title):
         doc["text"] = f"{title}\n{doc['text']}"
+    if ptt and isinstance(doc.get("comments"), list):
+        doc["text"] = load_ptt_article(doc["text"], doc["comments"])
     doc.setdefault("post_text", "")
     doc.setdefault("parents", [])
     return doc
+
+
+def load_ptt_article(text: str, comments: list[dict]) -> str:
+    """PTT 文章：本文後面接「推文」段落，一行一則「user：內容」。
+
+    PTT 一則推文太長會斷成好幾行，同一人連續的推文接成一則；空推文略過。
+    推文的 tag（推／噓／→）和時間不放進去。
+    """
+    merged: list[list[str]] = []
+    for c in comments:
+        user, content = (c.get("user") or "").strip(), (c.get("content") or "").strip()
+        if not content:
+            continue
+        if merged and merged[-1][0] == user:
+            merged[-1][1] += content
+        else:
+            merged.append([user, content])
+    if not merged:
+        return text
+    return text.rstrip() + "\n\n推文：\n" + "\n".join(f"{u}：{c}" for u, c in merged)

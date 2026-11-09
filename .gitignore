@@ -5,4 +5,5 @@
 .pytest_cache
 __pycache__
 .claude
-data
+data/mock_article
+data/ptt_article

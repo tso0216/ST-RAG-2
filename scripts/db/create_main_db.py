@@ -4,7 +4,8 @@ from pathlib import Path
 
 # place：一列一個 OSM 物件
 # content.poi_name：抽取時寫的原始名稱，只是紀錄；地點以 poi_id 為準
-# embedding 和 nominatim_cache 兩張快取表由用到的模組自己建（rag/embedding.py、place.py）
+# embedding、nominatim_cache 兩張快取表和 place_alias 由用到的模組自己建（rag/embedding.py、place.py）；
+# --rebuild 不動它們，所以別名重建後照樣有效
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS place (
     id         INTEGER PRIMARY KEY,
@@ -32,6 +33,15 @@ CREATE TABLE IF NOT EXISTS content (
     month      TEXT    NOT NULL,
     content    TEXT
 );
+
+-- 抽取前用 article_id 判斷文章是否已在 DB
+CREATE INDEX IF NOT EXISTS idx_content_article ON content (article_id);
+
+-- place 加上片段數：直接指到這個地點的片段，區域不含範圍裡其他地點的片段。查的時候才算，不會跟 content 不同步
+CREATE VIEW IF NOT EXISTS place_stats AS
+SELECT p.*, count(c.id) AS content_count
+FROM place p LEFT JOIN content c ON c.poi_id = p.id
+GROUP BY p.id;
 """
 
 
@@ -50,6 +60,7 @@ def main() -> None:
     Path(a.db).parent.mkdir(parents=True, exist_ok=True)
     with connect(a.db) as conn:
         if a.rebuild:
+            conn.execute("DROP VIEW IF EXISTS place_stats")
             conn.execute("DROP TABLE IF EXISTS content")
             conn.execute("DROP TABLE IF EXISTS place")
         conn.executescript(SCHEMA)
