@@ -7,3 +7,4 @@ __pycache__
 .claude
 data/mock_article
 data/ptt_article
+.mypy_cache

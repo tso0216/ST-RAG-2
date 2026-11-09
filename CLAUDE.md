@@ -10,4 +10,4 @@ Issues 以 local markdown 存放在 `.scratch/<feature>/`。See `docs/agents/iss
 
 ### Domain docs
 
-Single-context：根目錄一份 `GLOSSARY.md` + `docs/adr/`。See `docs/agents/domain.md`.
+Single-context：根目錄一份 `GLOSSARY.md` 。See `docs/agents/domain.md`.
