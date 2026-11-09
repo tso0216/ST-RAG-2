@@ -1,6 +1,6 @@
 # 01 qgen.py 補六個指令
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: —
 
 ## 為什麼
@@ -37,3 +37,14 @@ Blocked by: —
 - 原有指令的行為不變。
 
 Answer 寫：六個指令各一行用法範例。
+
+## Answer
+
+- `.venv/bin/python scripts/eval/qgen.py layers 50 --when '{"month": ["3"], "time": ["晚上"]}'`
+- `.venv/bin/python scripts/eval/qgen.py frag 6 611`
+- `.venv/bin/python scripts/eval/qgen.py usage`（預設 `ptt_v2/`；或 `usage .scratch/ptt-v2-questions/drafts`）
+- `.venv/bin/python scripts/eval/qgen.py merge src/strag_v3/eval/questions/ptt_v2/stay.json .scratch/ptt-v2-questions/drafts/stay-*.json`
+- `.venv/bin/python scripts/eval/qgen.py blind-input src/strag_v3/eval/questions/ptt_v2/stay.json [stay-03 stay-07] > .scratch/ptt-v2-questions/review/stay-input.json`
+- `.venv/bin/python scripts/eval/qgen.py blind-diff src/strag_v3/eval/questions/ptt_v2/stay.json .scratch/ptt-v2-questions/review/stay-blind-1.json .scratch/ptt-v2-questions/review/stay-blind-2.json`
+
+驗證：`tests/eval/test_qgen_commands.py` 16 個測試通過；用 `.scratch/ptt-v2-questions/tmp/` 的 stay-01／stay-02 草稿實跑完成條件每一項都對（layers 20／41／22 筆跟 pool 行數一致；merge 排序、重複 id 不寫檔；blind-input 沒有禁止欄位、要判的 id＝must_judge；blind-diff 一樣時 40/40、改一筆後落在「不計分→其他不收」並列出）。原有指令跟 HEAD 版逐字比對（places、areas、pool、outer、check、answer 和各子指令 -h），只有總 `-h` 多列了新指令；plan、calibrate 要呼叫 Opus 沒實跑，程式碼沒動。

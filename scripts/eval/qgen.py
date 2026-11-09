@@ -7,6 +7,12 @@
     python scripts/eval/qgen.py areas                           # 有範圍的區域，和範圍內的片段數（找地點題用）
     python scripts/eval/qgen.py pool 50 --when '{"month": ["3"], "time": ["晚上"]}' [--widen]
     python scripts/eval/qgen.py outer 50                        # 空間退讓會去的外圍行政區
+    python scripts/eval/qgen.py layers 50 [--when '<json>']     # 檢索依序試的每層：地點、時間條件、候選數、限定維度不明的筆數
+    python scripts/eval/qgen.py frag 6 611                      # 印指定的片段（格式跟 pool 一樣）
+    python scripts/eval/qgen.py usage [資料夾]                  # 題目檔用掉的地點（各題型、合計、到上限的）和出過的組合
+    python scripts/eval/qgen.py merge <題目檔> <草稿>...        # 草稿依 id 排序合併成題目檔；id 重複就報錯、不寫檔
+    python scripts/eval/qgen.py blind-input <題目檔> [題目 id...]   # 給盲審子代理的 JSON（不帶標註）
+    python scripts/eval/qgen.py blind-diff <題目檔> <盲審檔>...     # 標註 × 盲審的對照表、一致率和不一致的片段
     python scripts/eval/qgen.py check <題目檔>...               # 機械檢查，全部通過才 exit 0
     python scripts/eval/qgen.py plan <題目檔>...                # 讓 planner 只讀題目文字，比對還原出的地點和時間
     python scripts/eval/qgen.py answer <題目檔> <題目 id>       # 只用證據原句拼成的正向答案
@@ -19,7 +25,7 @@ import re
 import sqlite3
 import sys
 import unicodedata
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -97,12 +103,16 @@ class DB:
             self._layers[key] = out
         return self._layers[key]
 
-    def must_judge(self, space: dict, when: dict | None, coverage: str) -> set[int]:
-        """必須逐筆判過的候選：從原條件試到 coverage 那層為止的所有候選（none 是每一層）。"""
+    def judged_layers(self, space: dict, when: dict | None, coverage: str) -> list[tuple[str, set[int]]]:
+        """必須逐筆判的層：從原條件試到 coverage 那層為止（none 是每一層）。"""
         lay = self.layers(space["place_id"], when)
         names = [n for n, _ in lay]
         stop = names.index(coverage) + 1 if coverage in names else len(lay)
-        return set().union(*(ids for _, ids in lay[:stop]))
+        return lay[:stop]
+
+    def must_judge(self, space: dict, when: dict | None, coverage: str) -> set[int]:
+        """必須逐筆判過的候選：從原條件試到 coverage 那層為止的所有候選（none 是每一層）。"""
+        return set().union(*(ids for _, ids in self.judged_layers(space, when, coverage)))
 
 
 DIMS = {"month": "月份", "day_type": "平日／假日", "time": "時段"}
@@ -127,6 +137,12 @@ def unknown_dims(f: dict, when: dict | None, asks: str | None = None, widen: boo
     return out
 
 
+def frag_line(f: dict) -> str:
+    """`pool`、`frag` 印一筆片段的格式；有 `unknown_dims` 才標「限定維度不明」。"""
+    flag = f" | 限定維度不明：{'、'.join(f['unknown_dims'])}" if f.get("unknown_dims") else ""
+    return f"{f['id']} | {f['poi']} | {f['month']}/{f['day_type']}/{f['time']}{flag} | {f['content']}"
+
+
 def _norm(s: str) -> str:
     return unicodedata.normalize("NFKC", s)
 
@@ -137,6 +153,30 @@ def when_text(f: dict) -> str:
     month = "" if m == "不明" else f"{m} 月" if m[0].isdigit() else f"{m}天"
     parts = [month, *(x for x in (f["day_type"], f["time"]) if x != "不明")]
     return " ".join(p for p in parts if p) or "時間沒寫"
+
+
+# ---------- 檢索的層 ----------
+
+def layer_place(db: DB, place_id: int, layer: str) -> int:
+    """這層撈哪個地點：空間退讓撈外圍行政區，其餘撈原地點。"""
+    return db.outer(place_id) if layer == "space_backoff" else place_id
+
+
+def layer_when(when: dict | None, layer: str) -> dict | None:
+    """這層用的時間條件，寫成 when 的格式：時間退讓層是擴大後的條件，其餘是原條件。"""
+    if layer != "time_backoff":
+        return when
+    w = parse_time(when).widened()
+    return {k: v for k, v in (("month", list(w.month)), ("day_type", w.day_type), ("time", list(w.time))) if v}
+
+
+def place_text(db: DB, place_id: int) -> str:
+    p = db.places.get(place_id)
+    return f"{place_id} {p.name}（{p.kind}）"
+
+
+def cond_text(when: dict | None) -> str:
+    return json.dumps(when, ensure_ascii=False) if when else "時間不限"
 
 
 # ---------- 驗證 ----------
@@ -324,6 +364,193 @@ def check_files(db: DB, paths: list[Path]) -> int:
     return n_err
 
 
+# ---------- 題目檔 ----------
+
+ANNOTATION_NOTE = "依 src/strag_v3/eval/questions/generate.md 出題與標註"
+
+
+def _id_key(qid: str) -> list:
+    """stay-2 排在 stay-10 前面。"""
+    return [int(x) if x.isdigit() else x for x in re.split(r"(\d+)", qid)]
+
+
+def _units(q: dict) -> list[dict]:
+    """有自己 space／when 的單位：比較題是每個選項，其餘是題目本身。"""
+    return (q.get("options") or []) if q.get("type") == "比較" else [q]
+
+
+def usage(db: DB, folder: Path) -> None:
+    """資料夾裡所有題目檔用掉的地點：各題型和合計的題數（到上限的標出來），和出過的（地點、面向、時間條件）組合。"""
+    qs = []
+    for path in sorted(folder.glob("*.json")) if folder.is_dir() else []:
+        data = json.loads(path.read_text())
+        if isinstance(data, dict) and isinstance(data.get("questions"), list):
+            qs += data["questions"]
+    if not qs:
+        print("還沒有題目")
+        return
+
+    def mark(n: int, cap: int) -> str:
+        return f"{n}（到上限）" if n >= cap else str(n)
+
+    per: dict[int, Counter] = defaultdict(Counter)
+    for q in qs:
+        for p in places_of(q):
+            per[p][q.get("type")] += 1
+    print(f"各地點的題數（同一題型上限 {MAX_PER_PLACE_TYPE} 題，跨題型合計上限 {MAX_PER_PLACE} 題）：")
+    for p, c in sorted(per.items(), key=lambda x: (-x[1].total(), x[0])):
+        types = [*TYPES, *sorted(str(t) for t in c if t not in TYPES)]
+        counts = "、".join(f"{t} {mark(c[t], MAX_PER_PLACE_TYPE)}" for t in types if c[t])
+        print(f"{place_text(db, p)}：{counts}；合計 {mark(c.total(), MAX_PER_PLACE)}")
+
+    combos: dict[tuple, list[str]] = defaultdict(list)
+    for q in qs:
+        for u in _units(q):
+            if "space" in u:
+                combos[(u["space"]["place_id"], q.get("aspect") or "", cond_text(u.get("when")))].append(str(q.get("id")))
+    print("已出過的（地點、面向、時間條件）組合：")
+    for (p, aspect, when), ids in sorted(combos.items()):
+        print(f"{place_text(db, p)}｜{aspect}｜{when}｜{'、'.join(sorted(ids, key=_id_key))}")
+
+
+def merge(out: Path, drafts: list[Path]) -> int:
+    """把草稿的題目依 id 排序寫成題目檔；id 重複就報錯，不寫檔。"""
+    qs, where = [], {}
+    for path in drafts:
+        for q in json.loads(path.read_text())["questions"]:
+            qs.append(q)
+            where.setdefault(q.get("id"), []).append(str(path))
+    if dup := {i: ps for i, ps in where.items() if len(ps) > 1}:
+        print("\n".join(f"id 重複：{i}（{'、'.join(ps)}）" for i, ps in dup.items()) + f"\n沒有寫入 {out}")
+        return 1
+    qs.sort(key=lambda q: _id_key(str(q.get("id"))))
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps({"annotation_note": ANNOTATION_NOTE, "questions": qs}, ensure_ascii=False, indent=2) + "\n")
+    print(f"{out}：{len(qs)} 題（{'、'.join(str(q.get('id')) for q in qs)}）")
+    return 0
+
+
+# ---------- 盲審 ----------
+
+BLIND_FIELDS = ("id", "type", "question", "when", "asks", "aspect", "aspect_rule")  # 盲審只看得到這些欄位
+BLIND_NOTE = [
+    "每題照 generate.md〈收不收片段〉，逐筆判 layers[].judge 列的片段：收，或不收並附理由碼（無關、別處、時間矛盾、時間不明）。",
+    "每層的 space、when 是這層撈片段的地點範圍和時間條件，判這層的片段就照它們判（time_backoff 是擴大後的時間，"
+    "space_backoff 是外圍行政區）。片段全文從專案根目錄跑這層的 pool 指令看；pool 印的是整層的候選，"
+    "只判 judge 列的：同一筆只列在第一次出現的那層。",
+    "比較題每個選項各有自己的層（option 是選項標籤）；in_options 標出同時是好幾個選項候選的片段，只判一次。",
+    "結果寫成 JSON：{題目 id: {\"relevant\": {片段 id: 算數那句原文}, \"excluded\": {片段 id: 理由碼}}}。"
+    "原文從片段逐字複製，可以截短，不能改字；每筆 judge 列的片段都要出現在 relevant 或 excluded 其中一邊。",
+]
+
+
+def scope_text(db: DB, place_id: int) -> str:
+    """撈片段的地點範圍：景點只撈自己，區域撈本身和範圍內所有地點。"""
+    p = db.places.get(place_id)
+    return f"{place_id} {p.name}（{'區域：區域本身和範圍內所有地點' if p.kind == '區域' else p.kind}）"
+
+
+def pool_cmd(place_id: int, when: dict | None, widen: bool) -> str:
+    cmd = f".venv/bin/python scripts/eval/qgen.py pool {place_id}"
+    if when:
+        cmd += f" --when '{json.dumps(when, ensure_ascii=False)}'"
+    return cmd + (" --widen" if widen else "")
+
+
+def blind_input(db: DB, q: dict) -> dict:
+    """給盲審子代理的一題：只有題目要素（BLIND_FIELDS），和跟 must_judge 一樣的要判的層。
+    標註（coverage、收不收、expect…）一律不帶。"""
+    compare = q.get("type") == "比較"
+    layers: list[dict] = []
+    first: dict[int, dict] = {}            # 片段 → 它第一次出現的那層
+    owners: dict[int, list[str]] = {}      # 比較題：片段 → 它是哪些選項的候選
+    for u in _units(q):
+        for name, ids in db.judged_layers(u["space"], u.get("when"), q.get("coverage")):
+            pid = layer_place(db, u["space"]["place_id"], name)
+            entry = {"layer": name, **({"option": u.get("label")} if compare else {}),
+                     "space": scope_text(db, pid), "when": layer_when(u.get("when"), name),
+                     "pool": pool_cmd(pid, u.get("when"), name == "time_backoff"),
+                     "judge": sorted(ids - first.keys())}
+            first |= {i: entry for i in entry["judge"]}
+            if compare:
+                for i in ids:
+                    if u.get("label") not in owners.setdefault(i, []):
+                        owners[i].append(u.get("label"))
+            layers.append(entry)
+    for i in sorted(owners):
+        if len(owners[i]) > 1:
+            first[i].setdefault("in_options", {})[str(i)] = owners[i]
+    return {**{k: q[k] for k in BLIND_FIELDS if k in q}, "layers": layers}
+
+
+CATEGORIES = ("收", "不計分", "其他不收")  # 不計分＝時間不明；其他不收＝無關、別處、時間矛盾
+
+
+def _judgement(kind: str, value: str) -> tuple[str, str]:
+    """(三類之一, 顯示用的判斷)；kind 是 relevant 或 excluded，value 是引文或理由碼。"""
+    if kind == "relevant":
+        return "收", "收"
+    return ("不計分" if value == "時間不明" else "其他不收"), f"不收（{value}）"
+
+
+def _content(db: DB, cid: int) -> str:
+    try:
+        return db.frag(cid)["content"]
+    except KeyError:
+        return ""
+
+
+def blind_diff(db: DB, path: Path, blind_paths: list[Path]) -> int:
+    """標註 × 盲審的三類對照表和一致率，逐筆列出不一致的；再列盲審漏判、判到候選以外、引文不是原文的。
+    只對照盲審檔裡有的題目。全部一致、沒有其他問題才 exit 0。"""
+    qs = {q.get("id"): q for q in json.loads(path.read_text())["questions"]}
+    blind: dict[str, dict[int, tuple[str, str]]] = {}
+    odd: list[str] = []
+    for bp in blind_paths:
+        for qid, j in json.loads(bp.read_text()).items():
+            rel = {int(c): t for c, t in (j.get("relevant") or {}).items()}
+            exc = {int(c): r for c, r in (j.get("excluded") or {}).items()}
+            odd += [f"{qid} | {c} | 同時寫在 relevant 和 excluded" for c in sorted(rel.keys() & exc.keys())]
+            odd += [f"{qid} | {c} | 理由碼「{r}」不是 {'、'.join(REASONS)}" for c, r in exc.items() if r not in REASONS]
+            blind.setdefault(qid, {}).update({c: ("excluded", r) for c, r in exc.items()}
+                                             | {c: ("relevant", t) for c, t in rel.items()})
+
+    table: Counter = Counter()
+    diffs, missed, outside, bad_quotes = [], [], [], []
+    odd += [f"{qid} | 題目檔裡沒有這題" for qid in blind if qid not in qs]
+    for qid in sorted((i for i in blind if i in qs), key=_id_key):
+        q, mine = qs[qid], blind[qid]
+        cands = set().union(*(db.must_judge(u["space"], u.get("when"), q.get("coverage")) for u in _units(q)))
+        rel = set(q.get("relevant_contents") or [])
+        exc = {int(i): r for i, r in (q.get("excluded") or {}).items()}
+        for c in sorted(cands & mine.keys() & (rel | exc.keys())):  # 標註漏判的不對照，check 會抓
+            ours, ours_text = _judgement("relevant", "") if c in rel else _judgement("excluded", exc[c])
+            theirs, theirs_text = _judgement(*mine[c])
+            table[ours, theirs] += 1
+            if ours != theirs:
+                quote = mine[c][1] if mine[c][0] == "relevant" else "—"
+                diffs.append(f"{qid} | {c} | 標註：{ours_text} | 盲審：{theirs_text} | 盲審引文：{quote}")
+        if miss := sorted(cands - mine.keys()):
+            missed.append(f"{qid}：{'、'.join(map(str, miss))}")
+        if out := sorted(mine.keys() - cands):
+            outside.append(f"{qid}：{'、'.join(map(str, out))}")
+        for c, (kind, quote) in sorted(mine.items()):
+            if kind == "relevant" and not (quote and _norm(quote) in _norm(_content(db, c))):
+                bad_quotes.append(f"{qid} | {c} | {quote}")
+
+    n = table.total()
+    agree = sum(table[x, x] for x in CATEGORIES)
+    print("標註＼盲審 | " + " | ".join(CATEGORIES))
+    for x in CATEGORIES:
+        print(f"{x} | " + " | ".join(str(table[x, y]) for y in CATEGORIES))
+    print(f"一致率：{agree}/{n}（{agree / n:.1%}）" if n else "一致率：沒有可以對照的片段")
+    sections = [("不一致的", diffs), ("盲審漏判的候選", missed), ("判了候選以外的片段", outside),
+                ("盲審引文不是片段原文的", bad_quotes), ("盲審檔看不懂的", odd)]
+    for title, lines in sections:
+        print(f"{title}：" + ("\n" + "\n".join(lines) if lines else "無"))
+    return 1 if any(lines for _, lines in sections) else 0
+
+
 # ---------- planner 讀題 ----------
 
 def _time_key(t) -> tuple:
@@ -423,7 +650,7 @@ async def calibrate(db: DB, path: Path, negatives: dict[str, str], concurrency: 
 
 # ---------- 命令列 ----------
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--db", type=Path, default=ROOT / "data/ptt.db")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -436,6 +663,22 @@ def main() -> int:
     s.add_argument("--widen", action="store_true")
     s = sub.add_parser("outer")
     s.add_argument("place_id", type=int)
+    s = sub.add_parser("layers")
+    s.add_argument("place_id", type=int)
+    s.add_argument("--when", type=json.loads, default=None)
+    s = sub.add_parser("frag")
+    s.add_argument("ids", type=int, nargs="+")
+    s = sub.add_parser("usage")
+    s.add_argument("folder", type=Path, nargs="?", default=ROOT / "src/strag_v3/eval/questions/ptt_v2")
+    s = sub.add_parser("merge")
+    s.add_argument("file", type=Path, help="要寫的題目檔")
+    s.add_argument("drafts", type=Path, nargs="+")
+    s = sub.add_parser("blind-input")
+    s.add_argument("file", type=Path)
+    s.add_argument("qids", nargs="*", help="只帶這些題目（預設全部）")
+    s = sub.add_parser("blind-diff")
+    s.add_argument("file", type=Path)
+    s.add_argument("blinds", type=Path, nargs="+", help="盲審檔；同一題同一筆，後面的檔蓋過前面的")
     s = sub.add_parser("check")
     s.add_argument("files", type=Path, nargs="+")
     s = sub.add_parser("plan")
@@ -448,7 +691,7 @@ def main() -> int:
     s.add_argument("file", type=Path)
     s.add_argument("--negatives", type=Path, required=True, help="JSON：題目 id → 反向答案")
     s.add_argument("--concurrency", type=int, default=4)
-    a = ap.parse_args()
+    a = ap.parse_args(argv)
     db = DB(a.db)
 
     if a.cmd == "places":
@@ -472,11 +715,38 @@ def main() -> int:
             print(f"{pid} | {name} | {city} | 範圍內有片段的地點 {k} | 片段 {n}")
     elif a.cmd == "pool":
         for f in db.pool(a.place_id, a.when, a.widen):
-            flag = f" | 限定維度不明：{'、'.join(f['unknown_dims'])}" if f["unknown_dims"] else ""
-            print(f"{f['id']} | {f['poi']} | {f['month']}/{f['day_type']}/{f['time']}{flag} | {f['content']}")
+            print(frag_line(f))
     elif a.cmd == "outer":
         o = db.outer(a.place_id)
         print(o and f"{o} | {db.places.get(o).name_ja}")
+    elif a.cmd == "layers":
+        for name, ids in db.layers(a.place_id, a.when):
+            widen = name == "time_backoff"
+            unk = sum(bool(unknown_dims(db.frag(i), a.when, widen=widen)) for i in ids)
+            print(f"{name} | {place_text(db, layer_place(db, a.place_id, name))} | "
+                  f"{cond_text(layer_when(a.when, name))} | 候選 {len(ids)} | 限定維度不明 {unk}")
+    elif a.cmd == "frag":
+        missing = 0
+        for cid in a.ids:
+            try:
+                print(frag_line(db.frag(cid)))
+            except KeyError as ex:
+                print(ex.args[0])
+                missing += 1
+        return 1 if missing else 0
+    elif a.cmd == "usage":
+        usage(db, a.folder)
+    elif a.cmd == "merge":
+        return merge(a.file, a.drafts)
+    elif a.cmd == "blind-input":
+        qs = json.loads(a.file.read_text())["questions"]
+        if miss := [i for i in a.qids if i not in {q.get("id") for q in qs}]:
+            print(f"{a.file} 裡沒有這些題目：{'、'.join(miss)}")
+            return 1
+        items = [blind_input(db, q) for q in qs if not a.qids or q.get("id") in a.qids]
+        print(json.dumps({"說明": BLIND_NOTE, "題目": items}, ensure_ascii=False, indent=2))
+    elif a.cmd == "blind-diff":
+        return blind_diff(db, a.file, a.blinds)
     elif a.cmd == "check":
         return 1 if check_files(db, a.files) else 0
     elif a.cmd == "plan":
