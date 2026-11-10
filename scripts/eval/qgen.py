@@ -1,7 +1,8 @@
-"""出題工具（配合 `src/strag_v3/eval/questions/generate.md`）：候選片段、題目檔驗證、評審校準。
+"""出題工具（配合 `.scratch/ptt-v2-questions/generate.md`）：候選片段、題目檔驗證。
 
 候選片段和檢索用同一套規則（`Places.scope`、`TimeQuery.matches`、`TimeQuery.widened`、`Places.outer`），
-所以「哪些片段要判」由程式決定，不靠人工篩。DB 以唯讀開啟；評審校準的快取放記憶體，不寫進 DB。
+所以「哪些片段要判」由程式決定，不靠人工篩。DB 以唯讀開啟。
+評審校準在 `python -m strag_v3.eval.baseline calibrate`。
 
     python scripts/eval/qgen.py places [--min 3]               # 有片段的地點（id、種類、名稱、片段數）
     python scripts/eval/qgen.py areas                           # 有範圍的區域，和範圍內的片段數（找地點題用）
@@ -16,7 +17,6 @@
     python scripts/eval/qgen.py check <題目檔>...               # 機械檢查，全部通過才 exit 0
     python scripts/eval/qgen.py plan <題目檔>...                # 讓 planner 只讀題目文字，比對還原出的地點和時間
     python scripts/eval/qgen.py answer <題目檔> <題目 id>       # 只用證據原句拼成的正向答案
-    python scripts/eval/qgen.py calibrate <題目檔> --negatives <反向答案.json>   # 用真正的評審校準 expect
 """
 import argparse
 import asyncio
@@ -31,6 +31,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / "src"), str(ROOT)]
 
+from strag_v3.eval.baseline.calibrate import positive_answer  # noqa: E402
+from strag_v3.eval.baseline.fragments import load_fragments  # noqa: E402
+from strag_v3.eval.baseline.questions import Question  # noqa: E402
 from strag_v3.place import Places  # noqa: E402
 from strag_v3.rag.plan import parse_time  # noqa: E402
 from strag_v3.rag.timematch import TimeSpec, months_of  # noqa: E402
@@ -606,48 +609,6 @@ async def plan_check(db: DB, paths: list[Path], concurrency: int) -> int:
     return len(problems)
 
 
-# ---------- 評審校準 ----------
-
-def positive_answer(db: DB, q: dict) -> str:
-    """只用證據原句拼成的答案：揭露條照抄（去掉「說明」），其餘每個來源寫成「地點（時間標籤）：原句」。"""
-    lines = []
-    for p, s in zip(q["expect"], q["expect_sources"]):
-        if not s:
-            lines.append(p.removeprefix("說明") + "。")
-        for c, quote in s.items():
-            f = db.frag(int(c))
-            lines.append(f"{f['poi']}（{when_text(f)}）：{quote} [{c}]")
-    return "\n".join(lines)
-
-
-async def calibrate(db: DB, path: Path, negatives: dict[str, str], concurrency: int) -> int:
-    """真正的評審（judge.md）：正向答案每條都要判涵蓋，反向答案每條都要判不涵蓋。印出沒過的條目。"""
-    from service.env import load_env
-    from strag_v3.eval.full.judge import Judge
-    from strag_v3.eval.metrics import Outcome
-    from strag_v3.eval.questions import load_questions
-
-    load_env()
-    judge = Judge(sqlite3.connect(":memory:"))
-    raw = {q["id"]: q for q in json.loads(path.read_text())["questions"]}
-    sem = asyncio.Semaphore(concurrency)
-    problems: list[str] = []
-
-    async def one(q):
-        qid = q.key.split("/", 1)[1]
-        async with sem:
-            jp = await judge.judge(q, Outcome(answer=positive_answer(db, raw[qid])))
-            jn = await judge.judge(q, Outcome(answer=negatives[qid])) if qid in negatives else None
-        problems.extend(f"[正向沒涵蓋] {qid}｜{c.point}｜{c.reason}" for c in jp.expect if not c.covered)
-        problems.extend(f"[反向沒擋住] {qid}｜{c.point}｜{c.reason}" for c in (jn.expect if jn else ()) if c.covered)
-        if qid not in negatives:
-            problems.append(f"[缺反向答案] {qid}")
-
-    await asyncio.gather(*(one(q) for q in load_questions(path)))
-    print("\n".join(sorted(problems)) if problems else f"{path}：正向全部涵蓋、反向全部擋住")
-    return len(problems)
-
-
 # ---------- 命令列 ----------
 
 def main(argv: list[str] | None = None) -> int:
@@ -687,10 +648,6 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("answer")
     s.add_argument("file", type=Path)
     s.add_argument("qid")
-    s = sub.add_parser("calibrate")
-    s.add_argument("file", type=Path)
-    s.add_argument("--negatives", type=Path, required=True, help="JSON：題目 id → 反向答案")
-    s.add_argument("--concurrency", type=int, default=4)
     a = ap.parse_args(argv)
     db = DB(a.db)
 
@@ -753,10 +710,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1 if asyncio.run(plan_check(db, a.files, a.concurrency)) else 0
     elif a.cmd == "answer":
         q = next(q for q in json.loads(a.file.read_text())["questions"] if q["id"] == a.qid)
-        print(positive_answer(db, q))
-    elif a.cmd == "calibrate":
-        negatives = json.loads(a.negatives.read_text())
-        return 1 if asyncio.run(calibrate(db, a.file, negatives, a.concurrency)) else 0
+        print(positive_answer(Question.from_dict(q), load_fragments(db.conn)))
     return 0
 
 

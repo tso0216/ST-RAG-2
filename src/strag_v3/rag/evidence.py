@@ -14,7 +14,7 @@ class Evidence:
     place: str
     time: TimeSpec
     content: str
-    # 相關分數：gate=jev 時是 JEV 的 noul，gate=semantic 和 dense baseline 是 embedding cosine
+    # 相關分數：gate=jev 時是 JEV 的 noul，gate=semantic 是 embedding cosine
     relevance: float
     # 排序用的分數：相關分數，時間不明時再乘上 unknown_discount
     score: float

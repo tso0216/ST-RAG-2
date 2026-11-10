@@ -1,0 +1,1169 @@
+{
+  "config": {
+    "model": "jev-1.14.0",
+    "n": 1,
+    "pass": 0.5,
+    "coverage": {
+      "name": "covers_point",
+      "instructions": "答案有沒有說出跟這條重點相同的事實？用字可以不同，但內容要一致：講到同一件事卻結論相反、數字或時間不同、地點不同，都算沒涵蓋。重點開頭寫了時間或地點（例如「5 月下午：」「六義園：」）時，答案的時間或地點也要對得上。",
+      "criteria": {
+        "true": "答案裡有說法跟這條重點的事實一致，結論、數字、時間、地點都對得上。",
+        "false": "答案沒提到這件事，或提到了但結論相反、數字或時間不同、地點不同。"
+      }
+    },
+    "unsupported": {
+      "name": "unsupported_claim",
+      "instructions": "答案裡有沒有標準答案不支持的經驗說法？經驗說法是描述某個地點在某個時間實際是什麼狀況的說法（人潮、排隊、開放、景色、交通狀況等），不論是不是旅客親身經歷的口吻。每條經驗說法都要能在 reference_fragments 或 time_unknown_fragments 裡找到依據：內容一致，地點和時間也要跟該片段對得上。時間看的是片段自己的時間標籤，不是問的時間：答案明說這是另一個時間的經驗、而且跟片段的時間標籤一致，就算有依據。任何一條找不到依據，就是有。建議、一般介紹、說明沒有資料，不是經驗說法。",
+      "criteria": {
+        "true": "有：至少一條經驗說法在標準片段和時間不明片段裡都找不到依據，或地點、時間跟依據對不上。",
+        "false": "沒有：每條經驗說法都找得到依據，或答案沒有任何經驗說法。"
+      }
+    }
+  },
+  "run_config": {
+    "system": "strag",
+    "k": null,
+    "retrieval": "fragment",
+    "model": "claude-opus-5-5",
+    "questions": "ptt_v2",
+    "db": "ptt.db",
+    "started_at": "2026-11-10T19:08:59+08:00",
+    "finished_at": "2026-11-10T19:12:50+08:00"
+  },
+  "questions": [
+    {
+      "id": "stay-01",
+      "skipped": false,
+      "coverage": [
+        [
+          0.97
+        ],
+        [
+          0.96
+        ],
+        [
+          0.96
+        ]
+      ],
+      "unsupported": [
+        0.89
+      ]
+    },
+    {
+      "id": "stay-02",
+      "skipped": false,
+      "coverage": [
+        [
+          0.86
+        ],
+        [
+          0.96
+        ],
+        [
+          0.97
+        ],
+        [
+          0.6
+        ],
+        [
+          0.94
+        ],
+        [
+          0.91
+        ],
+        [
+          0.97
+        ],
+        [
+          0.88
+        ]
+      ],
+      "unsupported": [
+        0.43
+      ]
+    },
+    {
+      "id": "stay-03",
+      "skipped": false,
+      "coverage": [
+        [
+          0.98
+        ],
+        [
+          0.97
+        ],
+        [
+          0.98
+        ],
+        [
+          0.98
+        ],
+        [
+          0.99
+        ],
+        [
+          0.98
+        ],
+        [
+          0.97
+        ]
+      ],
+      "unsupported": [
+        0.19
+      ]
+    },
+    {
+      "id": "stay-04",
+      "skipped": false,
+      "coverage": [
+        [
+          0.92
+        ],
+        [
+          0.97
+        ]
+      ],
+      "unsupported": [
+        0.98
+      ]
+    },
+    {
+      "id": "stay-05",
+      "skipped": false,
+      "coverage": [
+        [
+          0.95
+        ],
+        [
+          0.86
+        ],
+        [
+          0.95
+        ],
+        [
+          0.97
+        ]
+      ],
+      "unsupported": [
+        0.98
+      ]
+    },
+    {
+      "id": "stay-06",
+      "skipped": false,
+      "coverage": [
+        [
+          0.96
+        ],
+        [
+          0.95
+        ]
+      ],
+      "unsupported": [
+        0.17
+      ]
+    },
+    {
+      "id": "stay-07",
+      "skipped": false,
+      "coverage": [
+        [
+          0.98
+        ],
+        [
+          0.96
+        ]
+      ],
+      "unsupported": [
+        0.97
+      ]
+    },
+    {
+      "id": "stay-08",
+      "skipped": false,
+      "coverage": [
+        [
+          0.81
+        ],
+        [
+          0.8
+        ],
+        [
+          0.94
+        ],
+        [
+          0.94
+        ]
+      ],
+      "unsupported": [
+        0.2
+      ]
+    },
+    {
+      "id": "stay-09",
+      "skipped": false,
+      "coverage": [
+        [
+          0.9
+        ],
+        [
+          0.94
+        ],
+        [
+          0.9
+        ]
+      ],
+      "unsupported": [
+        0.49
+      ]
+    },
+    {
+      "id": "stay-10",
+      "skipped": false,
+      "coverage": [
+        [
+          0.4
+        ],
+        [
+          0.8
+        ],
+        [
+          0.72
+        ]
+      ],
+      "unsupported": [
+        0.22
+      ]
+    },
+    {
+      "id": "move-01",
+      "skipped": false,
+      "coverage": [
+        [
+          0.96
+        ],
+        [
+          0.88
+        ],
+        [
+          0.83
+        ],
+        [
+          0.94
+        ],
+        [
+          0.93
+        ]
+      ],
+      "unsupported": [
+        0.13
+      ]
+    },
+    {
+      "id": "move-02",
+      "skipped": false,
+      "coverage": [
+        [
+          0.86
+        ],
+        [
+          0.95
+        ],
+        [
+          0.88
+        ],
+        [
+          0.95
+        ]
+      ],
+      "unsupported": [
+        0.6
+      ]
+    },
+    {
+      "id": "move-03",
+      "skipped": false,
+      "coverage": [
+        [
+          0.94
+        ],
+        [
+          0.92
+        ],
+        [
+          0.94
+        ]
+      ],
+      "unsupported": [
+        0.17
+      ]
+    },
+    {
+      "id": "move-04",
+      "skipped": false,
+      "coverage": [
+        [
+          0.92
+        ],
+        [
+          0.96
+        ],
+        [
+          0.87
+        ]
+      ],
+      "unsupported": [
+        0.13
+      ]
+    },
+    {
+      "id": "move-05",
+      "skipped": false,
+      "coverage": [
+        [
+          0.95
+        ],
+        [
+          0.95
+        ]
+      ],
+      "unsupported": [
+        0.17
+      ]
+    },
+    {
+      "id": "move-06",
+      "skipped": false,
+      "coverage": [
+        [
+          0.94
+        ],
+        [
+          0.94
+        ]
+      ],
+      "unsupported": [
+        0.07
+      ]
+    },
+    {
+      "id": "move-07",
+      "skipped": false,
+      "coverage": [
+        [
+          0.93
+        ],
+        [
+          0.95
+        ],
+        [
+          0.91
+        ]
+      ],
+      "unsupported": [
+        0.98
+      ]
+    },
+    {
+      "id": "move-08",
+      "skipped": false,
+      "coverage": [
+        [
+          0.95
+        ],
+        [
+          0.97
+        ],
+        [
+          0.96
+        ],
+        [
+          0.94
+        ]
+      ],
+      "unsupported": [
+        0.97
+      ]
+    },
+    {
+      "id": "move-09",
+      "skipped": false,
+      "coverage": [
+        [
+          0.83
+        ],
+        [
+          0.93
+        ],
+        [
+          0.81
+        ],
+        [
+          0.53
+        ],
+        [
+          0.83
+        ]
+      ],
+      "unsupported": [
+        0.81
+      ]
+    },
+    {
+      "id": "move-10",
+      "skipped": false,
+      "coverage": [
+        [
+          0.97
+        ],
+        [
+          0.97
+        ]
+      ],
+      "unsupported": [
+        0.67
+      ]
+    },
+    {
+      "id": "place-01",
+      "skipped": false,
+      "coverage": [
+        [
+          0.95
+        ],
+        [
+          0.94
+        ],
+        [
+          0.96
+        ],
+        [
+          0.96
+        ]
+      ],
+      "unsupported": [
+        0.06
+      ]
+    },
+    {
+      "id": "place-02",
+      "skipped": false,
+      "coverage": [
+        [
+          0.98
+        ],
+        [
+          0.98
+        ],
+        [
+          0.96
+        ],
+        [
+          0.98
+        ],
+        [
+          0.96
+        ],
+        [
+          0.98
+        ],
+        [
+          0.98
+        ]
+      ],
+      "unsupported": [
+        0.12
+      ]
+    },
+    {
+      "id": "place-03",
+      "skipped": false,
+      "coverage": [
+        [
+          0.97
+        ],
+        [
+          0.93
+        ],
+        [
+          0.92
+        ],
+        [
+          0.98
+        ],
+        [
+          0.96
+        ]
+      ],
+      "unsupported": [
+        0.22
+      ]
+    },
+    {
+      "id": "place-04",
+      "skipped": false,
+      "coverage": [
+        [
+          0.97
+        ],
+        [
+          0.97
+        ],
+        [
+          0.97
+        ],
+        [
+          0.95
+        ]
+      ],
+      "unsupported": [
+        0.78
+      ]
+    },
+    {
+      "id": "place-05",
+      "skipped": false,
+      "coverage": [
+        [
+          0.96
+        ],
+        [
+          0.98
+        ],
+        [
+          0.96
+        ],
+        [
+          0.98
+        ]
+      ],
+      "unsupported": [
+        0.21
+      ]
+    },
+    {
+      "id": "place-06",
+      "skipped": false,
+      "coverage": [
+        [
+          0.98
+        ],
+        [
+          0.98
+        ],
+        [
+          0.98
+        ],
+        [
+          0.96
+        ],
+        [
+          0.97
+        ]
+      ],
+      "unsupported": [
+        0.83
+      ]
+    },
+    {
+      "id": "place-07",
+      "skipped": false,
+      "coverage": [
+        [
+          0.96
+        ],
+        [
+          0.96
+        ],
+        [
+          0.97
+        ],
+        [
+          0.96
+        ],
+        [
+          0.98
+        ]
+      ],
+      "unsupported": [
+        0.98
+      ]
+    },
+    {
+      "id": "place-08",
+      "skipped": false,
+      "coverage": [
+        [
+          0.97
+        ],
+        [
+          0.95
+        ]
+      ],
+      "unsupported": [
+        0.94
+      ]
+    },
+    {
+      "id": "place-09",
+      "skipped": false,
+      "coverage": [
+        [
+          0.95
+        ],
+        [
+          0.99
+        ]
+      ],
+      "unsupported": [
+        0.17
+      ]
+    },
+    {
+      "id": "place-10",
+      "skipped": false,
+      "coverage": [
+        [
+          0.95
+        ],
+        [
+          0.98
+        ],
+        [
+          0.94
+        ],
+        [
+          0.95
+        ]
+      ],
+      "unsupported": [
+        0.08
+      ]
+    },
+    {
+      "id": "time-01",
+      "skipped": false,
+      "coverage": [
+        [
+          0.98
+        ],
+        [
+          0.95
+        ],
+        [
+          0.98
+        ],
+        [
+          0.97
+        ]
+      ],
+      "unsupported": [
+        0.74
+      ]
+    },
+    {
+      "id": "time-02",
+      "skipped": false,
+      "coverage": [
+        [
+          0.97
+        ],
+        [
+          0.97
+        ],
+        [
+          0.98
+        ]
+      ],
+      "unsupported": [
+        0.95
+      ]
+    },
+    {
+      "id": "time-03",
+      "skipped": false,
+      "coverage": [
+        [
+          0.95
+        ],
+        [
+          0.96
+        ],
+        [
+          0.95
+        ],
+        [
+          0.96
+        ],
+        [
+          0.96
+        ]
+      ],
+      "unsupported": [
+        0.98
+      ]
+    },
+    {
+      "id": "time-04",
+      "skipped": false,
+      "coverage": [
+        [
+          0.86
+        ],
+        [
+          0.93
+        ],
+        [
+          0.93
+        ],
+        [
+          0.85
+        ],
+        [
+          0.93
+        ],
+        [
+          0.74
+        ]
+      ],
+      "unsupported": [
+        0.96
+      ]
+    },
+    {
+      "id": "time-05",
+      "skipped": false,
+      "coverage": [
+        [
+          0.87
+        ],
+        [
+          0.75
+        ],
+        [
+          0.92
+        ],
+        [
+          0.94
+        ],
+        [
+          0.93
+        ],
+        [
+          0.24
+        ],
+        [
+          0.82
+        ]
+      ],
+      "unsupported": [
+        0.79
+      ]
+    },
+    {
+      "id": "time-06",
+      "skipped": false,
+      "coverage": [
+        [
+          0.86
+        ],
+        [
+          0.87
+        ],
+        [
+          0.82
+        ],
+        [
+          0.84
+        ],
+        [
+          0.94
+        ],
+        [
+          0.46
+        ],
+        [
+          0.84
+        ],
+        [
+          0.95
+        ]
+      ],
+      "unsupported": [
+        0.28
+      ]
+    },
+    {
+      "id": "time-07",
+      "skipped": false,
+      "coverage": [
+        [
+          0.92
+        ],
+        [
+          0.96
+        ],
+        [
+          0.98
+        ],
+        [
+          0.98
+        ],
+        [
+          0.96
+        ],
+        [
+          0.97
+        ]
+      ],
+      "unsupported": [
+        0.84
+      ]
+    },
+    {
+      "id": "time-08",
+      "skipped": false,
+      "coverage": [
+        [
+          0.97
+        ],
+        [
+          0.96
+        ],
+        [
+          0.96
+        ],
+        [
+          0.86
+        ],
+        [
+          0.91
+        ],
+        [
+          0.94
+        ]
+      ],
+      "unsupported": [
+        0.98
+      ]
+    },
+    {
+      "id": "time-09",
+      "skipped": false,
+      "coverage": [
+        [
+          0.92
+        ],
+        [
+          0.78
+        ],
+        [
+          0.8
+        ],
+        [
+          0.88
+        ],
+        [
+          0.82
+        ],
+        [
+          0.87
+        ]
+      ],
+      "unsupported": [
+        0.56
+      ]
+    },
+    {
+      "id": "time-10",
+      "skipped": false,
+      "coverage": [
+        [
+          0.94
+        ],
+        [
+          0.97
+        ],
+        [
+          0.96
+        ],
+        [
+          0.94
+        ],
+        [
+          0.72
+        ],
+        [
+          0.82
+        ],
+        [
+          0.94
+        ]
+      ],
+      "unsupported": [
+        0.95
+      ]
+    },
+    {
+      "id": "cmp-01",
+      "skipped": false,
+      "coverage": [
+        [
+          0.97
+        ],
+        [
+          0.98
+        ],
+        [
+          0.93
+        ],
+        [
+          0.96
+        ],
+        [
+          0.96
+        ],
+        [
+          0.81
+        ],
+        [
+          0.96
+        ]
+      ],
+      "unsupported": [
+        0.7
+      ]
+    },
+    {
+      "id": "cmp-02",
+      "skipped": false,
+      "coverage": [
+        [
+          0.92
+        ],
+        [
+          0.92
+        ],
+        [
+          0.94
+        ],
+        [
+          0.91
+        ]
+      ],
+      "unsupported": [
+        0.53
+      ]
+    },
+    {
+      "id": "cmp-03",
+      "skipped": false,
+      "coverage": [
+        [
+          0.98
+        ],
+        [
+          0.91
+        ],
+        [
+          0.96
+        ],
+        [
+          0.92
+        ],
+        [
+          0.94
+        ],
+        [
+          0.95
+        ]
+      ],
+      "unsupported": [
+        0.75
+      ]
+    },
+    {
+      "id": "cmp-04",
+      "skipped": false,
+      "coverage": [
+        [
+          0.97
+        ],
+        [
+          0.98
+        ],
+        [
+          0.97
+        ],
+        [
+          0.98
+        ],
+        [
+          0.97
+        ],
+        [
+          0.98
+        ],
+        [
+          0.99
+        ],
+        [
+          0.97
+        ]
+      ],
+      "unsupported": [
+        0.39
+      ]
+    },
+    {
+      "id": "cmp-05",
+      "skipped": false,
+      "coverage": [
+        [
+          0.97
+        ],
+        [
+          0.95
+        ],
+        [
+          0.95
+        ],
+        [
+          0.95
+        ],
+        [
+          0.96
+        ],
+        [
+          0.97
+        ],
+        [
+          0.97
+        ],
+        [
+          0.96
+        ]
+      ],
+      "unsupported": [
+        0.96
+      ]
+    },
+    {
+      "id": "cmp-06",
+      "skipped": false,
+      "coverage": [
+        [
+          0.87
+        ],
+        [
+          0.77
+        ]
+      ],
+      "unsupported": [
+        0.17
+      ]
+    },
+    {
+      "id": "cmp-07",
+      "skipped": false,
+      "coverage": [
+        [
+          0.98
+        ],
+        [
+          0.97
+        ],
+        [
+          0.97
+        ],
+        [
+          0.98
+        ],
+        [
+          0.98
+        ],
+        [
+          0.98
+        ]
+      ],
+      "unsupported": [
+        0.82
+      ]
+    },
+    {
+      "id": "cmp-08",
+      "skipped": false,
+      "coverage": [
+        [
+          0.87
+        ],
+        [
+          0.97
+        ],
+        [
+          0.97
+        ],
+        [
+          0.93
+        ],
+        [
+          0.97
+        ],
+        [
+          0.9
+        ],
+        [
+          0.95
+        ],
+        [
+          0.98
+        ]
+      ],
+      "unsupported": [
+        0.97
+      ]
+    },
+    {
+      "id": "cmp-09",
+      "skipped": false,
+      "coverage": [
+        [
+          0.95
+        ],
+        [
+          0.96
+        ],
+        [
+          0.96
+        ],
+        [
+          0.96
+        ]
+      ],
+      "unsupported": [
+        0.37
+      ]
+    },
+    {
+      "id": "cmp-10",
+      "skipped": false,
+      "coverage": [
+        [
+          0.97
+        ],
+        [
+          0.97
+        ]
+      ],
+      "unsupported": [
+        0.92
+      ]
+    }
+  ],
+  "disagreements": [],
+  "agreement": {
+    "coverage": 1.0,
+    "unsupported": 1.0
+  },
+  "run": "20261110-191250_strag.json"
+}

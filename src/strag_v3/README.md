@@ -34,9 +34,9 @@
 | `rag/evidence.py` | 輸出結構：`Evidence`、`SubQueryResult`、`Available`、`Group`、`Section` |
 | `rag/params.py` | 可調參數：`gate`（`jev` 預設／`semantic`）、`jev_model=jev-1.14.0`、`jev_pass=0.5`、`jev_concurrency=4`、`delta=0.3`（semantic 用）、`unknown_discount=0.8`、`time_backoff`、`space_backoff` |
 | `rag/embedding.py` | `text-embedding-3-large`，結果快取在 DB 的 `embedding` 表 |
-| `rag/dense.py` | Dense baseline：不看計畫，只用原問題取 top-k（對照組） |
 | `rag/llm.py` + `rag/prompts/` | 規劃器（`planner.md`）和生成器（`generator.md`），模型 `claude-opus-5-5`，structured output；實際呼叫在根目錄 `service/llm.py` |
-| `eval/` | 評估。`questions.py` 讀題目檔、`metrics.py` 檢索指標、`full/` 跑完整系統（規劃器正確率、LLM 評審答案）、`question/question_type.md` 題型定義 |
+| `eval/questions/ptt_v2/` | 評估題目：50 題（停留經驗、移動經驗、找地點、找時間、比較各 10 題），附標準片段、標準文章、排除片段、`expect`；`calibration/` 是校準評審用的反向答案。出題規則在 `.scratch/ptt-v2-questions/generate.md`，出題工具是 `scripts/eval/qgen.py` |
+| `eval/baseline/` | 比較實驗：五個系統（`llm`、`dense_raw`、`dense_frag`、`dense_filter`、`strag`）用同一份題目、同一個生成模型各跑一次，JEV 評審答案，出系統 × 指標的比較表。程式、提示詞（`prompts/`）、結果檔（`runs/`）都在這個資料夾，見下面〈比較實驗〉 |
 
 ## 資料（SQLite）
 
@@ -52,7 +52,7 @@
 | `embedding` | embedding 快取（用到時才建） |
 | `jev_cache` | JEV 判斷快取：鍵（模型, 判準 hash, 原問題, aspect, 片段 id），存 noul、實際回答的模型版本、建立時間；有快取就不重問，論文重跑靠它 |
 
-`data/ptt.db` 現況（2026-11）：150 篇、312 個片段、663 個地點（有片段的約 140 個）。片段集中在東京：淺草寺 61、東京晴空塔 31，其餘多半 1–9 筆。時段不明 120 筆、平日/假日不明 155 筆。
+`data/ptt.db` 現況（2026-11）：248 篇、648 個片段、1306 個地點（有片段的 311 個）。片段集中在東京：淺草寺 67、東京晴空塔 34、東京迪士尼海洋 27、東京巨蛋 22，其餘多半 1–17 筆。時段不明 229 筆、平日/假日不明 272 筆。原文封存在 `.archive/ptt_article/`（不進版控）。
 
 ## 檢索規則（`rag/retrieve.py`）
 
@@ -76,7 +76,7 @@
 
 ## 怎麼跑
 
-從專案根目錄跑，`PYTHONPATH=.:src`（pytest 已在 `pytest.ini` 設好）。需要 Anthropic、OpenAI 和 TypeSafe（JEV，`TYPESAFE_API_KEY`）的 API key（見 `service/llm.py`、`rag/embedding.py`、`service/jev.py`）；`rag` 和 `eval.full` 會先讀專案根目錄的 `.env`（`service/env.py`，只補沒設定的變數）。
+從專案根目錄跑，`PYTHONPATH=.:src`（pytest 已在 `pytest.ini` 設好）。需要 Anthropic、OpenAI 和 TypeSafe（JEV，`TYPESAFE_API_KEY`）的 API key（見 `service/llm.py`、`rag/embedding.py`、`service/jev.py`）；`rag` 和 `eval.baseline` 會先讀專案根目錄的 `.env`（`service/env.py`，只補沒設定的變數）。
 
 ```bash
 # 建 DB
@@ -85,12 +85,50 @@ python scripts/db/create_main_db.py --db data/main.db
 PYTHONPATH=.:src python -m strag_v3.extract data/ptt_article --ptt --db data/ptt.db --jobs 4
 # 問問題（--json 輸出完整結構；--no-time-backoff / --no-space-backoff / --gate semantic 做消融）
 PYTHONPATH=.:src python -m strag_v3.rag "平日早上淺草寺人多嗎？" --db data/ptt.db
-# 評估完整系統
-PYTHONPATH=.:src python -m strag_v3.eval.full run data/mock_article/eval --split dev --judge [--gate semantic]
-PYTHONPATH=.:src python -m strag_v3.eval.full compare src/strag_v3/eval/full/runs/*.json
+# 比較實驗（見〈比較實驗〉）
+PYTHONPATH=.:src python -m strag_v3.eval.baseline run --system strag
 # 測試（Nominatim 用 tests/fake_nominatim.py、JEV 用 tests/fake_typesafe.py，不打網路）
 pytest
 ```
+
+## 比較實驗（`eval/baseline/`）
+
+五個系統用 ptt_v2 的 50 題、同一個生成模型（`claude-opus-5-5`）各跑一次，答案交給 JEV 評審，最後出比較表。規格在 `.scratch/baseline/spec.md`。
+
+| 系統 | 做法 | 預設 k |
+|---|---|---|
+| `llm` | 不檢索，只給問題 | — |
+| `dense_raw` | 原問題對原文段（遊記原文切出來的段落，不是片段）的 cosine top-k | 5（附表 3、10） |
+| `dense_frag` | 原問題對片段的 cosine top-k | 10（附表 5、20） |
+| `dense_filter` | Opus 從問題產生一組或多組過濾條件（地點名、月份、平日／假日、時段），地點只做字串比對、不展開區域，時間用主系統的比對規則；過濾後 cosine top-k，多組各取再合併。沒有相關判斷、沒有退讓 | 10 |
+| `strag` | 主系統，預設參數（含 JEV 相關判斷和它的快取、兩種退讓） | — |
+
+三個 dense 系統共用精簡版生成提示詞（`prompts/dense.md`：只根據證據、標出處、不同文章講明是不同旅客，沒有退讓規則）；`strag` 用主系統原本的生成器提示詞；`llm` 只給問題。
+
+| 檔案 | 做什麼 |
+|---|---|
+| `questions.py` | 讀 ptt_v2 題目和校準檔 |
+| `fragments.py` | 從 DB 讀片段（評審、指標、dense 用） |
+| `systems.py` | 五個系統的共同介面（一題進、`Outcome` 出）和逐題執行（一題出錯只記那題） |
+| `dense.py` | 片段的 cosine top-k（`dense_frag`）和過濾條件（`dense_filter`） |
+| `chunks.py` | 原文段的切法（內文加推文，以段落為界，約 500 字、重疊 100 字）、`chunks.db` |
+| `judge.py` | 評審：JEV `jev-1.14.0`，每條 `expect` 問一次覆蓋、整份答案問一次無支持（對不上標準片段、也對不上時間不明片段的經驗說法）；`--n` 重問，分數只用第 1 次；不快取 |
+| `calibrate.py` | 用正向答案（照 `expect_sources` 拼原句）和校準檔的反向答案驗評審 |
+| `metrics.py` | 指標：expect 覆蓋率、無支持比例（附 95% bootstrap 信賴區間）、文章級 recall、片段級 P／R／F1、時間違規率、成本 |
+| `report.py` | markdown 比較表：主表和依題型分的表 |
+| `results.py` | 結果檔 `runs/<時間>_<系統>[_k<k>].json` 和評審檔 `<結果檔>.judge.json`，都不覆寫 |
+
+`chunks.db` 是可重建的衍生資料（原文段，和 baseline 用到的所有 embedding），不進版控；`dense_raw` 以外的系統也用它快取 embedding，所以評測不寫進 `data/ptt.db`（`strag` 自己的相關判斷快取和地點解析快取例外，那是系統原本的行為）。
+
+```bash
+PYTHONPATH=.:src python -m strag_v3.eval.baseline build-chunks                 # 248 篇原文 → chunks.db
+PYTHONPATH=.:src python -m strag_v3.eval.baseline calibrate [--n 3]            # 正式跑之前先校準評審
+PYTHONPATH=.:src python -m strag_v3.eval.baseline run --system dense_frag [--k 10]
+PYTHONPATH=.:src python -m strag_v3.eval.baseline judge src/strag_v3/eval/baseline/runs/<結果檔> [--n 3]
+PYTHONPATH=.:src python -m strag_v3.eval.baseline report src/strag_v3/eval/baseline/runs/*.judge.json
+```
+
+原文封存缺文章時，用 `python scripts/ptt/ptt.py --out .archive/ptt_article --ids <文章 id>...` 補抓。
 
 ## 跟一般 LLM / native RAG 的差別（論文賣點）
 

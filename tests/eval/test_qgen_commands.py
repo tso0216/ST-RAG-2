@@ -1,6 +1,6 @@
 """`scripts/eval/qgen.py` 給協調者用的指令：layers、frag、usage、merge、blind-input、blind-diff。
 
-用真的 `data/ptt.db`（唯讀）和 generate.md〈範例〉裡完整的 stay-01。
+用真的 `data/ptt.db`（唯讀）和 `.scratch/ptt-v2-questions/generate.md`〈範例〉裡完整的 stay-01。
 """
 import importlib.util
 import json
@@ -20,7 +20,7 @@ WHEN = '{"month": ["3"], "time": ["晚上"]}'
 
 def stay_01() -> dict:
     """generate.md〈範例〉的停留經驗 exact 那一題。"""
-    md = (ROOT / "src" / "strag_v3" / "eval" / "questions" / "generate.md").read_text()
+    md = (ROOT / ".scratch" / "ptt-v2-questions" / "generate.md").read_text()
     block = re.search(r"\*\*停留經驗、`exact`（完整的一題）\*\*：\n\n```json\n(.*?)\n```", md, re.S).group(1)
     return json.loads(block)
 

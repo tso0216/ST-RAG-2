@@ -8,3 +8,4 @@ __pycache__
 data/mock_article
 data/ptt_article
 .mypy_cache
+src/strag_v3/eval/baseline/chunks.db

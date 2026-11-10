@@ -1,6 +1,10 @@
 r"""PTT 日本旅遊板（Japan_Travel）遊記爬取工具。
 
 usage: python3 scripts/ptt/ptt.py [--count 100] [--out data/ptt_article] [--keyword 京都 [紅葉 ...]] [--restart]
+       python3 scripts/ptt/ptt.py --ids M.1573263329.A.24C [...] [--out .archive/ptt_article]
+
+給了 --ids 時不翻搜尋頁，直接抓指定的文章（文章 id 可以帶 `ptt_` 前綴），存法相同；
+已存在的略過，抓不到（刪文、404）的列在最後並以 exit 1 結束。
 
 用 PTT 看板搜尋（/bbs/Japan_Travel/search?q=[遊記]）由新到舊翻頁，挑標題含 [遊記] 的文章
 （略過 Re: 回文）。
@@ -153,6 +157,31 @@ def save_state(state):
     os.replace(path + ".tmp", path)
 
 
+def fetch_ids(session, ids, out, delay):
+    """抓指定的文章；回傳 0（全部有了）或 1（有抓不到的）。"""
+    failed = []
+    for raw in ids:
+        article_id = raw.removeprefix("ptt_")
+        path = os.path.join(out, f"ptt_{article_id}.json")
+        if os.path.exists(path):
+            continue
+        url = f"{BASE}/bbs/{BOARD}/{article_id}.html"
+        time.sleep(delay)
+        html = get(session, url)
+        parsed = parse_article(html) if html else None
+        if not parsed or not parsed[1]:
+            failed.append(article_id)
+            print(f"  抓不到 {url}", file=sys.stderr, flush=True)
+            continue
+        meta, body, comments = parsed
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(to_json(meta, body, comments, url), f, ensure_ascii=False, indent=2)
+            f.write("\n")
+        print(f"{article_id}：{meta.get('標題', '')} ({len(comments)} 則留言)", flush=True)
+    print(f"done: 指定 {len(ids)} 篇，抓不到 {len(failed)} 篇" + (f"：{' '.join(failed)}" if failed else ""), flush=True)
+    return 1 if failed else 0
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--count", type=int, default=100)
@@ -160,12 +189,15 @@ def main():
     ap.add_argument("--keyword", nargs="+", default=[], help="標題須含的關鍵字（可多個，全部都要符合）")
     ap.add_argument("--restart", action="store_true", help="忽略上次停下的頁碼，從第 1 頁開始")
     ap.add_argument("--delay", type=float, default=0.5, help="每次請求間隔秒數")
+    ap.add_argument("--ids", nargs="+", default=[], help="直接抓這些文章 id，不翻搜尋頁")
     args = ap.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
     session = requests.Session()
     session.headers.update(HEADERS)
     session.cookies.set("over18", "1", domain="www.ptt.cc")
+    if args.ids:
+        sys.exit(fetch_ids(session, args.ids, args.out, args.delay))
 
     saved, seen = 0, set()
     query = args.keyword[0] if args.keyword else "[遊記]"

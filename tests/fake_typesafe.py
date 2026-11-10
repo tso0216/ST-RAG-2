@@ -32,3 +32,29 @@ class FakeTypeSafe:
 
     async def aclose(self):
         pass
+
+
+class ScriptedTypeSafe:
+    """可以指定回傳值的假 TypeSafe client（評審用；評審的 `state` 跟相關判斷不同）。
+
+    `respond(state, attempt)` 決定 noul：attempt 是同一個 state 第幾次被問（從 1 起算）。預設全部 0.9。
+    """
+
+    def __init__(self, respond=None):
+        self.respond = respond or (lambda state, attempt: 0.9)
+        self.calls: list[dict] = []
+        self._seen: dict[str, int] = {}
+
+    async def system_one(self, state, questions, *, model=None, **_):
+        self.calls.append({"model": model, "state": state, "questions": questions})
+        key = repr(sorted(state.items()))
+        self._seen[key] = self._seen.get(key, 0) + 1
+        noul = self.respond(state, self._seen[key])
+        return SystemOneResponse.model_validate({
+            "model": model,
+            "usage": {"input_tokens": 1, "output_tokens": 1},
+            "answers": {name: {"type": "noul", "noul": noul} for name in questions},
+        })
+
+    async def aclose(self):
+        pass
