@@ -34,7 +34,7 @@ Blocked by: 03
   3. `plan` 通過後，盲審、審 `expect`、寫反向答案同時開。哪一題要修，就只重做那一題後面的驗證。
 - 2026-11-10 使用者核准省額度做法（A–D 都用）：A. 審 expect 的小修正由協調者直接改草稿、自己跑 check，只有改題目文字或 aspect_rule 才重跑 plan；B. 可改可不改的小問題不處理；C. find_place 盲審從 4 個減成 2 個；D. 盲審和反向答案子代理改用 Sonnet。
 - 2026-11-10 find_place 10 題 plan 全部「快取解析不到」（區域的 nominatim_cache 鍵 city 是空字串或縣名）。出題子代理換了 8 種寫法都失敗。使用者同意開 1 個 Sonnet 子代理唯讀查 src/ 和 qgen.py 找原因（破例讀原始碼）。
-- 2026-11-10 原因（Sonnet 子代理查）：planner 照 prompt（rag/prompts/planner.md:10）為區域填 city（渋谷区→東京、京都市→京都），但快取裡區域的鍵是查外圍行政區時建的（city 空字串或縣名），place.py:186 精確鍵查不到；qgen 只讀快取所以失敗。實際系統會線上查 Nominatim，但「只讀快取」重跑時區域題會 place_unresolved。使用者同意破例補 data/ptt.db 的快取鍵：用 `scripts/db/pin_place.py --db data/ptt.db` 釘了 9 個區域的 24 個鍵（東京各區的 東京／東京都、京都市的 京都／京都市、大阪市的 大阪／大阪市、熱海市的 熱海／熱海市／静岡／静岡県、山梨県的 山梨／山梨県／甲府／甲府市、埼玉県的 埼玉／埼玉県／さいたま／さいたま市），osm 都跟原本的鍵相同。補完 plan 10 題一致。備份在 scratchpad 的 ptt.db.bak。根本修法（place.py 對區域加 fallback）留給之後的 ticket。
+- 2026-11-10 原因（Sonnet 子代理查）：planner 照 prompt（rag/prompts/planner.md:10）為區域填 city（渋谷区→東京、京都市→京都），但快取裡區域的鍵是查外圍行政區時建的（city 空字串或縣名），place.py:186 精確鍵查不到；qgen 只讀快取所以失敗。實際系統會線上查 Nominatim，但「只讀快取」重跑時區域題會 place_unresolved。使用者同意破例補 data/ptt.db 的快取鍵：用 `scripts/db/pin_place.py --db data/ptt.db` 釘了 9 個區域的 24 個鍵（東京各區的 東京／東京都、京都市的 京都／京都市、大阪市的 大阪／大阪市、熱海市的 熱海／熱海市／静岡／静岡県、山梨県的 山梨／山梨県／甲府／甲府市、埼玉県的 埼玉／埼玉県／さいたま／さいたま市），osm 都跟原本的鍵相同。補完 plan 10 題一致。寫入的 24 列裡有 1 列取代了原本同名的鍵，所以 nominatim_cache 淨增 23 筆（1928→1951）；這 24 列的 response 是區域邊界多邊形，合計約 3.66MB，所以 ptt.db 從 63.9MB 變成 67.5MB。備份在 scratchpad 的 ptt.db.bak。根本修法（place.py 對區域加 fallback）留給之後的 ticket。
 
 ## Answer
 
