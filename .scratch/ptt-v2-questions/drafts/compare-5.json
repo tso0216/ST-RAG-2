@@ -1,0 +1,63 @@
+{
+  "annotation_note": "依 src/strag_v3/eval/questions/generate.md 出題與標註",
+  "questions": [
+    {
+      "id": "cmp-09",
+      "type": "比較",
+      "question": "四月假日去新宿御苑和千鳥之淵，人潮差在哪？",
+      "when": {"month": ["4"], "day_type": "假日"},
+      "options": [
+        {"label": "新宿御苑", "space": {"place_id": 250, "name": "新宿御苑", "kind": "景點"},
+         "when": {"month": ["4"], "day_type": "假日"}, "relevant_contents": [262, 372]},
+        {"label": "千鳥之淵", "space": {"place_id": 666, "name": "千鳥之淵", "kind": "景點"},
+         "when": {"month": ["4"], "day_type": "假日"}, "relevant_contents": [361]}
+      ],
+      "aspect": "人潮多寡",
+      "aspect_rule": "算：明說人的多寡或擁擠（人多、人還蠻多、人超級多、擠滿人、說有許多人在做某事、沒什麼人、拍照拍不到沒人的畫面）；不算：只講氣氛（熱鬧、悠閒），只講能不能搭船或要不要預約的（沒預約就沒辦法划船），或要再推一步才知道人多人少的",
+      "coverage": "exact",
+      "relevant_contents": [262, 361, 372],
+      "relevant_articles": ["ptt_M.1744021240.A.2EA", "ptt_M.1744124366.A.CFB", "ptt_M.1745138682.A.71F"],
+      "excluded": {"192": "時間不明"},
+      "expect": [
+        "新宿御苑：入口附近人還蠻多",
+        "新宿御苑：台灣閣旁言葉之庭的涼亭人多，拍不到沒人的照片",
+        "新宿御苑：9 點開園前新宿門前擠滿人",
+        "千鳥之淵：下午人超級多"
+      ],
+      "expect_sources": [
+        {"262": "入口附近人還蠻多"},
+        {"262": "台灣閣旁言葉之庭的涼亭人多,拍不到沒人的照片"},
+        {"372": "9 點開園前新宿門前擠滿人"},
+        {"361": "週六下午人超級多"}
+      ],
+      "label_issues": []
+    },
+    {
+      "id": "cmp-10",
+      "type": "比較",
+      "question": "春天晚上去隅田公園和千鳥之淵，櫻花有沒有照明？",
+      "when": {"month": ["春"], "time": ["晚上"]},
+      "options": [
+        {"label": "隅田公園", "space": {"place_id": 60, "name": "隅田公園", "kind": "景點"},
+         "when": {"month": ["春"], "time": ["晚上"]}, "relevant_contents": [194]},
+        {"label": "千鳥之淵", "space": {"place_id": 666, "name": "千鳥之淵", "kind": "景點"},
+         "when": {"month": ["春"], "time": ["晚上"]}, "relevant_contents": [367]}
+      ],
+      "aspect": "開放狀況",
+      "aspect_rule": "算：明說櫻花晚上有沒有點燈照明（有打燈、有點燈、點燈到幾點、沒有點燈、已經熄燈）；不算：只說晚上去看夜櫻、沒說有沒有點燈的，燈光的顏色、變化或好不好看（同一句明說有點燈的，只算有點燈這件事），以及點燈以外的開放、預約或通行（搭船、步道通行方向、拍攝點排隊）",
+      "coverage": "exact",
+      "relevant_contents": [194, 367],
+      "relevant_articles": ["ptt_M.1744039372.A.C80", "ptt_M.1777042763.A.63D"],
+      "excluded": {"264": "無關", "363": "無關", "400": "無關"},
+      "expect": [
+        "隅田公園：傍晚 6 點多到時夜櫻有打燈",
+        "千鳥之淵：夜櫻有點燈"
+      ],
+      "expect_sources": [
+        {"194": "傍晚6點多到，夜櫻有打燈"},
+        {"367": "夜櫻點燈有多種顏色"}
+      ],
+      "label_issues": []
+    }
+  ]
+}
