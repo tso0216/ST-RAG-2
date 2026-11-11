@@ -36,6 +36,8 @@ Blocked by: 02
 
 ## Answer
 
+> 2026-11-10：ticket 07 補了 move-08..10，move 現在 10 題，見 `07-move-supplement.md`。
+
 ### 出了哪些題（7 題）
 
 | id | 地點 | when | aspect | coverage | 收 | expect |
